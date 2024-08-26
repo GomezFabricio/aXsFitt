@@ -7,26 +7,30 @@ export const createPersona = async (req, res, returnResponse = false) => {
     const { persona_nombre, persona_apellido, persona_dni, persona_fecha_nacimiento, persona_domicilio, persona_telefono } = req.body;
     const persona_fecha_alta = new Date();
 
-    const [result] = await pool.query(
-        "INSERT INTO `personas` (`persona_nombre`, `persona_apellido`, `persona_dni`, `persona_fecha_nacimiento`, `persona_domicilio`, `persona_telefono`, `persona_fecha_alta`) VALUES (?, ?, ?, ?, ?, ?, ?)",
-        [persona_nombre, persona_apellido, persona_dni, persona_fecha_nacimiento, persona_domicilio, persona_telefono, persona_fecha_alta]
-    );
+    try {
+        const [result] = await pool.query(
+            "INSERT INTO `personas` (`persona_nombre`, `persona_apellido`, `persona_dni`, `persona_fecha_nacimiento`, `persona_domicilio`, `persona_telefono`, `persona_fecha_alta`) VALUES (?, ?, ?, ?, ?, ?, ?)",
+            [persona_nombre, persona_apellido, persona_dni, persona_fecha_nacimiento, persona_domicilio, persona_telefono, persona_fecha_alta]
+        );
 
-    const response = {
-        id: result.insertId,
-        persona_nombre,
-        persona_apellido,
-        persona_dni,
-        persona_fecha_nacimiento,
-        persona_domicilio,
-        persona_telefono,
-        persona_fecha_alta
-    };
+        const response = {
+            id: result.insertId,
+            persona_nombre,
+            persona_apellido,
+            persona_dni,
+            persona_fecha_nacimiento,
+            persona_domicilio,
+            persona_telefono,
+            persona_fecha_alta
+        };
 
-    if (returnResponse) {
-        return response;
-    } else {
-        res.json(response);
+        if (returnResponse) {
+            return response;
+        } else {
+            res.json(response);
+        }
+    } catch (error) {
+        res.status(500).json({ message: 'Error de conexión' });
     }
 };
 
@@ -36,17 +40,21 @@ export const createPersona = async (req, res, returnResponse = false) => {
 export const updatePersona = async (req, res) => {
     const { id } = req.params; // Extraer el ID de la persona de los parámetros de la solicitud
 
-    // Consulta SQL para actualizar la información de la persona
-    const [result] = await pool.query(
-        `UPDATE personas 
-        SET ?
-        WHERE persona_id = ?`,
-        [
-            req.body,
-            id
-        ]
-    );
+    try {
+        // Consulta SQL para actualizar la información de la persona
+        const [result] = await pool.query(
+            `UPDATE personas 
+            SET ?
+            WHERE persona_id = ?`,
+            [
+                req.body,
+                id
+            ]
+        );
 
-    // Enviar respuesta de éxito
-    res.json({ message: 'Persona actualizada exitosamente' });
+        // Enviar respuesta de éxito
+        res.json({ message: 'Persona actualizada exitosamente' });
+    } catch (error) {
+        res.status(500).json({ message: 'Error de conexión' });
+    }
 };
