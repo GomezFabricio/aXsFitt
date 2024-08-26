@@ -28,7 +28,7 @@ export const getVendedores = async (req, res) => {
         // Enviar los datos obtenidos como respuesta
         res.json(rows);
     } catch (error) {
-        res.status(500).json({ message: 'Error de conexión' });
+        res.status(500).json({ message: error.message });
     }
 };
 
@@ -61,7 +61,7 @@ export const getVendedoresInactivos = async (req, res) => {
         // Enviar los datos obtenidos como respuesta
         res.json(rows);
     } catch (error) {
-        res.status(500).json({ message: 'Error de conexión' });
+        res.status(500).json({ message: error.message });
     }
 };
 
@@ -101,7 +101,7 @@ export const getVendedor = async (req, res) => {
         // Enviar los datos del vendedor como respuesta
         res.json(rows[0]);
     } catch (error) {
-        res.status(500).json({ message: 'Error de conexión' });
+        res.status(500).json({ message: error.message });
     }
 };
 
@@ -134,7 +134,7 @@ export const createVendedor = async (req, res) => {
             res.status(500).json({ message: 'Error al registrar al vendedor.' });
         }
     } catch (error) {
-        res.status(500).json({ message: 'Error de conexión' });
+        res.status(500).json({ message: error.message });
     }
 };
 
@@ -164,7 +164,7 @@ export const updateVendedor = async (req, res) => {
         // Enviar respuesta de éxito
         res.json({ message: 'Vendedor actualizado exitosamente' });
     } catch (error) {
-        res.status(500).json({ message: 'Error de conexión' });
+        res.status(500).json({ message: error.message });
     }
 };
 
@@ -180,7 +180,7 @@ export const deactivateVendedor = async (req, res) => {
 
         res.json({ message: 'Vendedor dado de baja exitosamente' });
     } catch (error) {
-        res.status(500).json({ message: 'Error de conexión' });
+        res.status(500).json({ message: error.message });
     }
 };
 
@@ -196,6 +196,6 @@ export const activateVendedor = async (req, res) => {
 
         res.json({ message: 'Vendedor reactivado exitosamente' });
     } catch (error) {
-        res.status(500).json({ message: 'Error de conexión' });
+        res.status(500).json({ message: error.message });
     }
 };

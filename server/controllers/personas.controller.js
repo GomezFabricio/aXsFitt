@@ -30,7 +30,7 @@ export const createPersona = async (req, res, returnResponse = false) => {
             res.json(response);
         }
     } catch (error) {
-        res.status(500).json({ message: 'Error de conexión' });
+        res.status(500).json({ message: error.message });
     }
 };
 
@@ -55,6 +55,6 @@ export const updatePersona = async (req, res) => {
         // Enviar respuesta de éxito
         res.json({ message: 'Persona actualizada exitosamente' });
     } catch (error) {
-        res.status(500).json({ message: 'Error de conexión' });
+        res.status(500).json({ message: error.message });
     }
 };
