@@ -139,7 +139,7 @@ export const updateVendedor = async (req, res) => {
 
     // Verificar si el vendedor existe
     if (vendedor.length === 0) {
-        return res.status(404).json({ message: 'Vendedor no encontrado' });
+        return res.status(404).json({ message: 'Vendedor ha actualzar no encontrado' });
     }
 
     const personaId = vendedor[0].persona_id; // Extraer el ID de la persona

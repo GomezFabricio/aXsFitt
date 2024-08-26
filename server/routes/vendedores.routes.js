@@ -6,6 +6,9 @@ const router = Router()
 /* Solicitar todos los vendedores */
 router.get('/vendedores', getVendedores)
 
+/* Obtener vendedores inactivos */
+router.get('/vendedores/inactivos', getVendedoresInactivos)
+
 /* Obtener un vendedor por su ID */
 router.get('/vendedores/:id', getVendedor)
 
@@ -20,8 +23,5 @@ router.put('/vendedores/:id/baja', deactivateVendedor)
 
 /* Reactivar un vendedor (cambiar a activo) */
 router.put('/vendedores/:id/activar', activateVendedor)
-
-/* Obtener vendedores inactivos */
-router.get('/vendedores/inactivos', getVendedoresInactivos)
 
 export default router

@@ -4,8 +4,8 @@ import indexRoutes from './routes/index.routes.js'
 import vendedoresRoutes from './routes/vendedores.routes.js';
 
 
-const app = express();
-app.use(indexRoutes)
+const app = express()
+app.use(express.json())
 app.use(vendedoresRoutes)
 
 app.listen(PORT)
