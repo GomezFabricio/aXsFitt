@@ -55,12 +55,12 @@ PRIMARY KEY(estado_comision_id));
 
 CREATE TABLE usuarios (
   usuario_id INTEGER UNSIGNED  NOT NULL   AUTO_INCREMENT,
-  personas_persona_id INTEGER UNSIGNED  NOT NULL  ,
-  usuario_user VARCHAR(50)  NULL  ,
+  persona_id INTEGER UNSIGNED  NOT NULL  ,
+  usuario_email VARCHAR(50)  NULL  ,
   usuario_pass VARCHAR(20)  NULL    ,
 PRIMARY KEY(usuario_id)  ,
-INDEX usuarios_FKIndex1(personas_persona_id),
-  FOREIGN KEY(personas_persona_id)
+INDEX usuarios_FKIndex1(persona_id),
+  FOREIGN KEY(persona_id)
     REFERENCES personas(persona_id)
       ON DELETE NO ACTION
       ON UPDATE NO ACTION);
@@ -91,7 +91,7 @@ CREATE TABLE vendedores (
   persona_id INTEGER UNSIGNED  NOT NULL  ,
   vendedor_fecha_ingreso DATE  NOT NULL    ,
 PRIMARY KEY(vendedor_id)  ,
-INDEX vendedores_FKIndex1(persona_id)  ,
+INDEX vendedores_FKIndex2(persona_id)  ,
 INDEX vendedores_FKIndex2(estado_vendedor_id),
   FOREIGN KEY(persona_id)
     REFERENCES personas(persona_id)

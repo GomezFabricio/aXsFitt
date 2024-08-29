@@ -3,8 +3,8 @@ import { pool } from '../db.js';
 /* -------------------------------------------------------------------------- */
 /*                          DAR DE ALTA A UNA PERSONA                         */
 /* -------------------------------------------------------------------------- */
-export const createPersona = async (req, res, returnResponse = false) => {
-    const { persona_nombre, persona_apellido, persona_dni, persona_fecha_nacimiento, persona_domicilio, persona_telefono } = req.body;
+export const createPersona = async (personaData) => {
+    const { persona_nombre, persona_apellido, persona_dni, persona_fecha_nacimiento, persona_domicilio, persona_telefono } = personaData;
     const persona_fecha_alta = new Date();
 
     try {
@@ -13,7 +13,7 @@ export const createPersona = async (req, res, returnResponse = false) => {
             [persona_nombre, persona_apellido, persona_dni, persona_fecha_nacimiento, persona_domicilio, persona_telefono, persona_fecha_alta]
         );
 
-        const response = {
+        return {
             id: result.insertId,
             persona_nombre,
             persona_apellido,
@@ -23,14 +23,8 @@ export const createPersona = async (req, res, returnResponse = false) => {
             persona_telefono,
             persona_fecha_alta
         };
-
-        if (returnResponse) {
-            return response;
-        } else {
-            res.json(response);
-        }
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        throw new Error(error.message);
     }
 };
 
