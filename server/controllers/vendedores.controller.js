@@ -5,7 +5,7 @@ import { asignarRolUsuario } from './usuarios_roles.controller.js';
 
 
 /* -------------------------------------------------------------------------- */
-/*                    OBTENER TODOS LOS VENDEDORES ACTIVOS                    */
+/*                    OBTENER TODOS LOS VENDEDORES                            */
 /* -------------------------------------------------------------------------- */
 export const getVendedores = async (req, res) => {
     try {

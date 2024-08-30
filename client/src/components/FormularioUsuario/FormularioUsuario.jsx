@@ -7,7 +7,7 @@ export const FormularioUsuario = ({ handleChange }) => {
         <div className="formulario-usuario">
             <h2 className="titulo-formulario">Crear Usuario</h2>
             <div className="form-group">
-                <label>Nombre de Usuario</label>
+                <label>Email</label>
                 <input type="text" name='usuario_email' onChange={handleChange} />
             </div>
             <div className="form-group">
