@@ -1,18 +1,18 @@
 import { pool } from '../db.js';
 
-const asignarRolUsuario = async (usuarioId, rolNombre) => {
+export const asignarRolUsuario = async (usuarioId, rolNombre) => {
     // Obtener el ID del rol utilizando el nombre del rol
     const [rolResult] = await pool.query(
-        "SELECT id FROM roles WHERE nombre = ?",
+        "SELECT rol_id FROM roles WHERE rol_tipo_rol = ?",
         [rolNombre]
     );
 
     if (rolResult.length > 0) {
-        const rolId = rolResult[0].id;
+        const rolId = rolResult[0].rol_id;
 
         // Insertar la asignación del rol al usuario
         await pool.query(
-            "INSERT INTO usuario_roles (usuario_id, rol_id) VALUES (?, ?)",
+            "INSERT INTO usuarios_roles (usuario_id, rol_id) VALUES (?, ?)",
             [usuarioId, rolId]
         );
     } else {

@@ -113,51 +113,38 @@ export const getVendedor = async (req, res) => {
 /* -------------------------------------------------------------------------- */
 export const createVendedor = async (req, res) => {
     try {
-        const { step, personaData, usuarioData } = req.body;
+        const { personaData, usuarioData } = req.body;
 
-        if (step === 1) {
-            // Guardar los datos de la persona en la sesión
-            req.session.personaData = personaData;
-            return res.json({ message: 'Datos de la persona guardados temporalmente.' });
-        } else if (step === 2) {
-            const personaData = req.session.personaData;
+        // Definir el estado y la fecha de ingreso
+        const estado_vendedor_id = 1; 
+        const fecha_ingreso = new Date();
 
-            if (!personaData) {
-                return res.status(400).json({ message: 'No se encontraron datos de la persona.' });
-            }
-
-            const personaResponse = await createPersona(personaData);
-            if (!personaResponse || !personaResponse.id) {
-                return res.status(500).json({ message: 'Error al crear la persona.' });
-            }
-
-            const vendedor_fecha_ingreso = new Date();
-            const estado_vendedor_id = 1;
-
-            const [vendedorResult] = await pool.query(
-                "INSERT INTO `vendedores` (`persona_id`, `estado_vendedor_id`, `vendedor_fecha_ingreso`) VALUES (?, ?, ?)",
-                [personaResponse.id, estado_vendedor_id, vendedor_fecha_ingreso]
-            );
-
-            const usuarioResponse = await createUser({ ...usuarioData, persona_id: personaResponse.id });
-            if (!usuarioResponse || !usuarioResponse.id) {
-                return res.status(500).json({ message: 'Error al crear el usuario.' });
-            }
-
-            await asignarRolUsuario(usuarioResponse.id, 'Vendedor');
-
-            // Limpiar los datos de la sesión
-            delete req.session.personaData;
-
-            res.json({
-                id: vendedorResult.insertId,
-                persona_id: personaResponse.id,
-                estado_vendedor_id,
-                vendedor_fecha_ingreso
-            });
-        } else {
-            res.status(400).json({ message: 'Paso inválido.' });
+        // Primero, crear la persona
+        const personaResponse = await createPersona(personaData);
+        if (!personaResponse || !personaResponse.id) {
+            return res.status(500).json({ message: 'Error al crear la persona.' });
         }
+
+        // Luego, crear el vendedor con la persona_id obtenida
+        const [vendedorResult] = await pool.query(
+            "INSERT INTO `vendedores` (`persona_id`, `estado_vendedor_id`, `vendedor_fecha_ingreso`) VALUES (?, ?, ?)",
+            [personaResponse.id, estado_vendedor_id, fecha_ingreso]
+        );
+
+        // Finalmente, crear el usuario y asignar rol
+        const usuarioResponse = await createUser({ ...usuarioData, persona_id: personaResponse.id });
+        if (!usuarioResponse || !usuarioResponse.id) {
+            return res.status(500).json({ message: 'Error al crear el usuario.' });
+        }
+
+        await asignarRolUsuario(usuarioResponse.id, 'Vendedor');
+
+        res.json({
+            id: vendedorResult.insertId,
+            persona_id: personaResponse.id,
+            estado_vendedor_id,
+            fecha_ingreso
+        });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
