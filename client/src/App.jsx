@@ -1,6 +1,6 @@
 import React from 'react'
 import { Route, Routes } from 'react-router-dom'
-import VendedoresList from './pages/vendedores/VendedoresList'
+import VendedoresList from './pages/vendedores/VendedoresList/VendedoresList'
 import NotFound from './pages/NotFound'
 import VendedorCreate from './pages/vendedores/VendedorCreate/VendedorCreate'
 import Navbar from './components/Navbar/Navbar'
