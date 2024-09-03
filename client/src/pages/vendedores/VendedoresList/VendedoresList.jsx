@@ -28,24 +28,26 @@ const VendedoresList = () => {
   };
 
   return (
-    <div className="container">
+    <div className="container-page">
       <h1>Vendedores</h1>
-      <SearchInput
-        style={{
-          width: '100%',
-          maxWidth: '400px',
-          padding: '12px',
-          marginBottom: '20px',
-          border: '1px solid #ccc',
-          borderRadius: '25px',
-          fontSize: '16px',
-          outline: 'none',
-          boxSizing: 'border-box',
-          textAlign: 'center', 
-        }}
-        onChange={setSearchTerm}
-        placeholder="Buscar vendedores..."
-      />
+      <div style={{ display: 'flex', justifyContent: 'center' }}>
+        <SearchInput
+          style={{
+            width: '100%',
+            maxWidth: '400px',
+            padding: '12px',
+            marginBottom: '20px',
+            border: '1px solid #ccc',
+            borderRadius: '25px',
+            fontSize: '16px',
+            outline: 'none',
+            boxSizing: 'border-box',
+            textAlign: 'center',
+          }}
+          onChange={setSearchTerm}
+          placeholder="Buscar vendedores..."
+        />
+      </div>
       <div className="vendedores-list">
         {filteredVendedores.map((vendedor) => (
           <VendedorCard

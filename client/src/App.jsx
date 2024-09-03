@@ -6,6 +6,7 @@ import VendedorCreate from './pages/vendedores/VendedorCreate/VendedorCreate'
 import VendedorDetail from './pages/vendedores/VendedorDetail/VendedorDetail'
 import Navbar from './components/Navbar/Navbar'
 import './assets/styles/variables.css'
+import './assets/styles/pages.css'
 
 function App() {
   return (

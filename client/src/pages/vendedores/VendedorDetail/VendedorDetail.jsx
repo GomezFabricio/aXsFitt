@@ -20,7 +20,7 @@ const VendedorDetail = () => {
   }
 
   return (
-    <div className="container-detail">
+    <div className="container-page">
       <h1>Detalles de Vendedor</h1>
       <VendedorDetailContent
         nombre={vendedor.persona_nombre}

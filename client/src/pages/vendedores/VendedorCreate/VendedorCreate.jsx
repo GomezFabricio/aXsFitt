@@ -11,7 +11,7 @@ const VendedorCreate = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="container">
+    <div className="container-page">
       <h1 className="title">Alta Vendedor</h1>
       <h2>Complete los siguientes campos para registrar un nuevo vendedor en el sistema. Asegúrese de ingresar toda la información requerida para garantizar un registro exitoso.</h2>
       <Formik

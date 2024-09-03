@@ -8,7 +8,7 @@
     flex-direction: column;
 }
 
-label {
+.form-group > label {
     margin-bottom: 8px;
     font-weight: 500;
     color: var(--color-letras-fondo-claro);
