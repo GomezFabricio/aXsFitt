@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { getVendedoresRequest } from '../../../api/vendedores.api';
 import VendedorCard from '../../../components/VendedorCard/VendedorCard';
-import SearchInput, { createFilter } from 'react-search-input'; // Importamos la librería
+import SearchInput, { createFilter } from 'react-search-input';
+import { useNavigate } from 'react-router-dom';
 import './VendedoresList.css';
 
 const KEYS_TO_FILTERS = ['persona_nombre', 'persona_apellido', 'persona_dni']; // Campos a filtrar
@@ -19,6 +20,12 @@ const VendedoresList = () => {
   }, []);
 
   const filteredVendedores = vendedores.filter(createFilter(searchTerm, KEYS_TO_FILTERS)); // Filtramos los vendedores
+
+  const navigate = useNavigate();
+
+  const handleDetalleClick = (vendedorId) => {
+    navigate(`/vendedor/${vendedorId}`); // Navegamos a la página de detalle del vendedor
+  };
 
   return (
     <div className="container">
@@ -48,7 +55,7 @@ const VendedoresList = () => {
             dni={vendedor.persona_dni}
             ventasRealizadas={0} // Aun no trabajado, así que lo dejamos fijo en 0
             comisionesPendientes={0} // Aun no trabajado, así que lo dejamos fijo en 0
-            onDetalleClick={() => alert(`Detalles de ${vendedor.persona_nombre} ${vendedor.persona_apellido}`)}
+            onDetalleClick={() => handleDetalleClick(vendedor.vendedor_id)}
           />
         ))}
       </div>

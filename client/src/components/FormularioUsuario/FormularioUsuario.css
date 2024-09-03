@@ -11,5 +11,5 @@
 label {
     margin-bottom: 8px;
     font-weight: 500;
-    color: #444;
+    color: var(--color-letras-fondo-claro);
 }

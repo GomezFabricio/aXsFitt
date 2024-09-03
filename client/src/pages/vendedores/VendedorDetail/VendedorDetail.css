@@ -1,0 +1,11 @@
+.container-detail {
+    padding: 0px;
+}
+
+h1 {
+    font-size: 48px;
+    color: var(--color-principal); 
+    font-weight: 400;
+    text-align: center;
+    margin-bottom: 20px;
+}

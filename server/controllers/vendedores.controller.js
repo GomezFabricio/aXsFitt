@@ -119,7 +119,7 @@ export const createVendedor = async (req, res) => {
         const estado_vendedor_id = 1; 
         const fecha_ingreso = new Date();
 
-        // Primero, crear la persona
+        // Primero, crear rla persona
         const personaResponse = await createPersona(personaData);
         if (!personaResponse || !personaResponse.id) {
             return res.status(500).json({ message: 'Error al crear la persona.' });

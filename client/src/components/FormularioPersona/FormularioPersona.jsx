@@ -6,7 +6,6 @@ const FormularioPersona = ({ handleChange }) => {
     return (
         <div className="formulario-persona">
             {/* Fila para Nombre y Apellido */}
-            <h2>Datos Personales</h2>
             <div className="form-row">
                 <div className="form-group">
                     <label>Nombre</label>

@@ -1,0 +1,56 @@
+:root {
+    --color-boton-editar: #ff0000; /* Rojo */
+    --color-boton-eliminar: #0099ff; /* Celeste */
+}
+
+.vendedor-detail-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 20px;
+    border-radius: 8px;
+}
+
+.vendedor-detail-header{
+    margin-bottom: 10px;
+    color: var(--color-letras-fondo-claro);
+}
+
+.vendedor-detail-info {
+    margin-bottom: 20px;
+    color: var(--color-letras-fondo-claro);
+    line-height: 1.5; /* Aumenta el espacio entre líneas */
+}
+
+.vendedor-detail-buttons {
+    display: flex;
+    gap: 5px;
+    justify-content: flex-start;
+}
+
+.btn-client {
+    display: flex;
+    align-items: center;
+    color: var(--color-letras-botones);
+    border: none;
+    border-radius: 5px;
+    padding: 10px 15px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.btn-edit {
+    background-color: var(--color-boton-editar);
+}
+
+.btn-edit:hover {
+    background-color: darkred; /* Color de hover para el botón de editar */
+}
+
+.btn-delete {
+    background-color: var(--color-boton-eliminar);
+}
+
+.btn-delete:hover {
+    background-color: darkblue; /* Color de hover para el botón de eliminar */
+}
