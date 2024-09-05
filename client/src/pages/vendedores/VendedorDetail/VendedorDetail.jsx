@@ -29,7 +29,6 @@ const VendedorDetail = () => {
         ventasAcumuladas={0} // Temporales hasta que se implemente la lógica
         ventasUltimoPeriodo={0}
         totalComisiones={0}
-        comisionesUltimoPeriodo={0}
       />
     </div>
   );

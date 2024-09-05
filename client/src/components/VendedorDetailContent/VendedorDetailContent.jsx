@@ -9,7 +9,6 @@ const VendedorDetailContent = ({
     ventasAcumuladas,
     ventasUltimoPeriodo,
     totalComisiones,
-    comisionesUltimoPeriodo,
 }) => {
     return (
         <div className="vendedor-detail-container">
@@ -22,7 +21,6 @@ const VendedorDetailContent = ({
                 <p>Ventas acumuladas: {ventasAcumuladas}</p>
                 <p>Ventas en el último periodo: {ventasUltimoPeriodo}</p>
                 <p>Total acumulado en comisiones: {totalComisiones}</p>
-                <p>Total comisiones en el último periodo: {comisionesUltimoPeriodo}</p>
             </div>
 
             <div className="vendedor-detail-buttons">
