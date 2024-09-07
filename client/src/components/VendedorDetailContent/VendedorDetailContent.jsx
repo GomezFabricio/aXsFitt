@@ -1,6 +1,6 @@
 import React from 'react';
 import './VendedorDetailContent.css';
-import { FaTrash, FaEdit } from 'react-icons/fa'; // Asegúrate de tener react-icons instalado
+import { FaTrash, FaEdit } from 'react-icons/fa';
 
 const VendedorDetailContent = ({
     nombre,
@@ -9,7 +9,9 @@ const VendedorDetailContent = ({
     ventasAcumuladas,
     ventasUltimoPeriodo,
     totalComisiones,
+    onDelete 
 }) => {
+
     return (
         <div className="vendedor-detail-container">
             <div className="vendedor-detail-header">
@@ -27,7 +29,7 @@ const VendedorDetailContent = ({
                 <button className="btn-client btn-edit">
                     <FaEdit /> Editar
                 </button>
-                <button className="btn-client btn-delete">
+                <button className="btn-client btn-delete" onClick={onDelete}>
                     <FaTrash /> Eliminar
                 </button>
             </div>
