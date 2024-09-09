@@ -27,9 +27,19 @@ const VendedoresList = () => {
     navigate(`/vendedor/${vendedorId}`); // Navegamos a la página de detalle del vendedor
   };
 
+  const handleInactivosClick = () => {
+    navigate('/vendedores/inactivos'); // Navegamos a la página de vendedores inactivos
+  };
+
   return (
     <div className="container-page">
-      <h1>Vendedores</h1>
+      <div className="header">
+        <h1>Vendedores</h1>
+        <button className="inactivos-button" onClick={handleInactivosClick}>
+          Ver Inactivos
+        </button>
+      </div>
+
       <div style={{ display: 'flex', justifyContent: 'center' }}>
         <SearchInput
           style={{
@@ -48,6 +58,7 @@ const VendedoresList = () => {
           placeholder="Buscar vendedores..."
         />
       </div>
+
       <div className="vendedores-list">
         {filteredVendedores.map((vendedor) => (
           <VendedorCard

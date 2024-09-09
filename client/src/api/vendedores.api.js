@@ -16,3 +16,10 @@ export const deactivateVendedor = async (id) => {
     await axios.put(`http://localhost:4000/vendedores/${id}/baja`);
 };
 
+export const getVendedoresInactivosRequest = async () => {
+    return await axios.get('http://localhost:4000/vendedores/inactivos');
+};
+
+export const activateVendedorRequest = async (id) => {
+    return await axios.put(`http://localhost:4000/vendedores/${id}/activar`);
+};
