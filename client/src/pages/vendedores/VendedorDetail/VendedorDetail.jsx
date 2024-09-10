@@ -27,6 +27,10 @@ const VendedorDetail = () => {
     }
   };
 
+  const handleUpdate = async () => {
+    navigate(`/vendedor/${id}/edit`); // Navegamos a la página de edición del vendedor
+  }
+
   if (!vendedor) {
     return <p>Cargando...</p>; 
   }
@@ -42,6 +46,7 @@ const VendedorDetail = () => {
         ventasUltimoPeriodo={0}
         totalComisiones={0}
         onDelete={handleDelete}
+        onUpdate={handleUpdate}
       />
     </div>
   );

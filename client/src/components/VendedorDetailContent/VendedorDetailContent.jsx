@@ -9,7 +9,8 @@ const VendedorDetailContent = ({
     ventasAcumuladas,
     ventasUltimoPeriodo,
     totalComisiones,
-    onDelete 
+    onDelete,
+    onUpdate 
 }) => {
 
     return (
@@ -26,7 +27,7 @@ const VendedorDetailContent = ({
             </div>
 
             <div className="vendedor-detail-buttons">
-                <button className="btn-client btn-edit">
+                <button className="btn-client btn-edit" onClick={onUpdate}>
                     <FaEdit /> Editar
                 </button>
                 <button className="btn-client btn-delete" onClick={onDelete}>

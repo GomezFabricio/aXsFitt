@@ -8,6 +8,7 @@ import Navbar from './components/Navbar/Navbar'
 import './assets/styles/variables.css'
 import './assets/styles/pages.css'
 import VendedoresInactivosList from './pages/vendedores/VendedoresInactivosList/VendedoresInactivosList'
+import VendedorEdit from './pages/vendedores/VendedorEdit/VendedorEdit'
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
         <Route path='/create-vendedor' element={<VendedorCreate />} />
         <Route path="/vendedor/:id" element={<VendedorDetail />} />
         <Route path="/vendedores/inactivos" element={<VendedoresInactivosList />} />
+        <Route path="/vendedor/:id/edit" element={<VendedorEdit />} />
       </Routes>
 
     </>
