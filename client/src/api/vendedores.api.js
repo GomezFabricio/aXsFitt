@@ -24,6 +24,6 @@ export const activateVendedorRequest = async (id) => {
     return await axios.put(`http://localhost:4000/vendedores/${id}/activar`);
 };
 
-export const updateVendedorRequest = async (data) => {
-    return await axios.put(`http://localhost:4000/vendedores/${date.vendedor_id}`);
+export const updateVendedorRequest = async (id, data) => {
+    return await axios.put(`http://localhost:4000/vendedores/${id}`, data);
 };

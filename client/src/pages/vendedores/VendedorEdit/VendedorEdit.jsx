@@ -48,7 +48,7 @@ const VendedorEdit = () => {
         onSubmit={async (values) => {
           try {
             // Enviar la solicitud con los nuevos datos
-            await updateVendedorRequest(values);
+            await updateVendedorRequest(id, values);
             navigate('/'); // Redirigir a la URL "/" después de finalizar el registro
           } catch (error) {
             console.log(error);
@@ -60,7 +60,7 @@ const VendedorEdit = () => {
             <FormularioPersona handleChange={handleChange} values={values} />
 
             <button type='submit' className="btn">
-              Siguiente
+              Actualizar
             </button>
           </Form>
         )}
