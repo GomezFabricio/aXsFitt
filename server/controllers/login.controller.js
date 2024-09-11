@@ -1,9 +1,13 @@
 import { pool } from '../db.js';
+import { SECRET_KEY } from '../config.js';
+import jwt from 'jsonwebtoken';
 
 /* -------------------------------------------------------------------------- */
 /*                          LOGIN DEL USUARIO                                 */
 /* -------------------------------------------------------------------------- */
-export const login = async (email, password) => {
+export const login = async (req, res) => {
+    const { email, password } = req.body; // Obtener email y contraseña del cuerpo de la solicitud
+
     try {
         // Verificar si el usuario existe con el email y contraseña proporcionados
         const [usuario] = await pool.query(
@@ -12,7 +16,7 @@ export const login = async (email, password) => {
         );
 
         if (usuario.length === 0) {
-            throw new Error('Credenciales inválidas');
+            return res.status(401).json({ message: 'Credenciales inválidas' });
         }
 
         // Obtener los roles asociados al usuario
@@ -25,19 +29,27 @@ export const login = async (email, password) => {
         );
 
         if (roles.length === 0) {
-            throw new Error('No tiene roles asignados');
+            return res.status(403).json({ message: 'No tiene roles asignados' });
         }
 
-        // Devolver información del usuario junto con los roles
-        return {
+        // Generar el token JWT
+        const token = jwt.sign(
+            { userId: usuario[0].usuario_id, roles: roles.map(role => role.rol_tipo_rol) },
+            SECRET_KEY,
+            { expiresIn: '1h' }
+        );
+
+        // Devolver el token y la información del usuario
+        res.json({
             message: 'Login exitoso',
             usuario: {
                 id: usuario[0].usuario_id,
                 email: usuario[0].usuario_email,
                 roles: roles.map(role => role.rol_tipo_rol),
             },
-        };
+            token, // Enviar el token al cliente
+        });
     } catch (error) {
-        throw new Error(error.message);
+        return res.status(500).json({ message: error.message });
     }
 };
