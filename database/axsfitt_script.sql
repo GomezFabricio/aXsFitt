@@ -227,3 +227,15 @@ CREATE TABLE detalle_venta (
       ON DELETE NO ACTION
       ON UPDATE NO ACTION
 );
+
+CREATE TABLE menu_opciones (
+  opcion_id INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+  opcion_nombre VARCHAR(50) NOT NULL,
+  rol_id INTEGER UNSIGNED NOT NULL,
+  PRIMARY KEY(opcion_id),
+  INDEX idx_rol_id(rol_id),
+  FOREIGN KEY(rol_id)
+    REFERENCES roles(rol_id)
+      ON DELETE CASCADE
+      ON UPDATE CASCADE
+);
