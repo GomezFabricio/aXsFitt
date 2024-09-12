@@ -1,6 +1,6 @@
 import { pool } from '../db.js';
-import { SECRET_KEY } from '../config.js';
 import jwt from 'jsonwebtoken';
+import { SECRET_KEY } from '../config.js';
 
 /* -------------------------------------------------------------------------- */
 /*                          LOGIN DEL USUARIO                                 */
@@ -19,35 +19,28 @@ export const login = async (req, res) => {
             return res.status(401).json({ message: 'Credenciales inválidas' });
         }
 
+        const userId = usuario[0].usuario_id;
+
         // Obtener los roles asociados al usuario
         const [roles] = await pool.query(
-            `SELECT r.rol_tipo_rol 
-            FROM usuarios_roles ur 
-            JOIN roles r ON ur.rol_id = r.rol_id 
+            `SELECT r.rol_tipo_rol, r.rol_id
+            FROM usuarios_roles ur
+            JOIN roles r ON ur.rol_id = r.rol_id
             WHERE ur.usuario_id = ?`,
-            [usuario[0].usuario_id]
+            [userId]
         );
 
         if (roles.length === 0) {
             return res.status(403).json({ message: 'No tiene roles asignados' });
         }
 
-        // Generar el token JWT
-        const token = jwt.sign(
-            { userId: usuario[0].usuario_id, roles: roles.map(role => role.rol_tipo_rol) },
-            SECRET_KEY,
-            { expiresIn: '1h' }
-        );
-
-        // Devolver el token y la información del usuario
+        // Devolver los roles para que el usuario seleccione uno
         res.json({
             message: 'Login exitoso',
-            usuario: {
-                id: usuario[0].usuario_id,
-                email: usuario[0].usuario_email,
-                roles: roles.map(role => role.rol_tipo_rol),
-            },
-            token, // Enviar el token al cliente
+            roles: roles.map(role => ({
+                rolId: role.rol_id,
+                rolNombre: role.rol_tipo_rol
+            }))
         });
     } catch (error) {
         return res.status(500).json({ message: error.message });
