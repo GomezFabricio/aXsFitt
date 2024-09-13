@@ -11,9 +11,9 @@ export const getMenuByRole = async (req, res) => {
         // Obtener el rol del usuario logueado
         const [roles] = await pool.query(
             `SELECT r.rol_id 
-             FROM usuarios_roles ur 
-             JOIN roles r ON ur.rol_id = r.rol_id 
-             WHERE ur.usuario_id = ?`,
+            FROM usuarios_roles ur 
+            JOIN roles r ON ur.rol_id = r.rol_id 
+            WHERE ur.usuario_id = ?`,
             [userId]
         );
 
@@ -26,8 +26,8 @@ export const getMenuByRole = async (req, res) => {
         // Obtener las opciones del menú basadas en el rol
         const [menuOptions] = await pool.query(
             `SELECT opcion_nombre 
-             FROM menu_opciones 
-             WHERE rol_id = ?`,
+            FROM menu_opciones 
+            WHERE rol_id = ?`,
             [rolId]
         );
 
