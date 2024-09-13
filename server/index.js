@@ -4,8 +4,8 @@ import { PORT } from './config.js';
 import vendedoresRoutes from './routes/vendedores.routes.js';
 import loginRoutes from './routes/login.routes.js';
 import menuRoutes from './routes/menu.routes.js';
-import usuariosRolesRoutes from './routes/usuarios_roles.routes.js'; // Nueva ruta para manejar roles
-import { authMiddleware } from './middleware/auth.middleware.js';
+import usuariosRolesRoutes from './routes/usuarios_roles.routes.js'; 
+import authMiddleware from './middlewares/auth.middleware.js';
 
 const app = express();
 

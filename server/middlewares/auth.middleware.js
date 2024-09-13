@@ -1,8 +1,8 @@
 // middlewares/auth.middleware.js
-import { SECRET_KEY } from '../config';
+import { SECRET_KEY } from '../config.js';
 import jwt from 'jsonwebtoken';
 
-export const authenticate = (req, res, next) => {
+const authenticate = (req, res, next) => {
     const token = req.headers['authorization']?.split(' ')[1];
 
     if (!token) {
@@ -17,3 +17,5 @@ export const authenticate = (req, res, next) => {
         next(); // Continúa con el siguiente middleware o ruta
     });
 };
+
+export default authenticate
