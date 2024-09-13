@@ -31,24 +31,19 @@ export const createPersona = async (personaData) => {
 /* -------------------------------------------------------------------------- */
 /*                           ACTUALIZAR UNA PERSONA                           */
 /* -------------------------------------------------------------------------- */
-export const updatePersona = async (req, res) => {
+export const updatePersona = async (req) => {
     const { id } = req.params; // Extraer el ID de la persona de los parámetros de la solicitud
 
-    try {
-        // Consulta SQL para actualizar la información de la persona
-        const [result] = await pool.query(
-            `UPDATE personas 
-            SET ?
-            WHERE persona_id = ?`,
-            [
-                req.body,
-                id
-            ]
-        );
+    // Consulta SQL para actualizar la información de la persona
+    const [result] = await pool.query(
+        `UPDATE personas 
+        SET ?
+        WHERE persona_id = ?`,
+        [
+            req.body,
+            id
+        ]
+    );
 
-        // Enviar respuesta de éxito
-        res.json({ message: 'Persona actualizada exitosamente' });
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
+    return result; // Devuelve el resultado en lugar de enviar una respuesta
 };

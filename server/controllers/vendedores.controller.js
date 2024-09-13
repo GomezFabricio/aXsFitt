@@ -1,5 +1,5 @@
 import { pool } from '../db.js';
-import { createPersona } from './personas.controller.js';
+import { createPersona, updatePersona } from './personas.controller.js';
 import { createUser} from './usuarios.controller.js';
 import { asignarRolUsuario } from './usuarios_roles.controller.js';
 
@@ -25,7 +25,9 @@ export const getVendedores = async (req, res) => {
             INNER JOIN 
                 personas p 
             ON 
-                v.persona_id = p.persona_id`
+                v.persona_id = p.persona_id
+            WHERE 
+                v.estado_vendedor_id = 1`    
         );
 
         // Enviar los datos obtenidos como respuesta
@@ -156,6 +158,7 @@ export const createVendedor = async (req, res) => {
 /* -------------------------------------------------------------------------- */
 export const updateVendedor = async (req, res) => {
     const { id } = req.params; // Extraer el ID del vendedor de los parámetros de la solicitud
+    console.log("Este es el ID en la funcion de updateVendedor", id)
 
     try {
         // Consulta SQL para obtener el ID de la persona asociado al vendedor
@@ -170,14 +173,16 @@ export const updateVendedor = async (req, res) => {
 
         const personaId = vendedor[0].persona_id; // Extraer el ID de la persona
 
+
         // Actualizar la información de la persona
         req.params.id = personaId; // Reemplazar el ID en los parámetros con el ID de la persona
         await updatePersona(req, res); // Llamar a la función para actualizar la persona
 
         // Enviar respuesta de éxito
-        res.json({ message: 'Vendedor actualizado exitosamente' });
+        res.status(200).json({ message: 'Vendedor actualizado exitosamente' });
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        console.error('Error actualizando vendedor:', error); 
+        res.status(700).json({ message: 'Error al actualizar el vendedor', error: error.message });
     }
 };
 
