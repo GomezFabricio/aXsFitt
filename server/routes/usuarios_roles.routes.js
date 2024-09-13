@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { seleccionarRol, cambiarRol } from '../controllers/usuarios_rol.controller.js';
+import { seleccionarRol, cambiarRol } from '../controllers/usuarios_roles.controller.js';
 
 const router = Router();
 
