@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Formik, Form } from 'formik';
 import { useNavigate } from 'react-router-dom';
 import LoginForm from '../../../components/LoginForm/LoginForm';
-import { loginRequest } from '../../../api/login.api'; // Asegúrate de tener esta función
+import { loginRequest } from '../../../api/login.api';
 import './Login.css';
 
 const Login = () => {
@@ -29,8 +29,8 @@ const Login = () => {
                         // Guardar el token en localStorage (o en el estado, según prefieras)
                         localStorage.setItem('token', token);
 
-                        // Redirigir al dashboard
-                        navigate('/dashboard');
+                        // Redirigir al inicio
+                        navigate('/');
                     } catch (err) {
                         setError('Error en el inicio de sesión. Intenta nuevamente.'); // Manejo de errores
                         console.log(err);

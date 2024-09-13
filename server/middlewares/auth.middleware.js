@@ -13,7 +13,7 @@ const authenticate = (req, res, next) => {
         if (err) {
             return res.status(403).json({ message: 'Token no válido' });
         }
-        req.user = decoded; // Puedes almacenar el usuario decodificado en la solicitud
+        req.user = decoded; 
         next(); // Continúa con el siguiente middleware o ruta
     });
 };
