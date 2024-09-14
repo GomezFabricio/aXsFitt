@@ -1,11 +1,14 @@
 import { pool } from '../db.js';
 import jwt from 'jsonwebtoken';
 import { SECRET_KEY } from '../config.js';
+import authenticate from '../middlewares/auth.middleware.js';  // Importar middleware de autenticación
 
 /* -------------------------------------------------------------------------- */
 /*                 SELECCIONAR ROL AL INICIAR SESIÓN                          */
 /* -------------------------------------------------------------------------- */
-export const seleccionarRol = async (req, res) => {
+export const seleccionarRol = [
+    authenticate,
+    async (req, res) => {
     const { rolId } = req.body; // El rol seleccionado por el usuario
     const token = req.headers.authorization.split(" ")[1]; // Obtener el token del header
 
@@ -37,12 +40,14 @@ export const seleccionarRol = async (req, res) => {
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
-};
+}];
 
 /* -------------------------------------------------------------------------- */
 /*                 CAMBIAR DE ROL DURANTE LA SESIÓN                           */
 /* -------------------------------------------------------------------------- */
-export const cambiarRol = async (req, res) => {
+export const cambiarRol = [
+    authenticate,
+    async (req, res) => {
     const { nuevoRolId } = req.body; // El nuevo rol que desea seleccionar el usuario
     const token = req.headers.authorization.split(" ")[1]; // Obtener el token del header
 
@@ -74,12 +79,14 @@ export const cambiarRol = async (req, res) => {
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
-};
+}];
 
 /* -------------------------------------------------------------------------- */
 /*          ASIGNAR UN ROL AUTOMATICAMENTE AL DAR DE ALTA UN USUARIO          */
 /* -------------------------------------------------------------------------- */
-export const asignarRolUsuario = async (usuarioId, rolNombre) => {
+export const asignarRolUsuario = [
+    authenticate,
+    async (usuarioId, rolNombre) => {
     // Obtener el ID del rol utilizando el nombre del rol
     const [rolResult] = await pool.query(
         "SELECT rol_id FROM roles WHERE rol_tipo_rol = ?",
@@ -97,4 +104,4 @@ export const asignarRolUsuario = async (usuarioId, rolNombre) => {
     } else {
         throw new Error('Rol no encontrado.');
     }
-};
+}];
