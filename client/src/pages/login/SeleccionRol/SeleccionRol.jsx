@@ -9,7 +9,7 @@ const SeleccionRol = () => {
     const { roles } = location.state || {};  // Extraemos los roles del estado
 
     const handleRolClick = (rolId) => {
-        navigate(`/dashboard/${rolId}`);
+        navigate(`/vendedores`);
     };
 
     return (

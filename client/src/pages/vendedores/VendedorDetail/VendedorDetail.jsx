@@ -21,7 +21,7 @@ const VendedorDetail = () => {
   const handleDelete = async () => {
     try {
         await deactivateVendedor(id); 
-        navigate('/');  // Redireccionamos al listado de vendedores al eliminar el vendedor
+        navigate('/vendedores');  // Redireccionamos al listado de vendedores al eliminar el vendedor
     } catch (error) {
         console.error("Error al eliminar el vendedor:", error);
     }

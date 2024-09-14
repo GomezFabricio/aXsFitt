@@ -49,7 +49,7 @@ const VendedorEdit = () => {
           try {
             // Enviar la solicitud con los nuevos datos
             await updateVendedorRequest(id, values);
-            navigate('/'); // Redirigir a la URL "/" después de finalizar el registro
+            navigate('/vendedores'); // Redirigir a la URL "/" después de finalizar el registro
           } catch (error) {
             console.log(error);
           }

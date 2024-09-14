@@ -4,7 +4,7 @@ import { PORT } from './config.js';
 import vendedoresRoutes from './routes/vendedores.routes.js';
 import loginRoutes from './routes/login.routes.js';
 import menuRoutes from './routes/menu.routes.js';
-import usuariosRolesRoutes from './routes/usuarios_roles.routes.js'; 
+import usuariosRolesRoutes from './routes/usuarios_roles.routes.js';
 import authMiddleware from './middlewares/auth.middleware.js';
 
 const app = express();
@@ -19,8 +19,12 @@ app.use(express.json());
 
 // Rutas
 app.use(loginRoutes); // La ruta de login no requiere autenticación
-app.use(authMiddleware); // Aplica el middleware de autenticación para las siguientes rutas
-app.use(menuRoutes); // La ruta del menú (autenticación requerida)
+
+// Aplica el middleware de autenticación antes de las rutas que requieren autenticación
+app.use(authMiddleware); // Aplica el middleware de autenticación
+
+// Rutas que requieren autenticación
+app.use(menuRoutes); // La ruta del menú
 app.use(vendedoresRoutes); // Las rutas de vendedores requieren autenticación
 app.use(usuariosRolesRoutes); // Nuevas rutas para seleccionar y cambiar roles
 

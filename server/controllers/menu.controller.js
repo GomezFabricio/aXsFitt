@@ -6,7 +6,7 @@ export const getMenuByRole = async (req, res) => {
     try {
         const token = req.headers.authorization.split(" ")[1]; // Obtener el token del header
         const decoded = jwt.verify(token, SECRET_KEY); // Verificar el token
-        const userId = decoded.id;
+        const userId = decoded.userId;
 
         // Obtener el rol del usuario logueado
         const [roles] = await pool.query(
@@ -31,8 +31,14 @@ export const getMenuByRole = async (req, res) => {
             [rolId]
         );
 
+        console.log(menuOptions)
+
         res.json({ menu: menuOptions.map(option => option.opcion_nombre) });
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        if (error.name === 'TokenExpiredError') {
+            return res.status(401).json({ message: 'El token ha expirado. Por favor, inicie sesión nuevamente.' });
+        }
+        console.error('Error en getMenuByRole:', error);
+        return res.status(500).json({ message: error.message });
     }
 };

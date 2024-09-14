@@ -41,7 +41,7 @@ const VendedorCreate = () => {
 
               // Enviar la solicitud con ambos pasos completados
               await createVendedorRequest({ personaData, usuarioData });
-              navigate('/'); // Redirigir a la URL "/" después de finalizar el registro
+              navigate('/vendedores'); // Redirigir a la URL "/vendedores" después de finalizar el registro
             }
           } catch (error) {
             console.log(error);

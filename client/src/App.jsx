@@ -1,5 +1,5 @@
 import React from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import VendedoresList from './pages/vendedores/VendedoresList/VendedoresList';
 import NotFound from './pages/NotFound';
 import VendedorCreate from './pages/vendedores/VendedorCreate/VendedorCreate';
@@ -9,19 +9,21 @@ import VendedoresInactivosList from './pages/vendedores/VendedoresInactivosList/
 import VendedorEdit from './pages/vendedores/VendedorEdit/VendedorEdit';
 import ProtectedRoute from './pages/ProtectedRoute';
 import Login from './pages/login/Login/Login';
-import SeleccionRol from './pages/login/SeleccionRol/SeleccionRol'; 
+import SeleccionRol from './pages/login/SeleccionRol/SeleccionRol';
 import './assets/styles/variables.css';
 import './assets/styles/pages.css';
 
 function App() {
   return (
     <>
-      <Navbar />
       <Routes>
-        <Route path="*" element={<NotFound />} />
+        {/* Redirigir la ruta raíz al login */}
+        <Route path="/" element={<Navigate to="/login" />} />
 
+        {/* Página de login */}
         <Route path="/login" element={<Login />} />
 
+        {/* Página de selección de roles, protegida */}
         <Route
           path="/seleccion-rol"
           element={
@@ -31,10 +33,12 @@ function App() {
           }
         />
 
+        {/* Vistas protegidas */}
         <Route
-          path="/"
+          path="/vendedores"
           element={
             <ProtectedRoute>
+              <Navbar /> {/* Navbar visible solo en rutas protegidas */}
               <VendedoresList />
             </ProtectedRoute>
           }
@@ -44,6 +48,7 @@ function App() {
           path="/create-vendedor"
           element={
             <ProtectedRoute>
+              <Navbar />
               <VendedorCreate />
             </ProtectedRoute>
           }
@@ -53,6 +58,7 @@ function App() {
           path="/vendedor/:id"
           element={
             <ProtectedRoute>
+              <Navbar />
               <VendedorDetail />
             </ProtectedRoute>
           }
@@ -62,6 +68,7 @@ function App() {
           path="/vendedores/inactivos"
           element={
             <ProtectedRoute>
+              <Navbar />
               <VendedoresInactivosList />
             </ProtectedRoute>
           }
@@ -71,10 +78,14 @@ function App() {
           path="/vendedor/:id/edit"
           element={
             <ProtectedRoute>
+              <Navbar />
               <VendedorEdit />
             </ProtectedRoute>
           }
         />
+
+        {/* Ruta para páginas no encontradas */}
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </>
   );

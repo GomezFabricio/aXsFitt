@@ -35,7 +35,7 @@ export const login = async (req, res) => {
         }
 
         // Generar un token JWT
-        const token = jwt.sign({ userId, roles: roles.map(role => role.rol_id) }, SECRET_KEY, { expiresIn: '1h' });
+        const token = jwt.sign({ userId, roles: roles.map(role => role.rol_id) }, SECRET_KEY, { expiresIn: '2h' });
 
         // Devolver el token y los roles para que el usuario seleccione uno
         res.json({
