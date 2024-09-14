@@ -8,7 +8,8 @@ import Navbar from './components/Navbar/Navbar';
 import VendedoresInactivosList from './pages/vendedores/VendedoresInactivosList/VendedoresInactivosList';
 import VendedorEdit from './pages/vendedores/VendedorEdit/VendedorEdit';
 import ProtectedRoute from './pages/ProtectedRoute';
-import Login from './pages/login/Login/Login'; 
+import Login from './pages/login/Login/Login';
+import SeleccionRol from './pages/login/SeleccionRol/SeleccionRol'; 
 import './assets/styles/variables.css';
 import './assets/styles/pages.css';
 
@@ -17,15 +18,21 @@ function App() {
     <>
       <Navbar />
       <Routes>
-        <Route path='*' element={<NotFound />} />
+        <Route path="*" element={<NotFound />} />
+
+        <Route path="/login" element={<Login />} />
 
         <Route
-          path='/login'
-          element={<Login />}
+          path="/seleccion-rol"
+          element={
+            <ProtectedRoute>
+              <SeleccionRol />
+            </ProtectedRoute>
+          }
         />
 
         <Route
-          path='/'
+          path="/"
           element={
             <ProtectedRoute>
               <VendedoresList />
@@ -34,7 +41,7 @@ function App() {
         />
 
         <Route
-          path='/create-vendedor'
+          path="/create-vendedor"
           element={
             <ProtectedRoute>
               <VendedorCreate />
@@ -43,7 +50,7 @@ function App() {
         />
 
         <Route
-          path='/vendedor/:id'
+          path="/vendedor/:id"
           element={
             <ProtectedRoute>
               <VendedorDetail />
@@ -52,7 +59,7 @@ function App() {
         />
 
         <Route
-          path='/vendedores/inactivos'
+          path="/vendedores/inactivos"
           element={
             <ProtectedRoute>
               <VendedoresInactivosList />
@@ -61,7 +68,7 @@ function App() {
         />
 
         <Route
-          path='/vendedor/:id/edit'
+          path="/vendedor/:id/edit"
           element={
             <ProtectedRoute>
               <VendedorEdit />

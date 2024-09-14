@@ -7,33 +7,25 @@ import './Login.css';
 
 const Login = () => {
     const navigate = useNavigate();
-    const [error, setError] = useState(null); // Para manejar errores
+    const [error, setError] = useState(null);
 
     return (
         <div className="container-page">
             <h1>Iniciar Sesión</h1>
-
-            {error && <div className="error">{error}</div>} {/* Mostrar errores si hay */}
-
+            {error && <div className="error">{error}</div>}
             <Formik
-                initialValues={{
-                    email: '',
-                    password: '',
-                }}
-
+                initialValues={{ email: '', password: '' }}
                 onSubmit={async (values) => {
                     try {
-                        const response = await loginRequest(values); // Llama a la API para iniciar sesión
+                        const response = await loginRequest(values);
                         const { token, roles } = response.data;
-
-                        // Guardar el token en localStorage (o en el estado, según prefieras)
                         localStorage.setItem('token', token);
 
-                        // Redirigir al inicio
-                        navigate('/');
+                        // Redirigir a la página de selección de roles
+                        navigate('/seleccion-rol', { state: { roles } });
+                        console.log(roles)
                     } catch (err) {
-                        setError('Error en el inicio de sesión. Intenta nuevamente.'); // Manejo de errores
-                        console.log(err);
+                        setError('Error en el inicio de sesión. Intenta nuevamente.');
                     }
                 }}
             >
@@ -50,4 +42,4 @@ const Login = () => {
     );
 };
 
-export default Login;
+export default Login
