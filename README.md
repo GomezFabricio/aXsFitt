@@ -2,7 +2,7 @@
 
 ## Introducción
 
-aXsFitt es un sistema de gestión diseñado para un emprendimiento de ventas de suplementos deportivos. Este sistema tiene como objetivo ofrecer una gestión integral que abarca diferentes áreas del negocio, incluyendo la administración de vendedores, la gestión de ventas, el control de inventario y stock de los vendedores, así como el registro y manejo de clientes. 
+aXsFitt es un sistema de gestión diseñado para un emprendimiento de ventas de suplementos deportivos. Este sistema tiene como objetivo ofrecer una gestión integral que abarca diferentes áreas del negocio, incluyendo la administración de vendedores, la gestión de ventas, el control de inventario y stock de los vendedores, así como el registro y manejo de clientes.
 
 El proyecto está siendo desarrollado utilizando **React** para el frontend y **Express** para el backend, aprovechando las ventajas que estas tecnologías ofrecen en entornos web modernos.
 
@@ -13,6 +13,7 @@ El proyecto está siendo desarrollado utilizando **React** para el frontend y **
 - **express** (`^4.19.2`): Un framework minimalista y flexible para Node.js, utilizado para construir el backend del sistema, gestionar las rutas y controlar las peticiones HTTP.
 - **morgan** (`^1.10.0`): Middleware que ayuda a realizar un logging de las solicitudes HTTP, lo que es útil para el desarrollo y la depuración del sistema.
 - **mysql2** (`^3.11.0`): Un cliente MySQL para Node.js que ofrece soporte para Promesas, utilizado para manejar la conexión y las consultas a la base de datos MySQL.
+- **jsonwebtoken** (`^9.0.2`): Librería para crear y verificar tokens JSON Web, utilizada para la autenticación y autorización de usuarios en el sistema.
 
 ### Frontend (React)
 - **axios** (`^1.7.5`): Librería utilizada para realizar solicitudes HTTP desde el frontend al backend, facilitando la comunicación y el manejo de datos.
@@ -66,10 +67,18 @@ Las rutas están definidas para procesar las peticiones que provienen del fronte
   - `FormularioPersona.jsx`: Componente de formulario para gestionar los datos de las personas.
   - `FormularioUsuario.jsx`: Componente de formulario para la creación de usuarios.
   - `VendedorCard.jsx`: Tarjeta que representa la información de cada vendedor.
-  
+
 - **APIs:**
   - Se implementaron solicitudes HTTP utilizando `axios` para interactuar con el backend, permitiendo la creación, modificación, y consulta de datos relacionados con los vendedores.
 
+## Progreso Actual
+
+Nos encontramos en la primera entrega del mes de septiembre y, al día de hoy (16/09), ya se ha terminado el módulo de vendedores. Se han agregado funcionalidades como la opción de desactivar un vendedor, listar vendedores desactivados, volver a darlos de alta, además del CRUD completo.
+
+También se ha desarrollado el módulo de login, que permite a un usuario iniciar sesión y seleccionar un rol al momento de acceder al sistema. Dependiendo del rol que seleccione, las opciones del menú cambiarán para proporcionar diferentes accesos a funcionalidades específicas.
+
+Además, se ha iniciado el desarrollo del módulo de clientes, que aún no se ha finalizado.
+
 ## Conclusión
 
-El proyecto aXsFitt está en una etapa inicial, con el primer módulo completado que incluye la estructura básica tanto del frontend como del backend. A pesar de los desafíos enfrentados debido a la falta de experiencia con las tecnologías elegidas, el sistema avanza con una base sólida que permitirá su crecimiento y escalabilidad en futuras entregas. Se continuará con el desarrollo para incorporar nuevas funcionalidades y mejorar la experiencia del usuario final.
+El proyecto aXsFitt está en una etapa inicial, con los modulos de Login y Vendedores completados y con el modulo de Clientes que actualmente se encuentra en desarrollo. A pesar de los desafíos enfrentados debido a la falta de experiencia con las tecnologías elegidas, el sistema avanza con una base sólida que permitirá su crecimiento y escalabilidad en futuras entregas. Se continuará con el desarrollo para incorporar nuevas funcionalidades y mejorar la experiencia del usuario final.
