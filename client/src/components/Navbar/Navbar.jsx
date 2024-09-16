@@ -1,30 +1,26 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
-import { getMenuByRole } from '../../api/login.api';
+import { Link, useNavigate } from 'react-router-dom';
 import './NavBar.css';
 
 const NavBar = () => {
     const [menuOptions, setMenuOptions] = useState([]);
     const [error, setError] = useState(null); // Estado para almacenar errores
-
-    // Función para obtener las opciones del menú desde el backend
-    const fetchMenuOptions = async () => {
-        try {
-            const response = await getMenuByRole(); // Usar la función importada
-            console.log('Response data:', response.data); // Verificar qué datos recibes
-            if (response.data && response.data.menu) {
-                setMenuOptions(response.data.menu); // Guardar las opciones del menú en el estado
-            } else {
-                throw new Error('Formato de respuesta inesperado'); // Si la respuesta no tiene el formato esperado
-            }
-        } catch (error) {
-            setError('No se pudieron cargar las opciones del menú'); // Almacenar un mensaje de error
-        }
-    };
+    const navigate = useNavigate(); // Hook para navegar a otra página
 
     useEffect(() => {
-        fetchMenuOptions(); // Llamamos a la función cuando el componente se monta
-    }, []);
+        // Recuperar las opciones del menú desde localStorage
+        const storedMenuOptions = localStorage.getItem('menuOptions');
+        if (storedMenuOptions) {
+            setMenuOptions(JSON.parse(storedMenuOptions)); // Guardar las opciones en el estado
+        } else {
+            setError('No hay opciones de menú disponibles'); // Almacenar un mensaje de error
+        }
+    }, []); // Solo se ejecuta al montar el componente
+
+    // Función para manejar el click en "Cambiar Rol"
+    const handleCambiarRol = () => {
+        navigate('/seleccion-rol'); // Navegar a la página de cambiar rol
+    };
 
     return (
         <nav className="navbar">
@@ -42,6 +38,10 @@ const NavBar = () => {
                     <li>Cargando opciones...</li>
                 )}
             </ul>
+            {/* Botón Cambiar Rol */}
+            <button className="cambiar-rol-button" onClick={handleCambiarRol}>
+                Cambiar Rol
+            </button>
         </nav>
     );
 };

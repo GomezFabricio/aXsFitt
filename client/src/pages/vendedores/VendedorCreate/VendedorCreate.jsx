@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { createVendedorRequest } from '../../../api/vendedores.api';
 import FormularioPersona from '../../../components/FormularioPersona/FormularioPersona';
 import FormularioUsuario from '../../../components/FormularioUsuario/FormularioUsuario';
-import './VendedorCreate.css'
+import './VendedorCreate.css';
 
 const VendedorCreate = () => {
   const [step, setStep] = useState(1);
@@ -48,12 +48,20 @@ const VendedorCreate = () => {
           }
         }}
       >
-        {({ handleChange }) => (
+        {({ values, handleChange, setFieldValue }) => (
           <Form className="form">
             {step === 1 ? (
-              <FormularioPersona handleChange={handleChange} />
+              <FormularioPersona 
+                handleChange={handleChange} 
+                setFieldValue={setFieldValue} // Pasa setFieldValue
+                values={values} // Pasa los valores actuales
+              />
             ) : (
-              <FormularioUsuario handleChange={handleChange} />
+              <FormularioUsuario 
+                handleChange={handleChange} 
+                setFieldValue={setFieldValue} 
+                values={values} 
+              />
             )}
             <button type='submit' className="btn">
               {step === 1 ? 'Siguiente' : 'Finalizar Registro'}

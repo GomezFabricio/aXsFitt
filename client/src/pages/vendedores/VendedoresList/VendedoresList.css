@@ -21,9 +21,16 @@
     flex-grow: 1;
 }
 
-.inactivos-button {
+.buttons-container {
     position: absolute;
     right: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px; /* Añadimos un espacio entre los dos botones */
+}
+
+.inactivos-button,
+.agregar-button {
     padding: 10px 20px;
     font-size: 16px;
     background-color: #A23FA9;
@@ -31,6 +38,11 @@
     border: none;
     border-radius: 5px;
     cursor: pointer;
+}
+
+.inactivos-button:hover,
+.agregar-button:hover {
+    background-color: #872a87;
 }
 
 .vendedores-list {

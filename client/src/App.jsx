@@ -17,6 +17,7 @@ function App() {
   return (
     <>
       <Routes>
+        
         {/* Redirigir la ruta raíz al login */}
         <Route path="/" element={<Navigate to="/login" />} />
 
@@ -84,8 +85,15 @@ function App() {
           }
         />
 
-        {/* Ruta para páginas no encontradas */}
-        <Route path="*" element={<NotFound />} />
+        <Route
+          path="*"
+          element={
+            <ProtectedRoute>
+              <Navbar /> {/* Navbar visible solo en rutas protegidas */}
+              <NotFound />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
     </>
   );

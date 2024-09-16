@@ -9,7 +9,7 @@ const VendedoresInactivosTable = ({ vendedores, onActivate }) => {
                     <th>Nombre</th>
                     <th>Apellido</th>
                     <th>DNI</th>
-                    <th>Fecha de Ingreso</th>
+                    {/* <th>Fecha de Ingreso</th> */}
                     <th>Acciones</th>
                 </tr>
             </thead>
@@ -19,7 +19,7 @@ const VendedoresInactivosTable = ({ vendedores, onActivate }) => {
                         <td>{vendedor.persona_nombre}</td>
                         <td>{vendedor.persona_apellido}</td>
                         <td>{vendedor.persona_dni}</td>
-                        <td>{new Date(vendedor.vendedor_fecha_ingreso).toLocaleDateString()}</td>
+                        {/* <td>{new Date(vendedor.vendedor_fecha_ingreso).toLocaleDateString()}</td> */}
                         <td>
                             <button onClick={() => onActivate(vendedor.vendedor_id)} className="btn-activate">
                                 Alta

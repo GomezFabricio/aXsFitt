@@ -11,7 +11,10 @@ export const login = async (req, res) => {
     try {
         // Verificar si el usuario existe con el email y contraseña proporcionados
         const [usuario] = await pool.query(
-            "SELECT * FROM `usuarios` WHERE `usuario_email` = ? AND `usuario_pass` = ?",
+            `SELECT u.usuario_id, p.persona_nombre, p.persona_apellido, u.usuario_email 
+            FROM usuarios u 
+            JOIN personas p ON u.persona_id = p.persona_id 
+            WHERE u.usuario_email = ? AND u.usuario_pass = ?`,
             [email, password]
         );
 
@@ -37,14 +40,19 @@ export const login = async (req, res) => {
         // Generar un token JWT
         const token = jwt.sign({ userId, roles: roles.map(role => role.rol_id) }, SECRET_KEY, { expiresIn: '2h' });
 
-        // Devolver el token y los roles para que el usuario seleccione uno
+        // Devolver el token, los roles y la información del usuario
         res.json({
             message: 'Login exitoso',
-            token, // Incluye el token en la respuesta
+            token,
             roles: roles.map(role => ({
                 rolId: role.rol_id,
                 rolNombre: role.rol_tipo_rol
-            }))
+            })),
+            usuario: {
+                nombre: usuario[0].persona_nombre,
+                apellido: usuario[0].persona_apellido,
+                email: usuario[0].usuario_email,
+            }
         });
     } catch (error) {
         return res.status(500).json({ message: error.message });

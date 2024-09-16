@@ -1,12 +1,9 @@
 import { pool } from '../db.js';
-import authenticate from '../middlewares/auth.middleware.js';  // Importar middleware de autenticación
 
 /* -------------------------------------------------------------------------- */
 /*                          DAR DE ALTA A UNA PERSONA                         */
 /* -------------------------------------------------------------------------- */
-export const createPersona = [
-    authenticate,
-    async (personaData) => {
+export const createPersona = async (personaData) => {
 
     const { persona_nombre, persona_apellido, persona_dni, persona_fecha_nacimiento, persona_domicilio, persona_telefono } = personaData;
     const persona_fecha_alta = new Date();
@@ -30,14 +27,12 @@ export const createPersona = [
     } catch (error) {
         throw new Error(error.message);
     }
-}];
+};
 
 /* -------------------------------------------------------------------------- */
 /*                           ACTUALIZAR UNA PERSONA                           */
 /* -------------------------------------------------------------------------- */
-export const updatePersona = [
-    authenticate,
-    async (req) => {
+export const updatePersona = async (req) => {
     const { id } = req.params; // Extraer el ID de la persona de los parámetros de la solicitud
 
     // Consulta SQL para actualizar la información de la persona
@@ -52,4 +47,4 @@ export const updatePersona = [
     );
 
     return result; // Devuelve el resultado en lugar de enviar una respuesta
-}];
+};

@@ -1,9 +1,6 @@
 import { pool } from '../db.js';
-import authenticate from '../middlewares/auth.middleware.js';  // Importar middleware de autenticación
 
-export const createUser = [
-    authenticate,
-    async (usuarioData) => {
+export const createUser = async (usuarioData) => {
     try {
         const { persona_id, usuario_email, usuario_pass } = usuarioData; 
 
@@ -16,4 +13,4 @@ export const createUser = [
     } catch (error) {
         throw new Error('Error al crear el usuario: ' + error.message);
     }
-}];
+};

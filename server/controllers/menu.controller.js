@@ -9,19 +9,13 @@ export const getMenuByRole = async (req, res) => {
         const userId = decoded.userId;
 
         // Obtener el rol del usuario logueado
-        const [roles] = await pool.query(
-            `SELECT r.rol_id 
-            FROM usuarios_roles ur 
-            JOIN roles r ON ur.rol_id = r.rol_id 
-            WHERE ur.usuario_id = ?`,
-            [userId]
-        );
+        const rolId = req.body.rolId || req.params.rolId; // Obtener rolId desde el cuerpo o parámetros
 
-        if (roles.length === 0) {
-            return res.status(404).json({ message: 'No se encontró rol para el usuario' });
+
+        // Comprobar si el rolId fue proporcionado
+        if (!rolId) {
+            return res.status(400).json({ message: 'El rol ID es requerido.' });
         }
-
-        const rolId = roles[0].rol_id;
 
         // Obtener las opciones del menú basadas en el rol
         const [menuOptions] = await pool.query(
@@ -31,7 +25,7 @@ export const getMenuByRole = async (req, res) => {
             [rolId]
         );
 
-        console.log(menuOptions)
+        console.log(menuOptions);
 
         res.json({ menu: menuOptions.map(option => option.opcion_nombre) });
     } catch (error) {

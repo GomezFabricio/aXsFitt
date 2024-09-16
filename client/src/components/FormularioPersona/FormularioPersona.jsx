@@ -2,7 +2,7 @@ import React from 'react';
 import '../../assets/styles/forms.css';
 import './FormularioPersona.css';
 
-const FormularioPersona = ({ handleChange, values = {} }) => {
+const FormularioPersona = ({ handleChange, setFieldValue, values }) => {
     return (
         <div className="formulario-persona">
             {/* Fila para Nombre y Apellido */}
