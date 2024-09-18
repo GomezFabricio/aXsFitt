@@ -25,8 +25,6 @@ export const getMenuByRole = async (req, res) => {
             [rolId]
         );
 
-        console.log(menuOptions);
-
         res.json({ menu: menuOptions.map(option => option.opcion_nombre) });
     } catch (error) {
         if (error.name === 'TokenExpiredError') {
