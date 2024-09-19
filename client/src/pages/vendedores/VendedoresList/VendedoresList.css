@@ -25,7 +25,6 @@
     position: absolute;
     right: 0;
     display: flex;
-    flex-direction: column;
     gap: 10px; 
 }
 
@@ -33,7 +32,7 @@
 .agregar-button {
     padding: 8px 10px;
     font-size: 16px;
-    background-color: #A23FA9;
+    background-color: var(--color-principal);
     color: #fff;
     border: none;
     border-radius: 5px;

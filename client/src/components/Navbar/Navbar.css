@@ -10,7 +10,7 @@
 .navbar ul {
     list-style: none;
     display: flex;
-    gap: 20px;
+    gap: 30px;
     justify-content: center;
     flex-grow: 1;
 }
