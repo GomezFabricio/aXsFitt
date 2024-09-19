@@ -26,7 +26,7 @@
     right: 0;
     display: flex;
     flex-direction: column;
-    gap: 10px; /* Añadimos un espacio entre los dos botones */
+    gap: 10px; 
 }
 
 .inactivos-button,
