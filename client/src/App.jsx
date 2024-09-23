@@ -12,6 +12,7 @@ import Login from './pages/login/Login/Login';
 import SeleccionRol from './pages/login/SeleccionRol/SeleccionRol';
 import './assets/styles/variables.css';
 import './assets/styles/pages.css';
+import Footer from './components/Footer/Footer';
 
 function App() {
   return (
@@ -30,6 +31,7 @@ function App() {
           element={
             <ProtectedRoute>
               <SeleccionRol />
+              <Footer />
             </ProtectedRoute>
           }
         />
@@ -41,6 +43,7 @@ function App() {
             <ProtectedRoute>
               <Navbar /> {/* Navbar visible solo en rutas protegidas */}
               <VendedoresList />
+              <Footer />
             </ProtectedRoute>
           }
         />
@@ -51,6 +54,7 @@ function App() {
             <ProtectedRoute>
               <Navbar />
               <VendedorCreate />
+              <Footer />
             </ProtectedRoute>
           }
         />
@@ -61,6 +65,7 @@ function App() {
             <ProtectedRoute>
               <Navbar />
               <VendedorDetail />
+              <Footer />
             </ProtectedRoute>
           }
         />
@@ -71,6 +76,7 @@ function App() {
             <ProtectedRoute>
               <Navbar />
               <VendedoresInactivosList />
+              <Footer />
             </ProtectedRoute>
           }
         />
@@ -81,6 +87,7 @@ function App() {
             <ProtectedRoute>
               <Navbar />
               <VendedorEdit />
+              <Footer />
             </ProtectedRoute>
           }
         />
@@ -91,6 +98,7 @@ function App() {
             <ProtectedRoute>
               <Navbar /> {/* Navbar visible solo en rutas protegidas */}
               <NotFound />
+              <Footer />
             </ProtectedRoute>
           }
         />
