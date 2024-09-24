@@ -1,3 +1,10 @@
+CREATE TABLE marca_productos (
+  marca_producto_id INTEGER UNSIGNED  NOT NULL   AUTO_INCREMENT,
+  marca_producto_nombre VARCHAR(50)  NULL    ,
+PRIMARY KEY(marca_producto_id));
+
+
+
 CREATE TABLE estado_vendedores (
   estado_vendedor_id INTEGER UNSIGNED  NOT NULL   AUTO_INCREMENT,
   estado_vendedor_nombre VARCHAR(20)  NULL    ,
@@ -18,20 +25,6 @@ PRIMARY KEY(persona_id));
 
 
 
-CREATE TABLE marca_productos (
-  marca_producto_id INTEGER UNSIGNED  NOT NULL   AUTO_INCREMENT,
-  marca_producto_nombre VARCHAR(50)  NULL    ,
-PRIMARY KEY(marca_producto_id));
-
-
-
-CREATE TABLE estados_afiliacion (
-  estado_afiliacion_id INTEGER UNSIGNED  NOT NULL   AUTO_INCREMENT,
-  estado_afiliacion_nombre VARCHAR(20)  NULL    ,
-PRIMARY KEY(estado_afiliacion_id));
-
-
-
 CREATE TABLE tipos_productos (
   tipo_producto_id INTEGER UNSIGNED  NOT NULL   AUTO_INCREMENT,
   tipo_producto_nombre VARCHAR(50)  NULL    ,
@@ -46,17 +39,24 @@ PRIMARY KEY(rol_id));
 
 
 
-CREATE TABLE usuarios (
-  usuario_id INTEGER UNSIGNED  NOT NULL   AUTO_INCREMENT,
-  persona_id INTEGER UNSIGNED  NOT NULL  ,
-  usuario_email VARCHAR(50)  NULL  ,
-  usuario_pass VARCHAR(20)  NULL    ,
-PRIMARY KEY(usuario_id)  ,
-INDEX usuarios_FKIndex1(persona_id),
-  FOREIGN KEY(persona_id)
-    REFERENCES personas(persona_id)
-      ON DELETE NO ACTION
-      ON UPDATE NO ACTION);
+CREATE TABLE estados_usuarios (
+  estado_usuario_id INTEGER UNSIGNED  NOT NULL   AUTO_INCREMENT,
+  estado_usuario_nombre VARCHAR(50)  NULL    ,
+PRIMARY KEY(estado_usuario_id));
+
+
+
+CREATE TABLE estados_afiliacion (
+  estado_afiliacion_id INTEGER UNSIGNED  NOT NULL   AUTO_INCREMENT,
+  estado_afiliacion_nombre VARCHAR(20)  NULL    ,
+PRIMARY KEY(estado_afiliacion_id));
+
+
+
+CREATE TABLE estados_comisiones (
+  estado_comision_id INTEGER UNSIGNED  NOT NULL   AUTO_INCREMENT,
+  estado_comision_nombre VARCHAR(50)  NULL    ,
+PRIMARY KEY(estado_comision_id));
 
 
 
@@ -73,19 +73,21 @@ INDEX menu_opciones_FKIndex1(rol_id),
 
 
 
-CREATE TABLE usuarios_roles (
-  usuario_rol_id INTEGER UNSIGNED  NOT NULL   AUTO_INCREMENT,
-  usuario_id INTEGER UNSIGNED  NOT NULL  ,
-  rol_id INTEGER UNSIGNED  NOT NULL    ,
-PRIMARY KEY(usuario_rol_id)  ,
-INDEX usuarios_roles_FKIndex1(rol_id)  ,
-INDEX usuarios_roles_FKIndex2(usuario_id),
-  FOREIGN KEY(rol_id)
-    REFERENCES roles(rol_id)
+CREATE TABLE usuarios (
+  usuario_id INTEGER UNSIGNED  NOT NULL   AUTO_INCREMENT,
+  estado_usuario_id INTEGER UNSIGNED  NOT NULL  ,
+  persona_id INTEGER UNSIGNED  NOT NULL  ,
+  usuario_email VARCHAR(50)  NULL  ,
+  usuario_pass VARCHAR(20)  NULL    ,
+PRIMARY KEY(usuario_id)  ,
+INDEX usuarios_FKIndex1(persona_id)  ,
+INDEX usuarios_FKIndex2(estado_usuario_id),
+  FOREIGN KEY(persona_id)
+    REFERENCES personas(persona_id)
       ON DELETE NO ACTION
       ON UPDATE NO ACTION,
-  FOREIGN KEY(usuario_id)
-    REFERENCES usuarios(usuario_id)
+  FOREIGN KEY(estado_usuario_id)
+    REFERENCES estados_usuarios(estado_usuario_id)
       ON DELETE NO ACTION
       ON UPDATE NO ACTION);
 
@@ -156,15 +158,21 @@ INDEX clientes_FKIndex2(persona_id),
 
 CREATE TABLE comisiones (
   comision_id INTEGER UNSIGNED  NOT NULL   AUTO_INCREMENT,
+  estado_comision_id INTEGER UNSIGNED  NOT NULL  ,
   vendedor_id INTEGER UNSIGNED  NOT NULL  ,
   comision_porcentaje DECIMAL  NULL  ,
   comision_fecha DATE  NULL  ,
   comision_monto DECIMAL(10,2)  NULL  ,
   comision_descripcion VARCHAR(220)  NULL    ,
 PRIMARY KEY(comision_id)  ,
-INDEX comisiones_FKIndex1(vendedor_id),
+INDEX comisiones_FKIndex1(vendedor_id)  ,
+INDEX comisiones_FKIndex2(estado_comision_id),
   FOREIGN KEY(vendedor_id)
     REFERENCES vendedores(vendedor_id)
+      ON DELETE NO ACTION
+      ON UPDATE NO ACTION,
+  FOREIGN KEY(estado_comision_id)
+    REFERENCES estados_comisiones(estado_comision_id)
       ON DELETE NO ACTION
       ON UPDATE NO ACTION);
 
@@ -179,6 +187,24 @@ PRIMARY KEY(inventario_id)  ,
 INDEX inventario_principal_FKIndex1(producto_id),
   FOREIGN KEY(producto_id)
     REFERENCES productos(producto_id)
+      ON DELETE NO ACTION
+      ON UPDATE NO ACTION);
+
+
+
+CREATE TABLE usuarios_roles (
+  usuario_rol_id INTEGER UNSIGNED  NOT NULL   AUTO_INCREMENT,
+  usuario_id INTEGER UNSIGNED  NOT NULL  ,
+  rol_id INTEGER UNSIGNED  NOT NULL    ,
+PRIMARY KEY(usuario_rol_id)  ,
+INDEX usuarios_roles_FKIndex1(rol_id)  ,
+INDEX usuarios_roles_FKIndex2(usuario_id),
+  FOREIGN KEY(rol_id)
+    REFERENCES roles(rol_id)
+      ON DELETE NO ACTION
+      ON UPDATE NO ACTION,
+  FOREIGN KEY(usuario_id)
+    REFERENCES usuarios(usuario_id)
       ON DELETE NO ACTION
       ON UPDATE NO ACTION);
 
