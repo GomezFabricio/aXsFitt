@@ -9,17 +9,19 @@ export const login = async (req, res) => {
     const { email, password } = req.body; // Obtener email y contraseña del cuerpo de la solicitud
 
     try {
-        // Verificar si el usuario existe con el email y contraseña proporcionados
+        // Verificar si el usuario existe con el email, contraseña y que esté activo (estado_usuario_id = 1)
         const [usuario] = await pool.query(
             `SELECT u.usuario_id, p.persona_nombre, p.persona_apellido, u.usuario_email 
             FROM usuarios u 
             JOIN personas p ON u.persona_id = p.persona_id 
-            WHERE u.usuario_email = ? AND u.usuario_pass = ?`,
+            WHERE u.usuario_email = ? 
+              AND u.usuario_pass = ? 
+              AND u.estado_usuario_id = 1`, 
             [email, password]
         );
 
         if (usuario.length === 0) {
-            return res.status(401).json({ message: 'Credenciales inválidas' });
+            return res.status(401).json({ message: 'Credenciales inválidas o usuario inactivo' });
         }
 
         const userId = usuario[0].usuario_id;
@@ -58,3 +60,4 @@ export const login = async (req, res) => {
         return res.status(500).json({ message: error.message });
     }
 };
+
