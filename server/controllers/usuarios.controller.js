@@ -1,4 +1,6 @@
 import { pool } from '../db.js';
+import { createPersona, updatePersona } from './personas.controller.js';
+
 
 export const createUser = async (usuarioData) => {
     try {
