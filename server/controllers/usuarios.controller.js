@@ -2,17 +2,125 @@ import { pool } from '../db.js';
 
 export const createUser = async (usuarioData) => {
     try {
-        const { persona_id, usuario_email, usuario_pass } = usuarioData; 
+        const { persona_id, persona_nombre, persona_apellido, usuario_email, usuario_pass } = usuarioData;
 
-        const [result] = await pool.query(
+        let personaId = persona_id;
+
+        // Si no se proporciona persona_id, crea una nueva persona
+        if (!personaId) {
+            const personaResponse = await createPersona({ persona_nombre, persona_apellido });
+            if (!personaResponse || !personaResponse.id) {
+                throw new Error('Error al crear la persona.');
+            }
+            personaId = personaResponse.id;
+        }
+
+        // Inserta los datos del usuario usando el persona_id
+        const [usuarioResult] = await pool.query(
             "INSERT INTO `usuarios` (`persona_id`, `usuario_email`, `usuario_pass`) VALUES (?, ?, ?)",
-            [persona_id, usuario_email, usuario_pass]
+            [personaId, usuario_email, usuario_pass]
         );
 
-        return { id: result.insertId }; // Retorna el id del nuevo usuario
+        return { id: usuarioResult.insertId, persona_id: personaId }; // Retorna el id del nuevo usuario y el persona_id
     } catch (error) {
         throw new Error('Error al crear el usuario: ' + error.message);
     }
 };
 
-// Crear una funcion para listar los usuarios siguiendo la estructura de los demas controladores 
+// Funcion para obtener todos los usuarios 
+
+export const getAllUsers = async (req, res) => {
+    try {
+        const [rows] = await pool.query("SELECT * FROM `usuarios`");
+        res.json(rows);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+}
+
+// Funcion para obtener todos los usuarios inactivos 
+
+export const getInactiveUsers = async (req, res) => {
+    try {
+        const [rows] = await pool.query("SELECT * FROM `usuarios` WHERE estado_usuario_id = 2");
+        res.json(rows);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+}
+
+// Funcion para obtener un usuario por su id 
+
+export const getUserById = async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const [rows] = await pool.query("SELECT * FROM `usuarios` WHERE usuario_id = ?", [id]);
+
+        if (rows.length === 0) {
+            return res.status(404).json({ message: 'Usuario no encontrado' });
+        }
+
+        res.json(rows[0]);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+}
+
+// Funcion para actualizar un usuario 
+
+export const updateUser = async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const persona_id = req.body.persona_id;
+
+        const personaResult = await updatePersona(req);
+        if (!personaResult || !personaResult.affectedRows) {
+            return res.status(500).json({ message: 'Error al actualizar la persona.' });
+        }
+
+        const [result] = await pool.query(
+            `UPDATE usuarios 
+            SET ?
+            WHERE usuario_id = ?`,
+            [
+                req.body,
+                id
+            ]
+        );
+
+        return res.json({ message: 'Usuario actualizado' });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+}
+    
+// Funcion para cambiar el estado de un usuario a inactivo 
+
+export const deactivateUser = async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        await pool.query("UPDATE usuarios SET estado_usuario_id = 2 WHERE usuario_id = ?", [id]);
+
+        res.json({ message: 'Usuario dado de baja exitosamente' });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+}
+
+// Funcion para cambiar el estado de un usuario a activo 
+
+export const activateUser = async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        await pool.query("UPDATE usuarios SET estado_usuario_id = 1 WHERE usuario_id = ?", [id]);
+
+        res.json({ message: 'Usuario dado de alta exitosamente' });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+}
+
