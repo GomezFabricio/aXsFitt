@@ -14,3 +14,5 @@ export const createUser = async (usuarioData) => {
         throw new Error('Error al crear el usuario: ' + error.message);
     }
 };
+
+// Crear una funcion para listar los usuarios siguiendo la estructura de los demas controladores 
