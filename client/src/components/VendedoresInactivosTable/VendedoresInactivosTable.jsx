@@ -1,15 +1,14 @@
 import React from 'react';
-import './VendedoresInactivosTable.css';
+import { Table, Button } from 'react-bootstrap';
 
 const VendedoresInactivosTable = ({ vendedores, onActivate }) => {
     return (
-        <table className="vendedores-table">
+        <Table striped bordered hover className="vendedores-table">
             <thead>
                 <tr>
                     <th>Nombre</th>
                     <th>Apellido</th>
                     <th>DNI</th>
-                    {/* <th>Fecha de Ingreso</th> */}
                     <th>Acciones</th>
                 </tr>
             </thead>
@@ -19,16 +18,18 @@ const VendedoresInactivosTable = ({ vendedores, onActivate }) => {
                         <td>{vendedor.persona_nombre}</td>
                         <td>{vendedor.persona_apellido}</td>
                         <td>{vendedor.persona_dni}</td>
-                        {/* <td>{new Date(vendedor.vendedor_fecha_ingreso).toLocaleDateString()}</td> */}
                         <td>
-                            <button onClick={() => onActivate(vendedor.vendedor_id)} className="btn-activate">
+                            <Button 
+                                onClick={() => onActivate(vendedor.vendedor_id)} 
+                                className="btn btn-primary btn-sm"
+                            >
                                 Alta
-                            </button>
+                            </Button>
                         </td>
                     </tr>
                 ))}
             </tbody>
-        </table>
+        </Table>
     );
 };
 

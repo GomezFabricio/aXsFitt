@@ -22,10 +22,10 @@ const UsuariosListTable = ({ usuarios, onEdit, onBaja }) => {
                         <td>{usuario.usuario_email}</td>
                         <td>{usuario.rol_tipo_rol}</td>
                         <td>
-                            <button onClick={() => onEdit(usuario.usuario_id)} className="btn-edit">
+                            <button onClick={() => onEdit(usuario.usuario_id)} className="btn btn-primary btn-sm me-2">
                                 Editar
                             </button>
-                            <button onClick={() => onBaja(usuario.usuario_id)} className="btn-delete">
+                            <button onClick={() => onBaja(usuario.usuario_id)} className="btn btn-danger btn-sm">
                                 Baja
                             </button>
                         </td>

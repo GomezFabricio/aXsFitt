@@ -10,9 +10,11 @@ import VendedorEdit from './pages/vendedores/VendedorEdit/VendedorEdit';
 import ProtectedRoute from './pages/ProtectedRoute';
 import Login from './pages/login/Login/Login';
 import SeleccionRol from './pages/login/SeleccionRol/SeleccionRol';
+import UsuariosList from './pages/usuarios/UsuariosList/UsuariosList';
 import './assets/styles/variables.css';
 import './assets/styles/pages.css';
 import Footer from './components/Footer/Footer';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 function App() {
   return (
@@ -87,6 +89,17 @@ function App() {
             <ProtectedRoute>
               <Navbar />
               <VendedorEdit />
+              <Footer />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/usuarios"
+          element={
+            <ProtectedRoute>
+              <Navbar />
+              <UsuariosList />
               <Footer />
             </ProtectedRoute>
           }

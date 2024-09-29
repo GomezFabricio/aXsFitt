@@ -4,7 +4,7 @@ import { createPersona, updatePersona } from './personas.controller.js';
 
 export const createUser = async (usuarioData) => {
     try {
-        const { persona_id, persona_nombre, persona_apellido, usuario_email, usuario_pass } = usuarioData;
+        const { persona_id, persona_nombre, persona_apellido, usuario_email, usuario_pass, estado_usuario_id = 1 } = usuarioData;
 
         let personaId = persona_id;
 
@@ -19,8 +19,8 @@ export const createUser = async (usuarioData) => {
 
         // Inserta los datos del usuario usando el persona_id
         const [usuarioResult] = await pool.query(
-            "INSERT INTO `usuarios` (`persona_id`, `usuario_email`, `usuario_pass`) VALUES (?, ?, ?)",
-            [personaId, usuario_email, usuario_pass]
+            "INSERT INTO `usuarios` (`persona_id`, `usuario_email`, `usuario_pass`, `estado_usuario_id`) VALUES (?, ?, ?, ?)",
+            [personaId, usuario_email, usuario_pass, estado_usuario_id]
         );
 
         return { id: usuarioResult.insertId, persona_id: personaId }; // Retorna el id del nuevo usuario y el persona_id
@@ -34,7 +34,7 @@ export const createUser = async (usuarioData) => {
 export const getAllUsers = async (req, res) => {
     try {
         const [rows] = await pool.query(
-            `SELECT u.usuario_id, u.persona_id, p.persona_nombre, p.persona_apellido, u.usuario_email, u.estado_usuario_id, r.rol_tipo_rol
+            `SELECT u.usuario_id, u.persona_id, p.persona_nombre, p.persona_apellido, p.persona_dni, u.usuario_email, u.estado_usuario_id, r.rol_tipo_rol
             FROM usuarios u
             JOIN personas p ON u.persona_id = p.persona_id
             JOIN usuarios_roles ur ON u.usuario_id = ur.usuario_id

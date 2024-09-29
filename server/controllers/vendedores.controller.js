@@ -113,23 +113,30 @@ export const createVendedor = async (req, res) => {
     try {
         const { personaData, usuarioData } = req.body;
 
-        const estado_vendedor_id = 1;
-        const fecha_ingreso = new Date();
+        // Validar los datos aquí
+        if (!personaData || !usuarioData) {
+            return res.status(400).json({ message: 'Datos incompletos.' });
+        }
 
         const personaResponse = await createPersona(personaData);
         if (!personaResponse || !personaResponse.id) {
+            console.error('Error al crear la persona.');
             return res.status(500).json({ message: 'Error al crear la persona.' });
         }
+
+        const usuarioResponse = await createUser({ ...usuarioData, persona_id: personaResponse.id });
+        if (!usuarioResponse || !usuarioResponse.id) {
+            console.error('Error al crear el usuario.');
+            return res.status(500).json({ message: 'Error al crear el usuario.' });
+        }
+
+        const estado_vendedor_id = 1;
+        const fecha_ingreso = new Date();
 
         const [vendedorResult] = await pool.query(
             "INSERT INTO `vendedores` (`persona_id`, `estado_vendedor_id`, `vendedor_fecha_ingreso`) VALUES (?, ?, ?)",
             [personaResponse.id, estado_vendedor_id, fecha_ingreso]
         );
-
-        const usuarioResponse = await createUser({ ...usuarioData, persona_id: personaResponse.id });
-        if (!usuarioResponse || !usuarioResponse.id) {
-            return res.status(500).json({ message: 'Error al crear el usuario.' });
-        }
 
         await asignarRolUsuario(usuarioResponse.id, 'Vendedor');
 
@@ -140,6 +147,7 @@ export const createVendedor = async (req, res) => {
             fecha_ingreso
         });
     } catch (error) {
+        console.error('Error en createVendedor:', error);
         res.status(500).json({ message: error.message });
     }
 };
