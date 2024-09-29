@@ -98,3 +98,15 @@ export const asignarRolUsuario = async (usuarioId, rolNombre) => {
         throw new Error('Rol no encontrado.');
     }
 };
+
+
+//funcion que permite obtener todos los roles de la base de datos
+
+export const getAllRoles = async (req, res) => {
+    try {
+        const [roles] = await pool.query('SELECT * FROM roles');
+        res.json(roles);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+}
