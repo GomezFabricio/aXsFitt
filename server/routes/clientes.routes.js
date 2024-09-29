@@ -5,7 +5,8 @@ import {
     createCliente, 
     updateCliente, 
     deactivateCliente, 
-    activateCliente 
+    activateCliente,
+    deleteCliente 
 } from '../controllers/clientes.controller.js';
 
 const router = Router();
@@ -16,5 +17,6 @@ router.post('/clientes', createCliente);
 router.put('/clientes/:id', updateCliente);
 router.put('/clientes/:id/deactivate', deactivateCliente);
 router.put('/clientes/:id/activate', activateCliente);
+router.delete('/clientes/:id', deleteCliente);
 
 export default router;

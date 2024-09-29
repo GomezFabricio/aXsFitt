@@ -10,19 +10,24 @@ function ClientesList() {
     useEffect(() => {
         async function loadClientes() {
             const response = await getClientesRequest();
+            console.log(response.data);  // Verificar los datos devueltos
             setClientes(response.data);
         }
         loadClientes();
     }, []);
 
+    // Función para eliminar un cliente
     const handleDelete = async (id) => {
-        await deleteClienteRequest(id);
-        setClientes(clientes.filter(cliente => cliente.cliente_id !== id));
+        if (window.confirm('¿Estás seguro de que deseas eliminar este cliente?')) {
+            try {
+                await deleteClienteRequest(id);
+                setClientes(clientes.filter(cliente => cliente.cliente_id !== id));
+            } catch (error) {
+                console.error('Error al eliminar el cliente:', error);
+            }
+        }
     };
-
-    const handleEdit = (id) => {
-        navigate(`/edit-cliente/${id}`);
-    };
+    
 
     return (
         <div className="clientes-list">
@@ -30,15 +35,22 @@ function ClientesList() {
             <ul>
                 {clientes.map(cliente => (
                     <li key={cliente.cliente_id} className="cliente-item">
-                        <div className="cliente-nombre">{cliente.persona_nombre} {cliente.persona_apellido}</div>
+                        <div className="cliente-nombre">
+                            {cliente.persona_nombre} {cliente.persona_apellido}
+                        </div>
                         <div className="cliente-dni">DNI: {cliente.persona_dni}</div>
                         <div className="cliente-telefono">Teléfono: {cliente.persona_telefono}</div>
-                        <div className="cliente-email">Email: {cliente.persona_email}</div>
+                        <div className="cliente-email">Email: {cliente.usuario_email}</div>
+                        <div className="cliente-fecha-alta">Fecha de Afiliación: {new Date(cliente.cliente_fecha_alta).toLocaleDateString()}</div>
                         <div className="cliente-estado">Estado: {cliente.estado_afiliacion_id === 1 ? 'Activo' : 'Inactivo'}</div>
-                        <div className="cliente-fecha-alta">Fecha de afiliación: {new Date(cliente.cliente_fecha_alta).toLocaleDateString()}</div>
-                        <div className="cliente-buttons">
-                            <button onClick={() => handleEdit(cliente.cliente_id)} className="edit-button">Modificar</button>
-                            <button onClick={() => handleDelete(cliente.cliente_id)} className="delete-button">Eliminar</button>
+                        
+                        <div className="cliente-actions">
+                            <button onClick={() => navigate(`/clientes/edit/${cliente.cliente_id}`)} className="btn-edit">
+                                Editar
+                            </button>
+                            <button onClick={() => handleDelete(cliente.cliente_id)} className="btn-delete">
+                                Eliminar
+                            </button>
                         </div>
                     </li>
                 ))}
