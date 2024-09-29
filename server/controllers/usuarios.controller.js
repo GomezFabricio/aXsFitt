@@ -29,35 +29,59 @@ export const createUser = async (usuarioData) => {
     }
 };
 
-// Funcion para obtener todos los usuarios 
+// Funcion para obtener todos los usuarios, incluso los datos de la persona asociada, sus roles y con el estado activo
 
 export const getAllUsers = async (req, res) => {
     try {
-        const [rows] = await pool.query("SELECT * FROM `usuarios`");
+        const [rows] = await pool.query(
+            `SELECT u.usuario_id, u.persona_id, p.persona_nombre, p.persona_apellido, u.usuario_email, u.estado_usuario_id, r.rol_tipo_rol
+            FROM usuarios u
+            JOIN personas p ON u.persona_id = p.persona_id
+            JOIN usuarios_roles ur ON u.usuario_id = ur.usuario_id
+            JOIN roles r ON ur.rol_id = r.rol_id
+            WHERE u.estado_usuario_id = 1`
+        );
+
         res.json(rows);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
 }
 
-// Funcion para obtener todos los usuarios inactivos 
+// Funcion para obtener todos los usuarios inactivos incluso con los datos de la persona asociada y sus roles
 
 export const getInactiveUsers = async (req, res) => {
     try {
-        const [rows] = await pool.query("SELECT * FROM `usuarios` WHERE estado_usuario_id = 2");
+        const [rows] = await pool.query(
+            `SELECT u.usuario_id, u.persona_id, p.persona_nombre, p.persona_apellido, u.usuario_email, u.estado_usuario_id, r.rol_tipo_rol
+            FROM usuarios u
+            JOIN personas p ON u.persona_id = p.persona_id
+            JOIN usuarios_roles ur ON u.usuario_id = ur.usuario_id
+            JOIN roles r ON ur.rol_id = r.rol_id
+            WHERE u.estado_usuario_id = 2`
+        );
+
         res.json(rows);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
 }
 
-// Funcion para obtener un usuario por su id 
+// Funcion para obtener un usuario por su id, incluyendo los datos de la persona asociada y sus roles
 
 export const getUserById = async (req, res) => {
     const { id } = req.params;
 
     try {
-        const [rows] = await pool.query("SELECT * FROM `usuarios` WHERE usuario_id = ?", [id]);
+        const [rows] = await pool.query(
+            `SELECT u.usuario_id, u.persona_id, p.persona_nombre, p.persona_apellido, u.usuario_email, u.estado_usuario_id, r.rol_tipo_rol
+            FROM usuarios u
+            JOIN personas p ON u.persona_id = p.persona_id
+            JOIN usuarios_roles ur ON u.usuario_id = ur.usuario_id
+            JOIN roles r ON ur.rol_id = r.rol_id
+            WHERE u.usuario_id = ?`,
+            [id]
+        );
 
         if (rows.length === 0) {
             return res.status(404).json({ message: 'Usuario no encontrado' });
