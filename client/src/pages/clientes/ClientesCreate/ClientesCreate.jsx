@@ -11,7 +11,8 @@ function ClientesCreate() {
         persona_domicilio: '',
         persona_telefono: '',
         estado_afiliacion_id: '',
-        cliente_fecha_afiliacion: ''
+        cliente_fecha_afiliacion: '',
+        persona_email: '' // Nuevo campo para el correo
     });
 
     const handleChange = (e) => {
@@ -29,7 +30,8 @@ function ClientesCreate() {
             persona_domicilio: '',
             persona_telefono: '',
             estado_afiliacion_id: '',
-            cliente_fecha_afiliacion: ''
+            cliente_fecha_afiliacion: '',
+            persona_email: '' // Resetear el campo de correo
         });
     };
 
@@ -87,6 +89,15 @@ function ClientesCreate() {
                     value={cliente.persona_telefono}
                     onChange={handleChange}
                     className="input"
+                />
+                <input
+                    type="email"
+                    name="persona_email"
+                    placeholder="Correo"
+                    value={cliente.persona_email}
+                    onChange={handleChange}
+                    className="input"
+                    required
                 />
                 <select
                     name="estado_afiliacion_id"
