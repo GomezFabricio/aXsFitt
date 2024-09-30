@@ -44,7 +44,7 @@ const UsuariosInactivosList = () => {
                 <h1>Usuarios Inactivos</h1>
             </div>
 
-            <h2>En esta sección podrás ver los usuarios inactivos.</h2>
+            <h2>En esta sección podrás ver y gestionar los usuarios inactivos.</h2>
 
             <div style={{ display: 'flex', justifyContent: 'center' }}>
                 <SearchInput

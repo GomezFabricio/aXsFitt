@@ -33,6 +33,7 @@ const UsuariosList = () => {
 
     const handleAltaClick = () => {
         // Navegar a la página de alta de usuario
+        navigate('/usuarios/alta');
     };
 
     const handleBajaClick = async (id) => {
@@ -64,7 +65,7 @@ const UsuariosList = () => {
                 </div>
             </div>
 
-            <h2>En esta sección podrás ver los usuarios activos y agregar nuevos usuarios.</h2>
+            <h2>En esta sección podrás ver y gestionar los usuarios activos.</h2>
 
             <div style={{ display: 'flex', justifyContent: 'center' }}>
                 <SearchInput

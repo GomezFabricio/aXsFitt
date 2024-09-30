@@ -3,8 +3,6 @@ import { createUser, getAllUsers, getInactiveUsers, getUserById, deactivateUser,
 
 const router = Router();
 
-// Definir las rutas basandote en vendedores.routes.js
-
 // Obtener todos los usuarios
 router.get("/usuarios", getAllUsers);
 

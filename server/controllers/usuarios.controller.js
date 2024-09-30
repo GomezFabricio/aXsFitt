@@ -1,16 +1,16 @@
 import { pool } from '../db.js';
 import { createPersona, updatePersona } from './personas.controller.js';
 
-
-export const createUser = async (usuarioData) => {
+export const createUser = async (req, res) => {
     try {
-        const { persona_id, persona_nombre, persona_apellido, usuario_email, usuario_pass, estado_usuario_id = 1 } = usuarioData;
+        const { persona, usuario, roles } = req.body;
+        console.log('Datos recibidos en el servidor:', { persona, usuario, roles });
 
-        let personaId = persona_id;
+        let personaId = persona.persona_id;
 
         // Si no se proporciona persona_id, crea una nueva persona
         if (!personaId) {
-            const personaResponse = await createPersona({ persona_nombre, persona_apellido });
+            const personaResponse = await createPersona(persona);
             if (!personaResponse || !personaResponse.id) {
                 throw new Error('Error al crear la persona.');
             }
@@ -20,12 +20,34 @@ export const createUser = async (usuarioData) => {
         // Inserta los datos del usuario usando el persona_id
         const [usuarioResult] = await pool.query(
             "INSERT INTO `usuarios` (`persona_id`, `usuario_email`, `usuario_pass`, `estado_usuario_id`) VALUES (?, ?, ?, ?)",
-            [personaId, usuario_email, usuario_pass, estado_usuario_id]
+            [personaId, usuario.usuario_email, usuario.usuario_pass, usuario.estado_usuario_id || 1]
         );
 
-        return { id: usuarioResult.insertId, persona_id: personaId }; // Retorna el id del nuevo usuario y el persona_id
+        const usuarioId = usuarioResult.insertId;
+
+        // Asocia los roles al usuario
+        for (const rolId of roles) {
+            await pool.query(
+                "INSERT INTO `usuarios_roles` (`usuario_id`, `rol_id`) VALUES (?, ?)",
+                [usuarioId, rolId]
+            );
+
+            // Si el rol es "vendedor", también inserta en la tabla "vendedores"
+            if (rolId === 2) { // Asumiendo que el rol de "vendedor" tiene el ID 2
+                const estadoVendedorId = 1; // Estado inicial del vendedor
+                const vendedorFechaIngreso = new Date().toISOString().split('T')[0]; // Fecha de hoy en formato YYYY-MM-DD
+
+                await pool.query(
+                    "INSERT INTO `vendedores` (`persona_id`, `estado_vendedor_id`, `vendedor_fecha_ingreso`) VALUES (?, ?, ?)",
+                    [personaId, estadoVendedorId, vendedorFechaIngreso]
+                );
+            }
+        }
+
+        res.status(201).json({ id: usuarioId, persona_id: personaId });
     } catch (error) {
-        throw new Error('Error al crear el usuario: ' + error.message);
+        console.error('Error al crear el usuario:', error);
+        res.status(500).json({ message: 'Error al crear el usuario: ' + error.message });
     }
 };
 
@@ -53,7 +75,7 @@ export const getAllUsers = async (req, res) => {
 export const getInactiveUsers = async (req, res) => {
     try {
         const [rows] = await pool.query(
-            `SELECT u.usuario_id, u.persona_id, p.persona_nombre, p.persona_apellido, u.usuario_email, u.estado_usuario_id, r.rol_tipo_rol
+            `SELECT u.usuario_id, u.persona_id, p.persona_nombre, p.persona_apellido, p.persona_dni, u.usuario_email, u.estado_usuario_id, r.rol_tipo_rol
             FROM usuarios u
             JOIN personas p ON u.persona_id = p.persona_id
             JOIN usuarios_roles ur ON u.usuario_id = ur.usuario_id

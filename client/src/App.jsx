@@ -16,6 +16,7 @@ import './assets/styles/variables.css';
 import './assets/styles/pages.css';
 import Footer from './components/Footer/Footer';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import UsuariosCreate from './pages/usuarios/UsuariosCreate/UsuariosCreate';
 
 function App() {
   return (
@@ -112,6 +113,17 @@ function App() {
             <ProtectedRoute>
               <Navbar />
               <UsuariosInactivosList />
+              <Footer />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/usuarios/alta"
+          element={
+            <ProtectedRoute>
+              <Navbar />
+              <UsuariosCreate />
               <Footer />
             </ProtectedRoute>
           }

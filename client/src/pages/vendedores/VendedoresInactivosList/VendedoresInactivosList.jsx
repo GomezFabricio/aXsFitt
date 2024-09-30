@@ -39,6 +39,8 @@ const VendedoresInactivosList = () => {
         <div className="container-page">
             <h1>Vendedores Inactivos</h1>
 
+            <h2>En esta sección podrás ver y gestionar los vendedores inactivos.</h2>
+
             <div style={{ display: 'flex', justifyContent: 'center' }}>
                 <SearchInput
                     style={{
