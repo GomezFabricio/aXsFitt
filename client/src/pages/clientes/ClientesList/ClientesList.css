@@ -1,67 +1,78 @@
 .clientes-list {
     display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
-    justify-content: center;
+    flex-direction: column;
+    align-items: center;
     padding: 20px;
 }
 
+.clientes-list h1 {
+    color: #333;
+    font-size: 2em;
+    margin-bottom: 20px;
+}
+
+ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
 .cliente-item {
-    background-color: #f9f9f9;
+    background-color: #9E3DA5;
+    color: white;
     padding: 15px;
-    border-radius: 10px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    margin: 10px;
+    border-radius: 8px;
     width: 300px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     text-align: center;
-    transition: transform 0.3s ease;
+    transition: transform 0.3s;
 }
 
 .cliente-item:hover {
-    transform: translateY(-5px);
+    transform: scale(1.05);
 }
 
-.cliente-nombre {
-    font-size: 1.2em;
-    font-weight: bold;
-    margin-bottom: 10px;
-}
-
-.cliente-dni, .cliente-telefono, .cliente-email, .cliente-fecha-alta, .cliente-estado {
-    font-size: 1em;
-    color: #666;
-    margin-bottom: 5px;
+.cliente-nombre, .cliente-dni, .cliente-telefono, .cliente-email, .cliente-fecha-alta, .cliente-estado {
+    margin: 5px 0;
 }
 
 .cliente-actions {
     display: flex;
-    justify-content: space-around;
-    margin-top: 10px;
+    justify-content: space-between;
+    width: 100%;
 }
 
 .btn-edit {
-    background-color: #4caf50;
+    background-color: #28a745; /* Verde */
     color: white;
     border: none;
-    padding: 10px;
+    padding: 5px 10px;
     border-radius: 5px;
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    transition: background-color 0.3s;
 }
 
 .btn-edit:hover {
-    background-color: #45a049;
+    background-color: #218838; /* Tonalidad más oscura de verde */
 }
 
 .btn-delete {
-    background-color: #f44336;
+    background-color: #dc3545; /* Rojo */
     color: white;
     border: none;
-    padding: 10px;
+    padding: 5px 10px;
     border-radius: 5px;
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    transition: background-color 0.3s;
 }
 
 .btn-delete:hover {
-    background-color: #e53935;
+    background-color: #c82333; /* Tonalidad más oscura de rojo */
 }
