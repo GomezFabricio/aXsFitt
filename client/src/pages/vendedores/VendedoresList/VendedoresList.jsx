@@ -48,6 +48,7 @@ const VendedoresList = () => {
           </button>
         </div>
       </div>
+      <h2>En esta sección podrás ver los vendedores activos y agregar nuevos vendedores.</h2>
 
       <div style={{ display: 'flex', justifyContent: 'center' }}>
         <SearchInput

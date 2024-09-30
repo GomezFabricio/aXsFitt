@@ -1,6 +1,6 @@
 import { Table } from 'react-bootstrap';
 
-const UsuariosListTable = ({ usuarios, onEdit, onBaja }) => {
+const UsuariosInactivosTable = ({ usuarios, onReactivarClick }) => {
     return (
         <Table striped bordered hover>
             <thead>
@@ -20,13 +20,10 @@ const UsuariosListTable = ({ usuarios, onEdit, onBaja }) => {
                         <td>{usuario.persona_apellido}</td>
                         <td>{usuario.persona_dni}</td>
                         <td>{usuario.usuario_email}</td>
-                        <td>{usuario.rol_tipo_rol}</td>
+                        <td>{usuario.roles.join(', ')}</td>
                         <td>
-                            <button onClick={() => onEdit(usuario.usuario_id)} className="btn btn-primary btn-sm me-2">
-                                Editar
-                            </button>
-                            <button onClick={() => onBaja(usuario.usuario_id)} className="btn btn-danger btn-sm">
-                                Baja
+                            <button onClick={() => onReactivarClick(usuario.usuario_id)} className="btn btn-primary btn-sm">
+                                Alta
                             </button>
                         </td>
                     </tr>
@@ -36,4 +33,4 @@ const UsuariosListTable = ({ usuarios, onEdit, onBaja }) => {
     );
 }
 
-export default UsuariosListTable;
+export default UsuariosInactivosTable;

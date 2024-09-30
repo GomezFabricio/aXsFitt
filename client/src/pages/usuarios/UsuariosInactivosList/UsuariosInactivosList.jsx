@@ -1,20 +1,18 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { getUsuariosRequest, deactivateUsuario } from '../../../api/usuarios.api';
+import { getUsuariosInactivosRequest, activateUsuarioRequest } from '../../../api/usuarios.api';
 import SearchInput, { createFilter } from 'react-search-input';
-import UsuariosListTable from '../../../components/UsuariosListTable/UsuariosListTable';
-import './UsuariosList.css';
+import UsuariosInactivosTable from '../../../components/UsuariosInactivosTable/UsuariosInactivosTable';
+import "../UsuariosList/UsuariosList.css"; // Ajusta la ruta según la estructura de tu proyecto
 
 const KEYS_TO_FILTERS = ['persona_nombre', 'persona_apellido', 'persona_dni', 'usuario_email']; // Campos a filtrar
 
-const UsuariosList = () => {
+const UsuariosInactivosList = () => {
     const [usuarios, setUsuarios] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
-    const navigate = useNavigate();
 
     useEffect(() => {
-        async function loadUsuarios() {
-            const responseUsuarios = await getUsuariosRequest();
+        async function loadUsuariosInactivos() {
+            const responseUsuarios = await getUsuariosInactivosRequest();
             const usuariosConRolesAgrupados = responseUsuarios.data.reduce((acc, usuario) => {
                 const existingUser = acc.find(u => u.usuario_id === usuario.usuario_id);
                 if (existingUser) {
@@ -26,45 +24,27 @@ const UsuariosList = () => {
             }, []);
             setUsuarios(usuariosConRolesAgrupados);
         }
-        loadUsuarios();
+        loadUsuariosInactivos();
     }, []);
 
-    const filteredUsuarios = usuarios.filter(createFilter(searchTerm, KEYS_TO_FILTERS)); // Filtramos los usuarios
-
-    const handleAltaClick = () => {
-        // Navegar a la página de alta de usuario
-    };
-
-    const handleBajaClick = async (id) => {
-        // Manejar la baja del usuario con el id proporcionado
+    const handleReactivarClick = async (id) => {
         try {
-            await deactivateUsuario(id);
-            // Actualizar el estado de usuarios para eliminar el usuario de la lista
+            await activateUsuarioRequest(id);
             setUsuarios((prevUsuarios) => prevUsuarios.filter(usuario => usuario.usuario_id !== id));
         } catch (error) {
-            console.error("Error al eliminar el usuario:", error);
+            console.error("Error al reactivar el usuario:", error);
         }
     };
 
-    const handleInactivosClick = () => {
-        navigate('/usuarios/inactivos');
-    };
+    const filteredUsuarios = usuarios.filter(createFilter(searchTerm, KEYS_TO_FILTERS)); // Filtramos los usuarios
 
     return (
         <div className="container-page">
             <div className="header">
-                <h1>Usuarios</h1>
-                <div className="buttons-container">
-                    <button className="agregar-button" onClick={handleAltaClick}>
-                        Agregar Usuario
-                    </button>
-                    <button className="inactivos-button" onClick={handleInactivosClick}>
-                        Ver Inactivos
-                    </button>
-                </div>
+                <h1>Usuarios Inactivos</h1>
             </div>
 
-            <h2>En esta sección podrás ver los usuarios activos y agregar nuevos usuarios.</h2>
+            <h2>En esta sección podrás ver los usuarios inactivos.</h2>
 
             <div style={{ display: 'flex', justifyContent: 'center' }}>
                 <SearchInput
@@ -85,13 +65,16 @@ const UsuariosList = () => {
                 />
             </div>
 
-            <UsuariosListTable 
-                usuarios={filteredUsuarios} // Pasamos los usuarios filtrados
-                onEdit={() => {}}
-                onBaja={handleBajaClick} // Pasamos la función handleBajaClick
-            />
+            {filteredUsuarios.length > 0 ? (
+                <UsuariosInactivosTable 
+                    usuarios={filteredUsuarios} // Pasamos los usuarios filtrados
+                    onReactivarClick={handleReactivarClick}
+                />
+            ) : (
+                <p style={{ textAlign: 'center', marginTop: '20px' }}>No hay datos para mostrar.</p>
+            )}
         </div>
     );
 }
 
-export default UsuariosList;
+export default UsuariosInactivosList;

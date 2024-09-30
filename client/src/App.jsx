@@ -11,6 +11,7 @@ import ProtectedRoute from './pages/ProtectedRoute';
 import Login from './pages/login/Login/Login';
 import SeleccionRol from './pages/login/SeleccionRol/SeleccionRol';
 import UsuariosList from './pages/usuarios/UsuariosList/UsuariosList';
+import UsuariosInactivosList from "./pages/usuarios/UsuariosInactivosList/UsuariosInactivosList";
 import './assets/styles/variables.css';
 import './assets/styles/pages.css';
 import Footer from './components/Footer/Footer';
@@ -100,6 +101,17 @@ function App() {
             <ProtectedRoute>
               <Navbar />
               <UsuariosList />
+              <Footer />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/usuarios/inactivos"
+          element={
+            <ProtectedRoute>
+              <Navbar />
+              <UsuariosInactivosList />
               <Footer />
             </ProtectedRoute>
           }

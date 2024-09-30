@@ -13,8 +13,9 @@
 }
 
 .container-page > h2 {
-    margin: 20px 0 40px 0;
+    margin: 20px 0 20px 0;
     color: var(--color-letras-fondo-claro);
     font-weight: 200;
     font-size: 20px;
+    text-align: center;
 }
