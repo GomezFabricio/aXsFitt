@@ -79,6 +79,23 @@ También se ha desarrollado el módulo de login, que permite a un usuario inicia
 
 Además, se ha iniciado el desarrollo del módulo de clientes, que aún no se ha finalizado.
 
+## Actualización del Proyecto
+
+### Mejoras y Nuevas Funcionalidades
+
+- **Selección Múltiple de Roles:** Se ha añadido soporte para seleccionar múltiples roles utilizando un `<select>` con opción múltiple en el frontend.
+- **Estilización del Botón "Anterior":** Se ha estilizado el botón "Anterior" y el `<select>` para una mejor experiencia de usuario.
+- **Depuración de la API:** Se ha depurado la API para verificar que los datos se envían y reciben correctamente.
+- **Solución de Error 403 Forbidden:** Se ha solucionado el error 403 Forbidden al enviar solicitudes POST a `/usuarios`.
+- **Registro de Vendedores:** Se ha modificado el controlador `createUser` para registrar un nuevo vendedor en la tabla `vendedores` si se selecciona el rol de "vendedor". Los atributos registrados son `estado_vendedor_id`, `persona_id`, y `vendedor_fecha_ingreso`.
+
+### Backend:
+- **usuarios.controller.js:** Modificado para incluir la lógica de registro de vendedores cuando se selecciona el rol de "vendedor".
+
+### Frontend:
+- **FormularioRol.jsx:** Actualizado para utilizar un `<select>` con opción múltiple para la selección de roles.
+- **UsuariosCreate.jsx:** Actualizado para manejar la selección múltiple de roles y enviar los datos correctamente al backend.
+
 ## Conclusión
 
-El proyecto aXsFitt está en una etapa inicial, con los modulos de Login y Vendedores completados y con el modulo de Clientes que actualmente se encuentra en desarrollo. A pesar de los desafíos enfrentados debido a la falta de experiencia con las tecnologías elegidas, el sistema avanza con una base sólida que permitirá su crecimiento y escalabilidad en futuras entregas. Se continuará con el desarrollo para incorporar nuevas funcionalidades y mejorar la experiencia del usuario final.
+El proyecto aXsFitt está en una etapa inicial, con los módulos de Login y Vendedores completados y con el módulo de Clientes que actualmente se encuentra en desarrollo. A pesar de los desafíos enfrentados debido a la falta de experiencia con las tecnologías elegidas, el sistema avanza con una base sólida que permitirá su crecimiento y escalabilidad en futuras entregas. Se continuará con el desarrollo para incorporar nuevas funcionalidades y mejorar la experiencia del usuario final.
