@@ -7,16 +7,17 @@ import VendedorDetail from './pages/vendedores/VendedorDetail/VendedorDetail';
 import Navbar from './components/Navbar/Navbar';
 import VendedoresInactivosList from './pages/vendedores/VendedoresInactivosList/VendedoresInactivosList';
 import VendedorEdit from './pages/vendedores/VendedorEdit/VendedorEdit';
-import ProtectedRoute from './pages/ProtectedRoute';
 import Login from './pages/login/Login/Login';
 import SeleccionRol from './pages/login/SeleccionRol/SeleccionRol';
 import UsuariosList from './pages/usuarios/UsuariosList/UsuariosList';
 import UsuariosInactivosList from "./pages/usuarios/UsuariosInactivosList/UsuariosInactivosList";
+import Footer from './components/Footer/Footer';
+import UsuariosCreate from './pages/usuarios/UsuariosCreate/UsuariosCreate';
+import ProtectedRoute from './pages/ProtectedRoute';
+
+import 'bootstrap/dist/css/bootstrap.min.css';
 import './assets/styles/variables.css';
 import './assets/styles/pages.css';
-import Footer from './components/Footer/Footer';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import UsuariosCreate from './pages/usuarios/UsuariosCreate/UsuariosCreate';
 
 function App() {
   return (

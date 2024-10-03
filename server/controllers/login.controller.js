@@ -1,6 +1,7 @@
 import { pool } from '../db.js';
 import jwt from 'jsonwebtoken';
 import { SECRET_KEY } from '../config.js';
+import bcrypt from 'bcrypt';
 
 /* -------------------------------------------------------------------------- */
 /*                          LOGIN DEL USUARIO                                 */
@@ -9,22 +10,30 @@ export const login = async (req, res) => {
     const { email, password } = req.body; // Obtener email y contraseña del cuerpo de la solicitud
 
     try {
-        // Verificar si el usuario existe con el email, contraseña y que esté activo (estado_usuario_id = 1)
+        // Verificar si el usuario existe con el email y que esté activo (estado_usuario_id = 1)
         const [usuario] = await pool.query(
-            `SELECT u.usuario_id, p.persona_nombre, p.persona_apellido, u.usuario_email 
+            `SELECT u.usuario_id, p.persona_nombre, p.persona_apellido, u.usuario_email, u.usuario_pass 
             FROM usuarios u 
             JOIN personas p ON u.persona_id = p.persona_id 
             WHERE u.usuario_email = ? 
-              AND u.usuario_pass = ? 
               AND u.estado_usuario_id = 1`, 
-            [email, password]
+            [email]
         );
 
         if (usuario.length === 0) {
             return res.status(401).json({ message: 'Credenciales inválidas o usuario inactivo' });
         }
 
-        const userId = usuario[0].usuario_id;
+        const user = usuario[0];
+
+        // Comparar la contraseña proporcionada con la contraseña cifrada almacenada
+        const isMatch = await bcrypt.compare(password, user.usuario_pass);
+
+        if (!isMatch) {
+            return res.status(401).json({ message: 'Contraseña incorrecta' });
+        }
+
+        const userId = user.usuario_id;
 
         // Obtener los roles asociados al usuario
         const [roles] = await pool.query(
@@ -51,13 +60,12 @@ export const login = async (req, res) => {
                 rolNombre: role.rol_tipo_rol
             })),
             usuario: {
-                nombre: usuario[0].persona_nombre,
-                apellido: usuario[0].persona_apellido,
-                email: usuario[0].usuario_email,
+                nombre: user.persona_nombre,
+                apellido: user.persona_apellido,
+                email: user.usuario_email,
             }
         });
     } catch (error) {
         return res.status(500).json({ message: error.message });
     }
 };
-

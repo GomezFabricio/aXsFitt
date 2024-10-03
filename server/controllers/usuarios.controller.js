@@ -1,3 +1,4 @@
+import bcrypt from 'bcrypt';
 import { pool } from '../db.js';
 import { createPersona, updatePersona } from './personas.controller.js';
 
@@ -17,10 +18,14 @@ export const createUser = async (req, res) => {
             personaId = personaResponse.id;
         }
 
+        // Cifrar la contraseña del usuario
+        const saltRounds = 10;
+        const hashedPassword = await bcrypt.hash(usuario.usuario_pass, saltRounds);
+
         // Inserta los datos del usuario usando el persona_id
         const [usuarioResult] = await pool.query(
             "INSERT INTO `usuarios` (`persona_id`, `usuario_email`, `usuario_pass`, `estado_usuario_id`) VALUES (?, ?, ?, ?)",
-            [personaId, usuario.usuario_email, usuario.usuario_pass, usuario.estado_usuario_id || 1]
+            [personaId, usuario.usuario_email, hashedPassword, usuario.estado_usuario_id || 1]
         );
 
         const usuarioId = usuarioResult.insertId;
@@ -56,7 +61,7 @@ export const createUser = async (req, res) => {
 export const getAllUsers = async (req, res) => {
     try {
         const [rows] = await pool.query(
-            `SELECT u.usuario_id, u.persona_id, p.persona_nombre, p.persona_apellido, p.persona_dni, u.usuario_email, u.estado_usuario_id, r.rol_tipo_rol
+            `SELECT u.usuario_id, u.persona_id, p.persona_nombre, p.persona_apellido, p.persona_dni, u.usuario_email, u.usuario_pass, u.estado_usuario_id, r.rol_tipo_rol
             FROM usuarios u
             JOIN personas p ON u.persona_id = p.persona_id
             JOIN usuarios_roles ur ON u.usuario_id = ur.usuario_id
@@ -64,18 +69,17 @@ export const getAllUsers = async (req, res) => {
             WHERE u.estado_usuario_id = 1`
         );
 
+        // No decodificar la contraseña, solo devolverla cifrada
         res.json(rows);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
 }
 
-// Funcion para obtener todos los usuarios inactivos incluso con los datos de la persona asociada y sus roles
-
 export const getInactiveUsers = async (req, res) => {
     try {
         const [rows] = await pool.query(
-            `SELECT u.usuario_id, u.persona_id, p.persona_nombre, p.persona_apellido, p.persona_dni, u.usuario_email, u.estado_usuario_id, r.rol_tipo_rol
+            `SELECT u.usuario_id, u.persona_id, p.persona_nombre, p.persona_apellido, p.persona_dni, u.usuario_email, u.usuario_pass, u.estado_usuario_id, r.rol_tipo_rol
             FROM usuarios u
             JOIN personas p ON u.persona_id = p.persona_id
             JOIN usuarios_roles ur ON u.usuario_id = ur.usuario_id
@@ -83,6 +87,7 @@ export const getInactiveUsers = async (req, res) => {
             WHERE u.estado_usuario_id = 2`
         );
 
+        // No decodificar la contraseña, solo devolverla cifrada
         res.json(rows);
     } catch (error) {
         res.status(500).json({ message: error.message });
