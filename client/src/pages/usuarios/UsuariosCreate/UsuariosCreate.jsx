@@ -4,6 +4,8 @@ import FormularioPersona from '../../../components/FormularioPersona/FormularioP
 import FormularioUsuario from '../../../components/FormularioUsuario/FormularioUsuario';
 import FormularioRol from '../../../components/FormularioRol/FormularioRol';
 import { createUsuarioRequest, getRolesRequest } from '../../../api/usuarios.api';
+import './UsuariosCreate.css';
+import '../../../assets/styles/buttons.css';
 
 const UsuariosCreate = () => {
     const [persona, setPersona] = useState({
@@ -73,10 +75,10 @@ const UsuariosCreate = () => {
                 <div>
                     <FormularioUsuario values={usuario} handleChange={handleUsuarioChange} />
                     <FormularioRol roles={roles} selectedRoles={selectedRoles} setSelectedRoles={setSelectedRoles} />
-                    <button className="anterior-button" onClick={handlePreviousStep}>
+                    <button className="page-anterior-button" onClick={handlePreviousStep}>
                         Anterior
                     </button>
-                    <button className="agregar-button" onClick={handleAltaClick} disabled={selectedRoles.length === 0}>
+                    <button className="alta-button" onClick={handleAltaClick} disabled={selectedRoles.length === 0}>
                         Agregar Usuario
                     </button>
                 </div>

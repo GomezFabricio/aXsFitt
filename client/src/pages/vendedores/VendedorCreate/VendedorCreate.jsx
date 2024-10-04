@@ -5,10 +5,19 @@ import { createVendedorRequest } from '../../../api/vendedores.api';
 import FormularioPersona from '../../../components/FormularioPersona/FormularioPersona';
 import FormularioUsuario from '../../../components/FormularioUsuario/FormularioUsuario';
 import './VendedorCreate.css';
+import '../../../assets/styles/buttons.css';
 
 const VendedorCreate = () => {
   const [step, setStep] = useState(1);
   const navigate = useNavigate();
+
+  const handleNextStep = () => {
+    setStep(step + 1);
+  };
+
+  const handlePreviousStep = () => {
+    setStep(step - 1);
+  };
 
   return (
     <div className="container-page">
@@ -31,7 +40,7 @@ const VendedorCreate = () => {
             if (step === 1) {
               // Guardar datos en localStorage y pasar al siguiente paso
               localStorage.setItem('personaData', JSON.stringify(values));
-              setStep(2);
+              handleNextStep();
             } else {
               const personaData = JSON.parse(localStorage.getItem('personaData'));
               const usuarioData = {
@@ -51,21 +60,31 @@ const VendedorCreate = () => {
         {({ values, handleChange, setFieldValue }) => (
           <Form className="form">
             {step === 1 ? (
-              <FormularioPersona 
-                handleChange={handleChange} 
-                setFieldValue={setFieldValue} // Pasa setFieldValue
-                values={values} // Pasa los valores actuales
-              />
+              <div>
+                <FormularioPersona 
+                  handleChange={handleChange} 
+                  setFieldValue={setFieldValue} // Pasa setFieldValue
+                  values={values} // Pasa los valores actuales
+                />
+                <button type="button" className="siguiente-button" onClick={handleNextStep}>
+                  Siguiente
+                </button>
+              </div>
             ) : (
-              <FormularioUsuario 
-                handleChange={handleChange} 
-                setFieldValue={setFieldValue} 
-                values={values} 
-              />
+              <div>
+                <FormularioUsuario 
+                  handleChange={handleChange} 
+                  setFieldValue={setFieldValue} 
+                  values={values} 
+                />
+                <button type="button" className="page-anterior-button" onClick={handlePreviousStep}>
+                  Anterior
+                </button>
+                <button type="submit" className="alta-button">
+                  Finalizar Registro
+                </button>
+              </div>
             )}
-            <button type='submit' className="btn">
-              {step === 1 ? 'Siguiente' : 'Finalizar Registro'}
-            </button>
           </Form>
         )}
       </Formik>
