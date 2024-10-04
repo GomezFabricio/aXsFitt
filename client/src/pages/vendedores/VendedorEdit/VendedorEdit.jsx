@@ -4,6 +4,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { getVendedorRequest, updateVendedorRequest } from '../../../api/vendedores.api';
 import FormularioPersona from '../../../components/FormularioPersona/FormularioPersona';
 import './VendedorEdit.css';
+import '../../../assets/styles/buttons.css'; // Asegúrate de importar el archivo de estilos
 
 const VendedorEdit = () => {
   const navigate = useNavigate();
@@ -49,7 +50,7 @@ const VendedorEdit = () => {
           try {
             // Enviar la solicitud con los nuevos datos
             await updateVendedorRequest(id, values);
-            navigate('/vendedores'); // Redirigir a la URL "/" después de finalizar el registro
+            navigate('/vendedores'); // Redirigir a la URL "/vendedores" después de finalizar el registro
           } catch (error) {
             console.log(error);
           }
@@ -59,7 +60,7 @@ const VendedorEdit = () => {
           <Form className="form">
             <FormularioPersona handleChange={handleChange} values={values} />
 
-            <button type='submit' className="btn">
+            <button type='submit' className="actualizar-button">
               Actualizar
             </button>
           </Form>

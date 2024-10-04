@@ -19,6 +19,7 @@ export const getVendedorRequest = async (id) => {
 };
 
 export const createVendedorRequest = async (data) => {
+    console.log('Datos enviados a la API para crear vendedor:', data); // Agrega esta línea para depurar
     await axios.post('http://localhost:4000/vendedores', data, config);
 };
 

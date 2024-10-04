@@ -11,7 +11,8 @@ const VendedorCreate = () => {
   const [step, setStep] = useState(1);
   const navigate = useNavigate();
 
-  const handleNextStep = () => {
+  const handleNextStep = (values) => {
+    localStorage.setItem('personaData', JSON.stringify(values));
     setStep(step + 1);
   };
 
@@ -39,8 +40,7 @@ const VendedorCreate = () => {
           try {
             if (step === 1) {
               // Guardar datos en localStorage y pasar al siguiente paso
-              localStorage.setItem('personaData', JSON.stringify(values));
-              handleNextStep();
+              handleNextStep(values);
             } else {
               const personaData = JSON.parse(localStorage.getItem('personaData'));
               const usuarioData = {
@@ -66,7 +66,7 @@ const VendedorCreate = () => {
                   setFieldValue={setFieldValue} // Pasa setFieldValue
                   values={values} // Pasa los valores actuales
                 />
-                <button type="button" className="siguiente-button" onClick={handleNextStep}>
+                <button type="button" className="siguiente-button" onClick={() => handleNextStep(values)}>
                   Siguiente
                 </button>
               </div>

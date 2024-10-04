@@ -1,10 +1,11 @@
-import bcrypt from 'bcrypt';
+// controllers/usuarios.controller.js
 import { pool } from '../db.js';
-import { createPersona, updatePersona } from './personas.controller.js';
+import bcrypt from 'bcrypt';
+import { createPersona } from './personas.controller.js';
 
 export const createUser = async (req, res) => {
     try {
-        const { persona, usuario, roles } = req.body;
+        const { persona, usuario, roles } = req.body || req;
         console.log('Datos recibidos en el servidor:', { persona, usuario, roles });
 
         let personaId = persona.persona_id;
@@ -49,10 +50,18 @@ export const createUser = async (req, res) => {
             }
         }
 
-        res.status(201).json({ id: usuarioId, persona_id: personaId });
+        if (res) {
+            res.status(201).json({ id: usuarioId, persona_id: personaId });
+        } else {
+            return { id: usuarioId, persona_id: personaId };
+        }
     } catch (error) {
         console.error('Error al crear el usuario:', error);
-        res.status(500).json({ message: 'Error al crear el usuario: ' + error.message });
+        if (res) {
+            res.status(500).json({ message: 'Error al crear el usuario: ' + error.message });
+        } else {
+            throw error;
+        }
     }
 };
 

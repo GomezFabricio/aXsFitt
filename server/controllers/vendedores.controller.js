@@ -111,6 +111,8 @@ export const getVendedor = async (req, res) => {
 /* -------------------------------------------------------------------------- */
 export const createVendedor = async (req, res) => {
     try {
+        console.log('Datos recibidos en createVendedor:', req.body); // Agrega esta línea para depurar
+
         const { personaData, usuarioData } = req.body;
 
         // Validar los datos aquí
@@ -124,7 +126,13 @@ export const createVendedor = async (req, res) => {
             return res.status(500).json({ message: 'Error al crear la persona.' });
         }
 
-        const usuarioResponse = await createUser({ ...usuarioData, persona_id: personaResponse.id });
+        const usuarioRequestData = {
+            persona: personaData,
+            usuario: usuarioData,
+            roles: [2] // Asumiendo que el rol de "vendedor" tiene el ID 2
+        };
+
+        const usuarioResponse = await createUser({ body: usuarioRequestData });
         if (!usuarioResponse || !usuarioResponse.id) {
             console.error('Error al crear el usuario.');
             return res.status(500).json({ message: 'Error al crear el usuario.' });

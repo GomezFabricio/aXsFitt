@@ -1,6 +1,6 @@
 /* src/assets/styles/buttons.css */
 
-.siguiente-button, .page-anterior-button, .alta-button {
+.siguiente-button, .page-anterior-button, .alta-button, .actualizar-button {
   border: none;
   color: white;
   padding: 12px 24px;
@@ -39,5 +39,14 @@
 
 .alta-button:hover {
   background-color: #007bb5;
+  transform: translateY(-2px);
+}
+
+.actualizar-button {
+  background-color: #FFA500; /* Naranja */
+}
+
+.actualizar-button:hover {
+  background-color: #FF8C00;
   transform: translateY(-2px);
 }
