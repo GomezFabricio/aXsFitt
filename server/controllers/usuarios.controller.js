@@ -66,11 +66,10 @@ export const createUser = async (req, res) => {
 };
 
 // Funcion para obtener todos los usuarios, incluso los datos de la persona asociada, sus roles y con el estado activo
-
 export const getAllUsers = async (req, res) => {
     try {
         const [rows] = await pool.query(
-            `SELECT u.usuario_id, u.persona_id, p.persona_nombre, p.persona_apellido, p.persona_dni, u.usuario_email, u.usuario_pass, u.estado_usuario_id, r.rol_tipo_rol
+            `SELECT u.usuario_id, u.persona_id, p.persona_nombre, p.persona_apellido, p.persona_dni, u.usuario_email, u.estado_usuario_id, r.rol_tipo_rol
             FROM usuarios u
             JOIN personas p ON u.persona_id = p.persona_id
             JOIN usuarios_roles ur ON u.usuario_id = ur.usuario_id
@@ -78,7 +77,6 @@ export const getAllUsers = async (req, res) => {
             WHERE u.estado_usuario_id = 1`
         );
 
-        // No decodificar la contraseña, solo devolverla cifrada
         res.json(rows);
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -88,7 +86,7 @@ export const getAllUsers = async (req, res) => {
 export const getInactiveUsers = async (req, res) => {
     try {
         const [rows] = await pool.query(
-            `SELECT u.usuario_id, u.persona_id, p.persona_nombre, p.persona_apellido, p.persona_dni, u.usuario_email, u.usuario_pass, u.estado_usuario_id, r.rol_tipo_rol
+            `SELECT u.usuario_id, u.persona_id, p.persona_nombre, p.persona_apellido, p.persona_dni, u.usuario_email, u.estado_usuario_id, r.rol_tipo_rol
             FROM usuarios u
             JOIN personas p ON u.persona_id = p.persona_id
             JOIN usuarios_roles ur ON u.usuario_id = ur.usuario_id
@@ -96,7 +94,6 @@ export const getInactiveUsers = async (req, res) => {
             WHERE u.estado_usuario_id = 2`
         );
 
-        // No decodificar la contraseña, solo devolverla cifrada
         res.json(rows);
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -133,28 +130,58 @@ export const getUserById = async (req, res) => {
 
 export const updateUser = async (req, res) => {
     const { id } = req.params;
+    const { persona, usuario, roles } = req.body;
 
     try {
-        const persona_id = req.body.persona_id;
-
-        const personaResult = await updatePersona(req);
-        if (!personaResult || !personaResult.affectedRows) {
-            return res.status(500).json({ message: 'Error al actualizar la persona.' });
-        }
-
-        const [result] = await pool.query(
-            `UPDATE usuarios 
-            SET ?
-            WHERE usuario_id = ?`,
-            [
-                req.body,
-                id
-            ]
+        // Consulta SQL para obtener el ID de la persona asociado al usuario
+        const [user] = await pool.query(
+            `SELECT persona_id FROM usuarios WHERE usuario_id = ?`, [id]
         );
 
-        return res.json({ message: 'Usuario actualizado' });
+        // Verificar si el usuario existe
+        if (user.length === 0) {
+            return res.status(404).json({ message: 'Usuario a actualizar no encontrado' });
+        }
+
+        const personaId = user[0].persona_id;
+
+        // Actualizar la información de la persona
+        req.params.id = personaId;
+        req.body = persona;
+        await updatePersona(req);
+
+        // Actualizar la información del usuario
+        const { usuario_email, estado_usuario_id } = usuario;
+
+        const updateUserQuery = `
+            UPDATE usuarios 
+            SET 
+                usuario_email = ?, 
+                estado_usuario_id = ?
+            WHERE usuario_id = ?
+        `;
+
+        const updateUserParams = [
+            usuario_email,
+            estado_usuario_id,
+            id
+        ];
+
+        await pool.query(updateUserQuery, updateUserParams);
+
+        // Actualizar los roles del usuario
+        await pool.query("DELETE FROM usuarios_roles WHERE usuario_id = ?", [id]);
+        for (const rolId of roles) {
+            await pool.query(
+                "INSERT INTO usuarios_roles (usuario_id, rol_id) VALUES (?, ?)",
+                [id, rolId]
+            );
+        }
+
+        res.status(200).json({ message: 'Usuario actualizado exitosamente' });
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        console.error('Error actualizando usuario:', error);
+        res.status(500).json({ message: 'Error al actualizar el usuario', error: error.message });
     }
 }
     
