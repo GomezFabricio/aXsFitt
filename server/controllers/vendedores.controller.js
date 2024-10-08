@@ -111,33 +111,34 @@ export const getVendedor = async (req, res) => {
 /* -------------------------------------------------------------------------- */
 export const createVendedor = async (req, res) => {
     try {
-        console.log('Datos recibidos en createVendedor:', req.body); // Agrega esta línea para depurar
+        console.log('Datos recibidos en createVendedor:', req.body);
 
         const { personaData, usuarioData } = req.body;
 
         // Validar los datos aquí
         if (!personaData || !usuarioData) {
-            return res.status(400).json({ message: 'Datos incompletos.' });
+            return res.status(400).json({ message: 'Datos incompletos' });
         }
 
+        // Crear la persona
         const personaResponse = await createPersona(personaData);
         if (!personaResponse || !personaResponse.id) {
-            console.error('Error al crear la persona.');
-            return res.status(500).json({ message: 'Error al crear la persona.' });
+            return res.status(500).json({ message: 'Error al crear la persona' });
         }
 
+        // Crear el usuario
         const usuarioRequestData = {
-            persona: personaData,
+            persona: { persona_id: personaResponse.id },
             usuario: usuarioData,
-            roles: [2] // Asumiendo que el rol de "vendedor" tiene el ID 2
+            roles: [2] // Asignar el rol de vendedor
         };
 
         const usuarioResponse = await createUser({ body: usuarioRequestData });
         if (!usuarioResponse || !usuarioResponse.id) {
-            console.error('Error al crear el usuario.');
-            return res.status(500).json({ message: 'Error al crear el usuario.' });
+            return res.status(500).json({ message: 'Error al crear el usuario' });
         }
 
+        // Crear el vendedor
         const estado_vendedor_id = 1;
         const fecha_ingreso = new Date();
 
@@ -145,8 +146,6 @@ export const createVendedor = async (req, res) => {
             "INSERT INTO `vendedores` (`persona_id`, `estado_vendedor_id`, `vendedor_fecha_ingreso`) VALUES (?, ?, ?)",
             [personaResponse.id, estado_vendedor_id, fecha_ingreso]
         );
-
-        await asignarRolUsuario(usuarioResponse.id, 'Vendedor');
 
         res.json({
             id: vendedorResult.insertId,

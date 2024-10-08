@@ -14,7 +14,7 @@ export const createUser = async (req, res) => {
         if (!personaId) {
             const personaResponse = await createPersona(persona);
             if (!personaResponse || !personaResponse.id) {
-                throw new Error('Error al crear la persona.');
+                throw new Error('Error al crear la persona');
             }
             personaId = personaResponse.id;
         }
@@ -37,28 +37,17 @@ export const createUser = async (req, res) => {
                 "INSERT INTO `usuarios_roles` (`usuario_id`, `rol_id`) VALUES (?, ?)",
                 [usuarioId, rolId]
             );
-
-            // Si el rol es "vendedor", también inserta en la tabla "vendedores"
-            if (rolId === 2) { // Asumiendo que el rol de "vendedor" tiene el ID 2
-                const estadoVendedorId = 1; // Estado inicial del vendedor
-                const vendedorFechaIngreso = new Date().toISOString().split('T')[0]; // Fecha de hoy en formato YYYY-MM-DD
-
-                await pool.query(
-                    "INSERT INTO `vendedores` (`persona_id`, `estado_vendedor_id`, `vendedor_fecha_ingreso`) VALUES (?, ?, ?)",
-                    [personaId, estadoVendedorId, vendedorFechaIngreso]
-                );
-            }
         }
 
         if (res) {
-            res.status(201).json({ id: usuarioId, persona_id: personaId });
+            res.json({ id: usuarioId });
         } else {
-            return { id: usuarioId, persona_id: personaId };
+            return { id: usuarioId };
         }
     } catch (error) {
         console.error('Error al crear el usuario:', error);
         if (res) {
-            res.status(500).json({ message: 'Error al crear el usuario: ' + error.message });
+            res.status(500).json({ message: 'Error al crear el usuario', error: error.message });
         } else {
             throw error;
         }
