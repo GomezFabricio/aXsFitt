@@ -184,7 +184,7 @@ export const updateUser = async (req, res) => {
 
         const updateUserParams = [
             usuario_email,
-            estado_usuario_id,
+            estado_usuario_id || 1, // Asegúrate de enviar un estado válido
             id
         ];
 
