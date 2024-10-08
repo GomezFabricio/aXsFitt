@@ -3,6 +3,7 @@ import './FormularioRol.css';
 
 const FormularioRol = ({ roles, selectedRoles, setSelectedRoles }) => {
     const handleRolesChange = (e) => {
+        // Convertir las opciones seleccionadas en un array de IDs de roles
         setSelectedRoles(Array.from(e.target.selectedOptions, (option) => parseInt(option.value)));
     };
 

@@ -13,6 +13,7 @@ import UsuariosList from './pages/usuarios/UsuariosList/UsuariosList';
 import UsuariosInactivosList from "./pages/usuarios/UsuariosInactivosList/UsuariosInactivosList";
 import Footer from './components/Footer/Footer';
 import UsuariosCreate from './pages/usuarios/UsuariosCreate/UsuariosCreate';
+import UsuarioEdit from './pages/usuarios/UsuariosEdit/UsuariosEdit';
 import ProtectedRoute from './pages/ProtectedRoute';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -125,6 +126,17 @@ function App() {
             <ProtectedRoute>
               <Navbar />
               <UsuariosCreate />
+              <Footer />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/usuarios/editar/:id" // Nueva ruta para editar usuario
+          element={
+            <ProtectedRoute>
+              <Navbar />
+              <UsuarioEdit />
               <Footer />
             </ProtectedRoute>
           }

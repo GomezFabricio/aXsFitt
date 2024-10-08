@@ -51,6 +51,11 @@ const UsuariosList = () => {
         navigate('/usuarios/inactivos');
     };
 
+    const handleEditClick = (id) => {
+        // Navegar a la página de edición de usuario
+        navigate(`/usuarios/editar/${id}`);
+    };
+
     return (
         <div className="container-page">
             <div className="header">
@@ -88,7 +93,7 @@ const UsuariosList = () => {
 
             <UsuariosListTable 
                 usuarios={filteredUsuarios} // Pasamos los usuarios filtrados
-                onEdit={() => {}}
+                onEdit={handleEditClick} // Pasamos la función handleEditClick
                 onBaja={handleBajaClick} // Pasamos la función handleBajaClick
             />
         </div>

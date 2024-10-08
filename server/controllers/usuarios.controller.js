@@ -1,7 +1,7 @@
 // controllers/usuarios.controller.js
 import { pool } from '../db.js';
 import bcrypt from 'bcrypt';
-import { createPersona } from './personas.controller.js';
+import { createPersona, updatePersona } from './personas.controller.js';
 
 export const createUser = async (req, res) => {
     try {
@@ -107,7 +107,7 @@ export const getUserById = async (req, res) => {
 
     try {
         const [rows] = await pool.query(
-            `SELECT u.usuario_id, u.persona_id, p.persona_nombre, p.persona_apellido, u.usuario_email, u.estado_usuario_id, r.rol_tipo_rol
+            `SELECT u.usuario_id, u.persona_id, p.persona_nombre, p.persona_apellido, p.persona_fecha_nacimiento, p.persona_telefono, p.persona_domicilio, p.persona_dni, u.usuario_email, u.estado_usuario_id, r.rol_tipo_rol
             FROM usuarios u
             JOIN personas p ON u.persona_id = p.persona_id
             JOIN usuarios_roles ur ON u.usuario_id = ur.usuario_id
@@ -120,7 +120,28 @@ export const getUserById = async (req, res) => {
             return res.status(404).json({ message: 'Usuario no encontrado' });
         }
 
-        res.json(rows[0]);
+        // Agrupar los roles en un solo objeto de usuario
+        const user = rows.reduce((acc, row) => {
+            if (!acc.usuario_id) {
+                acc = {
+                    usuario_id: row.usuario_id,
+                    persona_id: row.persona_id,
+                    persona_nombre: row.persona_nombre,
+                    persona_apellido: row.persona_apellido,
+                    persona_fecha_nacimiento: row.persona_fecha_nacimiento,
+                    persona_telefono: row.persona_telefono,
+                    persona_domicilio: row.persona_domicilio,
+                    persona_dni: row.persona_dni,
+                    usuario_email: row.usuario_email,
+                    estado_usuario_id: row.estado_usuario_id,
+                    roles: []
+                };
+            }
+            acc.roles.push(row.rol_tipo_rol);
+            return acc;
+        }, {});
+
+        res.json(user);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
