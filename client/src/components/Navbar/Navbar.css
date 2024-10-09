@@ -11,10 +11,15 @@
     list-style: none;
     display: flex;
     gap: 30px;
-    justify-content: center;
+    justify-content: center; 
     align-items: center;
     margin-bottom: 0;
     flex-grow: 1;
+    padding: 0;
+    margin: 0; 
+    position: absolute; 
+    left: 50%; 
+    transform: translateX(-50%); 
 }
 
 .navbar ul li {
@@ -30,7 +35,7 @@
 .user-menu {
     display: flex;
     align-items: center;
-    position: relative;
+    margin-left: auto; 
 }
 
 .user-dropdown {

@@ -5,9 +5,9 @@
 }
 
 .container-page > h1 {
-    font-size: 48px;
+    font-size: 40px;
     color: var(--color-principal);
-    font-weight: 400;
+    font-weight: 300;
     text-align: center;
     margin-bottom: 20px;
 }
