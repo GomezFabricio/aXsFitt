@@ -27,20 +27,58 @@
     font-size: 20px;
 }
 
-.cambiar-rol-button {
-    background-color: var(--color-principal);
-    color: #fff;
-    border: none;
-    padding: 10px 20px;
-    font-size: 16px;
-    cursor: pointer;
-    border-radius: 5px;
-    position: absolute;
-    right: 0;
+.user-menu {
+    display: flex;
+    align-items: center;
+    position: relative;
 }
 
-.cambiar-rol-button:hover {
+.user-dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.user-button {
+    background-color: var(--color-principal);
+    color: white;
+    padding: 10px 20px;
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.user-button:hover {
     background-color: #872a87;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    right: 0;
+    background-color: white;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+}
+
+.user-dropdown:hover .dropdown-content {
+    display: block;
+}
+
+.dropdown-content a, .dropdown-content button {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+    border: none;
+    background: none;
+    width: 100%;
+    text-align: left;
+}
+
+.dropdown-content a:hover, .dropdown-content button:hover {
+    background-color: #f1f1f1;
 }
 
 .error {

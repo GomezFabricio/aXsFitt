@@ -1,30 +1,52 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { jwtDecode } from 'jwt-decode'; 
 import './NavBar.css';
 
 const NavBar = () => {
     const [menuOptions, setMenuOptions] = useState([]);
-    const [error, setError] = useState(null); // Estado para almacenar errores
-    const navigate = useNavigate(); // Hook para navegar a otra página
+    const [error, setError] = useState(null);
+    const [user, setUser] = useState(null);
+    const [dropdownVisible, setDropdownVisible] = useState(false);
+    const navigate = useNavigate();
 
     useEffect(() => {
         // Recuperar las opciones del menú desde localStorage
         const storedMenuOptions = localStorage.getItem('menuOptions');
         if (storedMenuOptions) {
-            setMenuOptions(JSON.parse(storedMenuOptions)); // Guardar las opciones en el estado
+            setMenuOptions(JSON.parse(storedMenuOptions));
         } else {
-            setError('No hay opciones de menú disponibles'); // Almacenar un mensaje de error
+            setError('No hay opciones de menú disponibles');
         }
-    }, []); // Solo se ejecuta al montar el componente
 
-    // Función para manejar el click en "Cambiar Rol"
-    const handleCambiarRol = () => {
-        navigate('/seleccion-rol'); // Navegar a la página de cambiar rol
+        // Recuperar el token desde localStorage y decodificarlo
+        const token = localStorage.getItem('token');
+        if (token) {
+            try {
+                const decodedToken = jwtDecode(token);
+                setUser({
+                    firstName: decodedToken.firstName,
+                    lastName: decodedToken.lastName,
+                });
+            } catch (err) {
+                console.error('Error al decodificar el token:', err);
+            }
+        }
+    }, []);
+
+    const handleLogout = () => {
+        localStorage.removeItem('token');
+        localStorage.removeItem('menuOptions');
+        navigate('/login');
+    };
+
+    const toggleDropdown = () => {
+        setDropdownVisible(!dropdownVisible);
     };
 
     return (
         <nav className="navbar">
-            {error && <p className="error">{error}</p>} {/* Mostrar mensaje de error si ocurre */}
+            {error && <p className="error">{error}</p>}
             <ul>
                 {menuOptions.length > 0 ? (
                     menuOptions.map((option, index) => (
@@ -38,10 +60,23 @@ const NavBar = () => {
                     <li>Cargando opciones...</li>
                 )}
             </ul>
-            {/* Botón Cambiar Rol */}
-            <button className="cambiar-rol-button" onClick={handleCambiarRol}>
-                Cambiar Rol
-            </button>
+            <div className="user-menu">
+                {user && (
+                    <div className="user-dropdown">
+                        <button className="user-button" onClick={toggleDropdown}>
+                            {user.firstName} {user.lastName}
+                        </button>
+                        {dropdownVisible && (
+                            <div className="dropdown-content">
+                                <Link to="/mi-perfil">Mi perfil</Link>
+                                <Link to="/seguridad-privacidad">Seguridad y Privacidad</Link>
+                                <Link to="/seleccion-rol">Roles</Link>
+                                <button onClick={handleLogout}>Salir</button>
+                            </div>
+                        )}
+                    </div>
+                )}
+            </div>
         </nav>
     );
 };
