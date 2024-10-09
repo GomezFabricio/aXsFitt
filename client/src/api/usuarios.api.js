@@ -65,3 +65,11 @@ export const getRolesRequest = async () => {
     console.log('Respuesta recibida:', response.data);
     return response;
 };
+
+// Nueva función para obtener los roles de un usuario por ID
+export const getRolesByUserIdRequest = async (userId) => {
+    console.log(`Enviando solicitud GET a /roles/${userId}`);
+    const response = await axios.get(`http://localhost:4000/roles/${userId}`, config);
+    console.log('Respuesta recibida:', response.data);
+    return response;
+};
