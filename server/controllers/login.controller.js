@@ -12,9 +12,9 @@ export const login = async (req, res) => {
     try {
         // Verificar si el usuario existe con el email y que esté activo (estado_usuario_id = 1)
         const [usuario] = await pool.query(
-            `SELECT u.usuario_id, p.persona_nombre, p.persona_apellido, u.usuario_email, u.usuario_pass 
-            FROM usuarios u 
-            JOIN personas p ON u.persona_id = p.persona_id 
+            `SELECT u.usuario_id, u.persona_id, p.persona_nombre, p.persona_apellido, p.persona_dni, u.usuario_email, u.usuario_pass, u.estado_usuario_id
+            FROM usuarios u
+            JOIN personas p ON u.persona_id = p.persona_id
             WHERE u.usuario_email = ? 
               AND u.estado_usuario_id = 1`, 
             [email]
@@ -48,22 +48,19 @@ export const login = async (req, res) => {
             return res.status(403).json({ message: 'No tiene roles asignados' });
         }
 
-        // Generar un token JWT
-        const token = jwt.sign({ userId, roles: roles.map(role => role.rol_id) }, SECRET_KEY, { expiresIn: '2h' });
+        // Generar un token JWT con solo el userId
+        const token = jwt.sign({
+            userId: user.usuario_id,
+        }, SECRET_KEY, { expiresIn: '2h' });
 
-        // Devolver el token, los roles y la información del usuario
+        // Devolver solo el token y los roles
         res.json({
             message: 'Login exitoso',
             token,
             roles: roles.map(role => ({
                 rolId: role.rol_id,
                 rolNombre: role.rol_tipo_rol
-            })),
-            usuario: {
-                nombre: user.persona_nombre,
-                apellido: user.persona_apellido,
-                email: user.usuario_email,
-            }
+            }))
         });
     } catch (error) {
         return res.status(500).json({ message: error.message });
