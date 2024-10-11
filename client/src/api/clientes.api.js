@@ -43,10 +43,11 @@ export const updateClienteRequest = async (id, updatedCliente) => {
   }
 };
 
-// Eliminar un cliente
+// Eliminar un cliente (lógica: cambiar a estado inactivo)
 export const deleteClienteRequest = async (id) => {
-  return await axios.delete(`http://localhost:4000/clientes/${id}`, config);
+  return await axios.put(`http://localhost:4000/clientes/${id}/baja`, null, config);
 };
+
 
 // Desactivar un cliente (opcional si tienes esta funcionalidad)
 export const deactivateCliente = async (id) => {

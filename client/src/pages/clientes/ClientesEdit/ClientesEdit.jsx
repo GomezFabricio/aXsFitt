@@ -9,8 +9,9 @@ function ClientesEdit() {
         persona_apellido: '',
         persona_dni: '',
         persona_telefono: '',
-        persona_email: '',  
-        cliente_fecha_afiliacion: '',
+        persona_email: '',
+        persona_fecha_nacimiento: '',  // Nuevo campo
+        usuario_pass: '',  // Nuevo campo para la contraseña
         estado_afiliacion_id: 1, 
     });
 
@@ -23,13 +24,18 @@ function ClientesEdit() {
             try {
                 const response = await getClienteRequest(id);
                 if (response && response.data) {
+                    const fechaNacimiento = response.data.persona_fecha_nacimiento 
+                        ? new Date(response.data.persona_fecha_nacimiento).toISOString().split('T')[0] 
+                        : '';
+                    
                     setCliente({
                         persona_nombre: response.data.persona_nombre,
                         persona_apellido: response.data.persona_apellido,
                         persona_dni: response.data.persona_dni,
                         persona_telefono: response.data.persona_telefono,
-                        persona_email: response.data.usuario_email || '',  // Asegurarse de obtener el email
-                        cliente_fecha_afiliacion: response.data.cliente_fecha_alta || '',
+                        persona_email: response.data.usuario_email || '',
+                        persona_fecha_nacimiento: fechaNacimiento,  // Convertir fecha al formato adecuado
+                        usuario_pass: '',  // Dejar la contraseña vacía inicialmente
                         estado_afiliacion_id: response.data.estado_afiliacion_id || 1,
                     });
                 } else {
@@ -41,6 +47,7 @@ function ClientesEdit() {
         }
         loadCliente();
     }, [id]);
+    
 
     // Función para manejar cambios en los inputs
     const handleChange = (e) => {
@@ -51,23 +58,25 @@ function ClientesEdit() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            // Preparar los datos para actualizar
+            // Asegúrate de enviar la fecha en el formato adecuado
             const updatedData = {
                 persona_nombre: cliente.persona_nombre,
                 persona_apellido: cliente.persona_apellido,
                 persona_dni: cliente.persona_dni,
                 persona_telefono: cliente.persona_telefono,
                 persona_email: cliente.persona_email,
+                persona_fecha_nacimiento: cliente.persona_fecha_nacimiento,  // Enviar la fecha en formato 'YYYY-MM-DD'
+                usuario_pass: cliente.usuario_pass,
                 estado_afiliacion_id: cliente.estado_afiliacion_id,
             };
-
-            await updateClienteRequest(id, updatedData);  
-            alert('Cliente actualizado correctamente');  
-            navigate('/clientes');  
+    
+            await updateClienteRequest(id, updatedData);
+            alert('Cliente actualizado correctamente');
+            navigate('/clientes');
         } catch (error) {
             console.error("Error actualizando el cliente:", error);
         }
-    };
+    };    
 
     return (
         <div>
@@ -110,10 +119,16 @@ function ClientesEdit() {
                 />
                 <input
                     type="date"
-                    name="cliente_fecha_afiliacion"
-                    value={cliente.cliente_fecha_afiliacion || ''}  
+                    name="persona_fecha_nacimiento"
+                    value={cliente.persona_fecha_nacimiento || ''}
                     onChange={handleChange}
-                    disabled  // Deshabilitado si no es editable
+                />
+                <input
+                    type="password"
+                    name="usuario_pass"
+                    placeholder="Nueva contraseña (opcional)"
+                    value={cliente.usuario_pass}
+                    onChange={handleChange}
                 />
                 <select
                     name="estado_afiliacion_id"

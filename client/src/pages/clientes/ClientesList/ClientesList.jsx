@@ -9,24 +9,48 @@ function ClientesList() {
 
     useEffect(() => {
         async function loadClientes() {
+          try {
+            const response = await getClientesRequest();
+            setClientes(response.data);
+          } catch (error) {
+            console.error('Error al cargar la lista de clientes:', error);
+          }
+        }
+      
+        loadClientes();
+      }, []);
+      
+
+    // Función para cargar los clientes desde la API
+    const loadClientes = async () => {
+        try {
             const response = await getClientesRequest();
             console.log(response.data);  // Verificar los datos devueltos
             setClientes(response.data);
-        }
-        loadClientes();
-    }, []);
-
-    // Función para eliminar un cliente
-    const handleDelete = async (id) => {
-        if (window.confirm('¿Estás seguro de que deseas eliminar este cliente?')) {
-            try {
-                await deleteClienteRequest(id);
-                setClientes(clientes.filter(cliente => cliente.cliente_id !== id));
-            } catch (error) {
-                console.error('Error al eliminar el cliente:', error);
-            }
+        } catch (error) {
+            console.error('Error al cargar los clientes:', error);
         }
     };
+
+    // Función para inactivar un cliente
+    const handleDelete = async (id) => {
+        if (window.confirm('¿Estás seguro de que deseas inactivar este cliente?')) {
+          try {
+            const response = await deleteClienteRequest(id);
+            
+            if (response.status === 200) {
+              console.log('Cliente inactivado con éxito');
+              // Recargar la lista de clientes después de inactivar
+              loadClientes();  
+            } else {
+              console.error('Error al inactivar cliente:', response);
+            }
+          } catch (error) {
+            console.error('Error al inactivar cliente:', error);
+          }
+        }
+      };
+      
     
 
     return (
@@ -49,7 +73,7 @@ function ClientesList() {
                                 Editar
                             </button>
                             <button onClick={() => handleDelete(cliente.cliente_id)} className="btn-delete">
-                                Eliminar
+                                Inactivar
                             </button>
                         </div>
                     </li>
