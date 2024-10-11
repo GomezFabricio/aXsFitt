@@ -1,0 +1,31 @@
+.menu-en-inventario {
+    margin-bottom: 20px;
+}
+
+.menu-tabs {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    gap: 10px;
+}
+
+.menu-tabs li {
+    padding: 10px 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+}
+
+.menu-tabs li.active {
+    background-color: #007bff;
+    color: white;
+}
+
+.menu-tabs li a {
+    text-decoration: none;
+    color: inherit;
+}
+
+.menu-tabs li.active a {
+    color: white;
+}

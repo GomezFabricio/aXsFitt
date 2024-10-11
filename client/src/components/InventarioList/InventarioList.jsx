@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import 'datatables.net-dt/css/jquery.dataTables.css';
+import 'datatables.net-dt/css/dataTables.dataTables.css';
 import $ from 'jquery';
 import 'datatables.net';
 
@@ -15,24 +15,28 @@ const InventarioList = ({ productos }) => {
         <table id="inventarioTable" className="display">
             <thead>
                 <tr>
+                    <th>Código de Barras</th>
                     <th>Producto</th>
                     <th>Tipo</th>
                     <th>Marca</th>
                     <th>Cantidad</th>
                     <th>Precio Costo</th>
                     <th>Precio Venta</th>
+                    <th>Precio Afiliados</th>
                     <th>Acciones</th>
                 </tr>
             </thead>
             <tbody>
-                {productos.map((producto) => (
+                {Array.isArray(productos) && productos.map((producto) => (
                     <tr key={producto.producto_id}>
-                        <td>{producto.producto_descripcion}</td>
-                        <td>{producto.tipo_producto_id}</td>
-                        <td>{producto.marca_producto_id}</td>
-                        <td>{producto.inventario_cantidad}</td>
-                        <td>{producto.producto_precio_costo}</td>
-                        <td>{producto.precio_venta}</td>
+                        <td>{producto.CodigoBarras}</td>
+                        <td>{producto.Producto}</td>
+                        <td>{producto.Tipo}</td>
+                        <td>{producto.Marca}</td>
+                        <td>{producto.Cantidad}</td>
+                        <td>{producto.PrecioCosto}</td>
+                        <td>{producto.PrecioVenta}</td>
+                        <td>{producto.PrecioAfiliados}</td>
                         <td>
                             <button>
                                 <Link to={`/productos/${producto.producto_id}`}>Detalle</Link>

@@ -113,6 +113,7 @@ export const inventarioList = async (req, res) => {
     try {
         const [result] = await pool.query(`
             SELECT 
+                p.producto_codigo_barras AS CodigoBarras,
                 p.producto_descripcion AS Producto,
                 tp.tipo_producto_nombre AS Tipo,
                 mp.marca_producto_nombre AS Marca,

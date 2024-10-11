@@ -16,6 +16,8 @@ import UsuariosCreate from './pages/usuarios/UsuariosCreate/UsuariosCreate';
 import UsuarioEdit from './pages/usuarios/UsuariosEdit/UsuariosEdit';
 import ProtectedRoute from './pages/ProtectedRoute';
 
+import Inventario from './pages/inventario/Inventario/Inventario';
+
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './assets/styles/variables.css';
 import './assets/styles/pages.css';
@@ -137,6 +139,18 @@ function App() {
             <ProtectedRoute>
               <Navbar />
               <UsuarioEdit />
+              <Footer />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Rutas del módulo de inventario */}
+        <Route
+          path="/inventario"
+          element={
+            <ProtectedRoute>
+              <Navbar />
+              <Inventario />
               <Footer />
             </ProtectedRoute>
           }

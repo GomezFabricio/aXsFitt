@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { inventarioList } from '../../../api/inventario.api';
-import InventarioList from '../../../components/InventarioList';
+import InventarioList from '../../../components/InventarioList/InventarioList';
+import MenuEnInventario from '../../../components/MenuEnInventario/MenuEnInventario';
 import { useNavigate } from 'react-router-dom';
 import './Inventario.css';
 
@@ -14,6 +15,7 @@ const Inventario = () => {
                 setProductos(data);
             } catch (error) {
                 console.error('Error fetching inventario:', error);
+                setProductos([]); // Asegurarse de que productos sea un array en caso de error
             }
         };
 
@@ -37,6 +39,7 @@ const Inventario = () => {
                 </div>
             </div>
             <h2>En esta sección podrás ver y gestionar el inventario de productos.</h2>
+            <MenuEnInventario />
 
             <InventarioList productos={productos} />
         </div>
