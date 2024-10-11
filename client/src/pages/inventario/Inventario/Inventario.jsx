@@ -1,54 +1,46 @@
-import React, { useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import 'datatables.net-dt/css/jquery.dataTables.css';
-import $ from 'jquery';
-import 'datatables.net';
+import React, { useEffect, useState } from 'react';
+import { inventarioList } from '../../../api/inventario.api';
+import InventarioList from '../../../components/InventarioList';
+import { useNavigate } from 'react-router-dom';
+import './Inventario.css';
 
-const InventarioList = ({ productos }) => {
+const Inventario = () => {
+    const [productos, setProductos] = useState([]);
+
     useEffect(() => {
-        $(document).ready(function() {
-            $('#inventarioTable').DataTable();
-        });
+        const fetchInventario = async () => {
+            try {
+                const data = await inventarioList();
+                setProductos(data);
+            } catch (error) {
+                console.error('Error fetching inventario:', error);
+            }
+        };
+
+        fetchInventario();
     }, []);
 
+    const navigate = useNavigate();
+
+    const handleAgregarClick = () => {
+        navigate('/productos/nuevo'); // Navegamos a la página de agregar un nuevo producto
+    };
+
     return (
-        <table id="inventarioTable" className="display">
-            <thead>
-                <tr>
-                    <th>Producto</th>
-                    <th>Tipo</th>
-                    <th>Marca</th>
-                    <th>Cantidad</th>
-                    <th>Precio Costo</th>
-                    <th>Precio Venta</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                {productos.map((producto) => (
-                    <tr key={producto.producto_id}>
-                        <td>{producto.producto_descripcion}</td>
-                        <td>{producto.tipo_producto_id}</td>
-                        <td>{producto.marca_producto_id}</td>
-                        <td>{producto.inventario_cantidad}</td>
-                        <td>{producto.producto_precio_costo}</td>
-                        <td>{producto.precio_venta}</td>
-                        <td>
-                            <button>
-                                <Link to={`/productos/${producto.producto_id}`}>Detalle</Link>
-                            </button>
-                            <button>
-                                <Link to={`/productos/editar/${producto.producto_id}`}>Editar</Link>
-                            </button>
-                            <button>
-                                <Link to={`/productos/eliminar/${producto.producto_id}`}>Eliminar</Link>
-                            </button>
-                        </td>
-                    </tr>
-                ))}
-            </tbody>
-        </table>
+        <div className="container-page">
+            <div className="header">
+                <h1>Inventario</h1>
+                <div className="buttons-container">
+                    <button className="agregar-button" onClick={handleAgregarClick}>
+                        Agregar Producto
+                    </button>
+                </div>
+            </div>
+            <h2>En esta sección podrás ver y gestionar el inventario de productos.</h2>
+
+            <InventarioList productos={productos} />
+        </div>
     );
 };
 
-export default InventarioList;
+export default Inventario;

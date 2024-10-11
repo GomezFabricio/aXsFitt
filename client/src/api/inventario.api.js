@@ -67,6 +67,16 @@ export const listProductos = async () => {
     }
 };
 
+// Función para listar inventario con detalles
+export const inventarioList = async () => {
+    try {
+        const response = await axios.get('/inventario/inventario-list', config);
+        return response.data;
+    } catch (error) {
+        throw error.response.data;
+    }
+};
+
 // Funciones para stock
 export const registerStock = async (stock) => {
     try {
