@@ -199,7 +199,15 @@ export const deactivateCliente = async (req, res) => {
     const { id } = req.params;
 
     try {
-        await pool.query("UPDATE clientes SET estado_afiliacion_id = 2 WHERE cliente_id = ?", [id]);
+        const [result] = await pool.query(
+            "UPDATE clientes SET estado_afiliacion_id = 2 WHERE cliente_id = ?", 
+            [id]
+        );
+
+        // Verificar si el cliente fue encontrado y actualizado
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ message: 'Cliente no encontrado' });
+        }
 
         res.json({ message: 'Cliente inactivado exitosamente' });
     } catch (error) {

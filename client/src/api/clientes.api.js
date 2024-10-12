@@ -43,23 +43,24 @@ export const updateClienteRequest = async (id, updatedCliente) => {
   }
 };
 
-// Eliminar un cliente (lógica: cambiar a estado inactivo)
+// Eliminar un cliente (cambiar el estado a inactivo)
 export const deleteClienteRequest = async (id) => {
-  return await axios.put(`http://localhost:4000/clientes/${id}/baja`, null, config);
+  try {
+    const response = await axios.put(`http://localhost:4000/clientes/${id}/baja`, null, config);
+    return response.data;
+  } catch (error) {
+    console.error("Error al intentar inactivar al cliente:", error);
+    throw error;
+  }
 };
 
-
-// Desactivar un cliente (opcional si tienes esta funcionalidad)
-export const deactivateCliente = async (id) => {
-  return await axios.put(`http://localhost:4000/clientes/${id}/baja`, null, config);
-};
-
-// Obtener clientes inactivos (opcional si tienes esta funcionalidad)
-export const getClientesInactivosRequest = async () => {
-  return await axios.get('http://localhost:4000/clientes/inactivos', config);
-};
-
-// Activar un cliente inactivo (opcional si tienes esta funcionalidad)
+// Activar un cliente inactivo
 export const activateClienteRequest = async (id) => {
-  return await axios.put(`http://localhost:4000/clientes/${id}/activar`, null, config);
+  try {
+    const response = await axios.put(`http://localhost:4000/clientes/${id}/activar`, null, config);
+    return response.data;
+  } catch (error) {
+    console.error("Error al intentar activar al cliente:", error);
+    throw error;
+  }
 };
