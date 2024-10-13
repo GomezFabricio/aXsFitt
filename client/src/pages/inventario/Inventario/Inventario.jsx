@@ -15,7 +15,7 @@ const Inventario = () => {
                 setProductos(data);
             } catch (error) {
                 console.error('Error fetching inventario:', error);
-                setProductos([]); // Asegurarse de que productos sea un array en caso de error
+                setProductos([]);
             }
         };
 
