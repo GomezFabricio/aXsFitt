@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import 'datatables.net-dt/css/dataTables.dataTables.css';
 import $ from 'jquery';
 import 'datatables.net';
-import './InventarioList.css'; // Importa el archivo CSS personalizado
+import './InventarioList.css';
 
 const InventarioList = ({ productos }) => {
     const tableRef = useRef(null);

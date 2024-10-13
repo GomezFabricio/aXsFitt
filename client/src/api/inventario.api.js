@@ -19,3 +19,33 @@ export const inventarioList = async () => {
         throw error.response.data;
     }
 };
+
+// Función para listar todas las marcas
+export const marcasList = async () => {
+    try {
+        const response = await axios.get('http://localhost:4000/inventario/marcas-list', config);
+        return response.data;
+    } catch (error) {
+        throw error.response.data;
+    }
+};
+
+// Función para listar todos los tipos de productos
+export const tiposProductosList = async () => {
+    try {
+        const response = await axios.get('http://localhost:4000/inventario/tipos-productos-list', config);
+        return response.data;
+    } catch (error) {
+        throw error.response.data;
+    }
+};
+
+// Función para listar todos los productos
+export const productosList = async () => {
+    try {
+        const response = await axios.get('http://localhost:4000/inventario/productos-list', config);
+        return response.data;
+    } catch (error) {
+        throw error.response.data;
+    }
+};
