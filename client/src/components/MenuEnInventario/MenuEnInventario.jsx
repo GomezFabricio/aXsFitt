@@ -12,10 +12,10 @@ const MenuEnInventario = () => {
                     <Link to="/inventario">Inventario</Link>
                 </li>
                 <li className={location.pathname === '/tipos-productos' ? 'active' : ''}>
-                    <Link to="/tipos-productos">Tipo Productos</Link>
+                    <Link to="/tipos-productos">Tipos de Productos</Link>
                 </li>
                 <li className={location.pathname === '/marcas-productos' ? 'active' : ''}>
-                    <Link to="/marcas-productos">Marcas</Link>
+                    <Link to="/marcas-productos">Marcas de Productos</Link>
                 </li>
             </ul>
         </div>

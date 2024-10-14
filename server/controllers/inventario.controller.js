@@ -33,8 +33,8 @@ export const marcasList = async (req, res) => {
     try {
         const [result] = await pool.query(`
             SELECT 
-                marca_producto_id AS id,
-                marca_producto_nombre AS nombre
+                marca_producto_id AS idMarcaProducto,
+                marca_producto_nombre AS nombreMarcaProducto
             FROM marca_productos
         `);
         console.log('Resultado de la consulta de marcas:', result); // Log para verificar el resultado de la consulta
@@ -51,8 +51,8 @@ export const tiposProductosList = async (req, res) => {
     try {
         const [result] = await pool.query(`
             SELECT 
-                tipo_producto_id AS id,
-                tipo_producto_nombre AS nombre
+                tipo_producto_id AS idTipoProducto,
+                tipo_producto_nombre AS nombreTipoProducto
             FROM tipos_productos
         `);
         console.log('Resultado de la consulta de tipos de productos:', result); // Log para verificar el resultado de la consulta
@@ -69,14 +69,14 @@ export const productosList = async (req, res) => {
     try {
         const [result] = await pool.query(`
             SELECT 
-                producto_id AS id,
-                producto_codigo_barras AS codigoBarras,
-                producto_descripcion AS descripcion,
-                tipo_producto_id AS tipoProductoId,
-                marca_producto_id AS marcaProductoId,
-                producto_precio_costo AS precioCosto,
-                precio_venta AS precioVenta,
-                precio_venta_afiliados AS precioAfiliados
+                producto_id AS idProducto,
+                producto_codigo_barras AS codigoBarrasProducto,
+                producto_descripcion AS nombreProducto,
+                tipo_producto_id AS idTipoProducto,
+                marca_producto_id AS idMarcaProducto,
+                producto_precio_costo AS precioCostoProducto,
+                precio_venta AS precioVentaProducto,
+                precio_venta_afiliados AS precioAfiliadosProducto
             FROM productos
         `);
         console.log('Resultado de la consulta de productos:', result); // Log para verificar el resultado de la consulta

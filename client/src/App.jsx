@@ -17,6 +17,9 @@ import UsuarioEdit from './pages/usuarios/UsuariosEdit/UsuariosEdit';
 import ProtectedRoute from './pages/ProtectedRoute';
 
 import Inventario from './pages/inventario/Inventario/Inventario';
+import MarcasProductos from './pages/inventario/MarcasProductos/MarcasProductos';
+import Productos from './pages/inventario/Productos/Productos';
+import TiposProductos from './pages/inventario/TiposProductos/TiposProductos';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './assets/styles/variables.css';
@@ -151,6 +154,39 @@ function App() {
             <ProtectedRoute>
               <Navbar />
               <Inventario />
+              <Footer />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/marcas-productos"
+          element={
+            <ProtectedRoute>
+              <Navbar />
+              <MarcasProductos />
+              <Footer />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/productos"
+          element={
+            <ProtectedRoute>
+              <Navbar />
+              <Productos />
+              <Footer />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/tipos-productos"
+          element={
+            <ProtectedRoute>
+              <Navbar />
+              <TiposProductos />
               <Footer />
             </ProtectedRoute>
           }

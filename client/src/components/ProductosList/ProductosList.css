@@ -1,0 +1,56 @@
+/* Cambiar el color de fondo de la tabla */
+#productosTable {
+    background-color: #f9f9f9;
+    width: 100%;
+    border-collapse: collapse;
+}
+
+/* Cambiar el color de fondo de las filas */
+#productosTable tbody tr {
+    background-color: #ffffff;
+}
+
+/* Cambiar el color de fondo de las filas alternas */
+#productosTable tbody tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+/* Cambiar el color de fondo del encabezado */
+#productosTable thead {
+    background-color: #333333;
+    color: #ffffff;
+}
+
+/* Centrar el texto en las celdas */
+#productosTable th, #productosTable td {
+    text-align: center;
+    padding: 8px;
+}
+
+/* Cambiar el color de los enlaces */
+#productosTable a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+/* Cambiar el color de los botones */
+#productosTable button {
+    background-color: #007bff;
+    color: #ffffff;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    margin: 2px;
+    border-radius: 4px;
+}
+
+/* Cambiar el color de los botones al pasar el mouse */
+#productosTable button:hover {
+    background-color: #0056b3;
+}
+
+/* Asegurarse de que el texto de los botones sea legible */
+#productosTable button a {
+    color: #ffffff;
+    text-decoration: none;
+}

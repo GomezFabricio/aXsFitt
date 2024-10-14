@@ -1,0 +1,85 @@
+#tiposProductosTableContainer {
+    display: flex;
+    justify-content: center;
+}
+
+#tiposProductosTableContainer .dataTables_wrapper {
+    width: 100%;
+    margin: 20px 0;
+    gap: 10px;
+}
+
+#tiposProductosTableContainer .dataTables_filter {
+    text-align: left;
+    margin-bottom: 10px;
+    width: 100%;
+}
+
+#tiposProductosTableContainer .dataTables_paginate {
+    text-align: left;
+    margin-top: 10px;
+    width: 100%;
+}
+
+#tiposProductosTableContainer .dt-container {
+    width: 100%;
+    margin: 20px 0;
+    gap: 10px;
+}
+
+#tiposProductosTableContainer .dt-layout-row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    gap: 10px;
+}
+
+#tiposProductosTable {
+    background-color: #f9f9f9;
+    width: 100%;
+    border-collapse: collapse;
+}
+
+#tiposProductosTable tbody tr {
+    background-color: #ffffff;
+}
+
+#tiposProductosTable tbody tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+#tiposProductosTable thead {
+    background-color: #333333;
+    color: #ffffff;
+}
+
+#tiposProductosTable th, #tiposProductosTable td {
+    text-align: center;
+    padding: 8px;
+}
+
+#tiposProductosTable a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+#tiposProductosTable button {
+    background-color: #007bff;
+    color: #ffffff;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    margin: 2px;
+    border-radius: 4px;
+}
+
+#tiposProductosTable button:hover {
+    background-color: #0056b3;
+}
+
+#tiposProductosTable button a {
+    color: #ffffff;
+    text-decoration: none;
+}

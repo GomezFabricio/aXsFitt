@@ -1,0 +1,84 @@
+#marcasTableContainer {
+    display: flex;
+    justify-content: center;
+}
+
+#marcasTableContainer .dataTables_wrapper {
+    width: 100%;
+    gap: 10px;
+}
+
+#marcasTableContainer .dataTables_filter {
+    text-align: left;
+    margin-bottom: 10px;
+    width: 100%;
+}
+
+#marcasTableContainer .dataTables_paginate {
+    text-align: left;
+    margin-top: 10px;
+    width: 100%;
+}
+
+#marcasTableContainer .dt-container {
+    width: 100%;
+    margin: 20px 0;
+    gap: 10px;
+}
+
+#marcasTableContainer .dt-layout-row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    gap: 10px;
+}
+
+#marcasTable {
+    background-color: #f9f9f9;
+    width: 100%;
+    border-collapse: collapse;
+}
+
+#marcasTable tbody tr {
+    background-color: #ffffff;
+}
+
+#marcasTable tbody tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+#marcasTable thead {
+    background-color: #333333;
+    color: #ffffff;
+}
+
+#marcasTable th, #marcasTable td {
+    text-align: center;
+    padding: 8px;
+}
+
+#marcasTable a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+#marcasTable button {
+    background-color: #007bff;
+    color: #ffffff;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    margin: 2px;
+    border-radius: 4px;
+}
+
+#marcasTable button:hover {
+    background-color: #0056b3;
+}
+
+#marcasTable button a {
+    color: #ffffff;
+    text-decoration: none;
+}
