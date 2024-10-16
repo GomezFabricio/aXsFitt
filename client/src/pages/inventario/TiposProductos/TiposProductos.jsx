@@ -1,12 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import { tiposProductosList } from '../../../api/inventario.api';
+import { Formik } from 'formik';
+import * as Yup from 'yup';
+import { tiposProductosList, agregarTipoProducto } from '../../../api/inventario.api';
 import TiposProductosList from '../../../components/TiposProductosList/TiposProductosList';
 import MenuEnInventario from '../../../components/MenuEnInventario/MenuEnInventario';
+import FormularioTiposProductos from '../../../components/FormularioTiposProductos/FormularioTiposProductos';
 import { useNavigate } from 'react-router-dom';
 import './TiposProductos.css';
 
 const TiposProductos = () => {
     const [tiposProductos, setTiposProductos] = useState([]);
+    const [showModal, setShowModal] = useState(false);
 
     useEffect(() => {
         const fetchTiposProductos = async () => {
@@ -25,7 +29,36 @@ const TiposProductos = () => {
     const navigate = useNavigate();
 
     const handleAgregarClick = () => {
-        navigate('/tiposproductos/nuevo'); // Navegamos a la página de agregar un nuevo tipo de producto
+        setShowModal(true);
+    };
+
+    const handleCloseModal = () => {
+        setShowModal(false);
+    };
+
+    const handleTipoProductoAgregado = async () => {
+        const data = await tiposProductosList();
+        setTiposProductos(data);
+    };
+
+    const initialValues = {
+        nombreTipoProducto: '',
+    };
+
+    const validationSchema = Yup.object({
+        nombreTipoProducto: Yup.string().required('El nombre del tipo de producto es obligatorio'),
+    });
+
+    const handleSubmit = async (values, { setSubmitting }) => {
+        try {
+            await agregarTipoProducto(values.nombreTipoProducto);
+            handleTipoProductoAgregado();
+            handleCloseModal();
+        } catch (error) {
+            console.error('Error agregando tipo de producto:', error);
+        } finally {
+            setSubmitting(false);
+        }
     };
 
     return (
@@ -42,6 +75,18 @@ const TiposProductos = () => {
             <MenuEnInventario />
 
             <TiposProductosList tiposProductos={tiposProductos} />
+
+            {showModal && (
+                <Formik
+                    initialValues={initialValues}
+                    validationSchema={validationSchema}
+                    onSubmit={handleSubmit}
+                >
+                    {({ handleSubmit }) => (
+                        <FormularioTiposProductos handleSubmit={handleSubmit} onClose={handleCloseModal} />
+                    )}
+                </Formik>
+            )}
         </div>
     );
 };
