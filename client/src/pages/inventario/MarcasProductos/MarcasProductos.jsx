@@ -1,12 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import { marcasList } from '../../../api/inventario.api';
+import { Formik } from 'formik';
+import * as Yup from 'yup';
+import { marcasList, agregarMarca } from '../../../api/inventario.api';
 import MarcasList from '../../../components/MarcasList/MarcasList';
 import MenuEnInventario from '../../../components/MenuEnInventario/MenuEnInventario';
+import FormularioMarcas from '../../../components/FormularioMarcas/FormularioMarcas';
 import { useNavigate } from 'react-router-dom';
 import './MarcasProductos.css';
 
 const MarcasProductos = () => {
     const [marcas, setMarcas] = useState([]);
+    const [showModal, setShowModal] = useState(false);
 
     useEffect(() => {
         const fetchMarcas = async () => {
@@ -25,7 +29,36 @@ const MarcasProductos = () => {
     const navigate = useNavigate();
 
     const handleAgregarClick = () => {
-        navigate('/marcas/nuevo'); // Navegamos a la página de agregar una nueva marca
+        setShowModal(true);
+    };
+
+    const handleCloseModal = () => {
+        setShowModal(false);
+    };
+
+    const handleMarcaAgregada = async () => {
+        const data = await marcasList();
+        setMarcas(data);
+    };
+
+    const initialValues = {
+        nombreMarca: '',
+    };
+
+    const validationSchema = Yup.object({
+        nombreMarca: Yup.string().required('El nombre de la marca es obligatorio'),
+    });
+
+    const handleSubmit = async (values, { setSubmitting }) => {
+        try {
+            await agregarMarca(values.nombreMarca);
+            handleMarcaAgregada();
+            handleCloseModal();
+        } catch (error) {
+            console.error('Error agregando marca:', error);
+        } finally {
+            setSubmitting(false);
+        }
     };
 
     return (
@@ -42,6 +75,18 @@ const MarcasProductos = () => {
             <MenuEnInventario />
 
             <MarcasList marcas={marcas} />
+
+            {showModal && (
+                <Formik
+                    initialValues={initialValues}
+                    validationSchema={validationSchema}
+                    onSubmit={handleSubmit}
+                >
+                    {({ handleSubmit }) => (
+                        <FormularioMarcas handleSubmit={handleSubmit} onClose={handleCloseModal} />
+                    )}
+                </Formik>
+            )}
         </div>
     );
 };
