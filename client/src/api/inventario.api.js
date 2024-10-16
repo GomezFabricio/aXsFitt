@@ -49,3 +49,33 @@ export const productosList = async () => {
         throw error.response.data;
     }
 };
+
+// Función para agregar un tipo de producto
+export const agregarTipoProducto = async (nombreTipoProducto) => {
+    try {
+        const response = await axios.post('http://localhost:4000/inventario/agregar-tipo-producto', { nombreTipoProducto }, config);
+        return response.data;
+    } catch (error) {
+        throw error.response.data;
+    }
+};
+
+// Función para agregar una marca
+export const agregarMarca = async (nombreMarcaProducto) => {
+    try {
+        const response = await axios.post('http://localhost:4000/inventario/agregar-marca', { nombreMarcaProducto }, config);
+        return response.data;
+    } catch (error) {
+        throw error.response.data;
+    }
+};
+
+// Función para agregar un producto
+export const agregarProducto = async (producto) => {
+    try {
+        const response = await axios.post('http://localhost:4000/inventario/agregar-producto', producto, config);
+        return response.data;
+    } catch (error) {
+        throw error.response.data;
+    }
+};

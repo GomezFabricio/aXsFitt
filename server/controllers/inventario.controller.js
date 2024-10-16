@@ -2,7 +2,7 @@ import { pool } from '../db.js';
 
 // Listar inventario con detalles
 export const inventarioList = async (req, res) => {
-    console.log('Entrando a inventarioList'); // Log para verificar que la función se está llamando
+    console.log('Entrando a inventarioList');
     try {
         const [result] = await pool.query(`
             SELECT 
@@ -19,17 +19,17 @@ export const inventarioList = async (req, res) => {
             JOIN marca_productos mp ON p.marca_producto_id = mp.marca_producto_id
             JOIN inventario_principal ip ON p.producto_id = ip.producto_id
         `);
-        console.log('Resultado de la consulta:', result); // Log para verificar el resultado de la consulta
+        console.log('Resultado de la consulta:', result);
         res.json(result);
     } catch (error) {
-        console.error('Error en inventarioList:', error); // Log para verificar el error
+        console.error('Error en inventarioList:', error);
         res.status(500).json({ message: error.message });
     }
 };
 
 // Listar todas las marcas
 export const marcasList = async (req, res) => {
-    console.log('Entrando a marcasList'); // Log para verificar que la función se está llamando
+    console.log('Entrando a marcasList');
     try {
         const [result] = await pool.query(`
             SELECT 
@@ -37,17 +37,17 @@ export const marcasList = async (req, res) => {
                 marca_producto_nombre AS nombreMarcaProducto
             FROM marca_productos
         `);
-        console.log('Resultado de la consulta de marcas:', result); // Log para verificar el resultado de la consulta
+        console.log('Resultado de la consulta de marcas:', result);
         res.json(result);
     } catch (error) {
-        console.error('Error en marcasList:', error); // Log para verificar el error
+        console.error('Error en marcasList:', error);
         res.status(500).json({ message: error.message });
     }
 };
 
 // Listar todos los tipos de productos
 export const tiposProductosList = async (req, res) => {
-    console.log('Entrando a tiposProductosList'); // Log para verificar que la función se está llamando
+    console.log('Entrando a tiposProductosList');
     try {
         const [result] = await pool.query(`
             SELECT 
@@ -55,17 +55,17 @@ export const tiposProductosList = async (req, res) => {
                 tipo_producto_nombre AS nombreTipoProducto
             FROM tipos_productos
         `);
-        console.log('Resultado de la consulta de tipos de productos:', result); // Log para verificar el resultado de la consulta
+        console.log('Resultado de la consulta de tipos de productos:', result);
         res.json(result);
     } catch (error) {
-        console.error('Error en tiposProductosList:', error); // Log para verificar el error
+        console.error('Error en tiposProductosList:', error);
         res.status(500).json({ message: error.message });
     }
 };
 
 // Listar todos los productos
 export const productosList = async (req, res) => {
-    console.log('Entrando a productosList'); // Log para verificar que la función se está llamando
+    console.log('Entrando a productosList');
     try {
         const [result] = await pool.query(`
             SELECT 
@@ -79,10 +79,61 @@ export const productosList = async (req, res) => {
                 precio_venta_afiliados AS precioAfiliadosProducto
             FROM productos
         `);
-        console.log('Resultado de la consulta de productos:', result); // Log para verificar el resultado de la consulta
+        console.log('Resultado de la consulta de productos:', result);
         res.json(result);
     } catch (error) {
-        console.error('Error en productosList:', error); // Log para verificar el error
+        console.error('Error en productosList:', error);
+        res.status(500).json({ message: error.message });
+    }
+};
+
+// Agregar un tipo de producto
+export const agregarTipoProducto = async (req, res) => {
+    console.log('Entrando a agregarTipoProducto');
+    const { nombreTipoProducto } = req.body;
+    try {
+        const [result] = await pool.query(`
+            INSERT INTO tipos_productos (tipo_producto_nombre)
+            VALUES (?)
+        `, [nombreTipoProducto]);
+        console.log('Resultado de la inserción de tipo de producto:', result);
+        res.json({ message: 'Tipo de producto agregado exitosamente', id: result.insertId });
+    } catch (error) {
+        console.error('Error en agregarTipoProducto:', error);
+        res.status(500).json({ message: error.message });
+    }
+};
+
+// Agregar una marca
+export const agregarMarca = async (req, res) => {
+    console.log('Entrando a agregarMarca');
+    const { nombreMarcaProducto } = req.body;
+    try {
+        const [result] = await pool.query(`
+            INSERT INTO marca_productos (marca_producto_nombre)
+            VALUES (?)
+        `, [nombreMarcaProducto]);
+        console.log('Resultado de la inserción de marca:', result);
+        res.json({ message: 'Marca agregada exitosamente', id: result.insertId });
+    } catch (error) {
+        console.error('Error en agregarMarca:', error);
+        res.status(500).json({ message: error.message });
+    }
+};
+
+// Agregar un producto
+export const agregarProducto = async (req, res) => {
+    console.log('Entrando a agregarProducto');
+    const { codigoBarrasProducto, nombreProducto, idTipoProducto, idMarcaProducto, precioCostoProducto, precioVentaProducto, precioAfiliadosProducto } = req.body;
+    try {
+        const [result] = await pool.query(`
+            INSERT INTO productos (producto_codigo_barras, producto_descripcion, tipo_producto_id, marca_producto_id, producto_precio_costo, precio_venta, precio_venta_afiliados)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+        `, [codigoBarrasProducto, nombreProducto, idTipoProducto, idMarcaProducto, precioCostoProducto, precioVentaProducto, precioAfiliadosProducto]);
+        console.log('Resultado de la inserción de producto:', result);
+        res.json({ message: 'Producto agregado exitosamente', id: result.insertId });
+    } catch (error) {
+        console.error('Error en agregarProducto:', error);
         res.status(500).json({ message: error.message });
     }
 };
