@@ -63,21 +63,22 @@ export const tiposProductosList = async (req, res) => {
     }
 };
 
-// Listar todos los productos
+// Listar todos los productos con datos relevantes para el usuario
 export const productosList = async (req, res) => {
     console.log('Entrando a productosList');
     try {
         const [result] = await pool.query(`
             SELECT 
-                producto_id AS idProducto,
-                producto_codigo_barras AS codigoBarrasProducto,
-                producto_descripcion AS nombreProducto,
-                tipo_producto_id AS idTipoProducto,
-                marca_producto_id AS idMarcaProducto,
-                producto_precio_costo AS precioCostoProducto,
-                precio_venta AS precioVentaProducto,
-                precio_venta_afiliados AS precioAfiliadosProducto
-            FROM productos
+                p.producto_codigo_barras AS CodigoBarras,
+                p.producto_descripcion AS Producto,
+                tp.tipo_producto_nombre AS TipoProducto,
+                mp.marca_producto_nombre AS MarcaProducto,
+                p.producto_precio_costo AS PrecioCosto,
+                p.precio_venta AS PrecioVenta,
+                p.precio_venta_afiliados AS PrecioAfiliados
+            FROM productos p
+            JOIN tipos_productos tp ON p.tipo_producto_id = tp.tipo_producto_id
+            JOIN marca_productos mp ON p.marca_producto_id = mp.marca_producto_id
         `);
         console.log('Resultado de la consulta de productos:', result);
         res.json(result);
@@ -86,7 +87,6 @@ export const productosList = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
-
 // Agregar un tipo de producto
 export const agregarTipoProducto = async (req, res) => {
     console.log('Entrando a agregarTipoProducto');
@@ -124,12 +124,33 @@ export const agregarMarca = async (req, res) => {
 // Agregar un producto
 export const agregarProducto = async (req, res) => {
     console.log('Entrando a agregarProducto');
-    const { codigoBarrasProducto, nombreProducto, idTipoProducto, idMarcaProducto, precioCostoProducto, precioVentaProducto, precioAfiliadosProducto } = req.body;
+    const { codigoBarrasProducto, nombreProducto, idTipoProducto, idMarcaProducto, precioCostoProducto, incremento, precioVentaProducto } = req.body;
+
+    let precioVenta;
+    let precioAfiliados;
+    let incrementoCalculado;
+
+    // Calcular el precio de venta y el incremento
+    if (incremento !== undefined) {
+        // Si el incremento está definido, calcular el precio de venta
+        precioVenta = precioCostoProducto + (precioCostoProducto * (incremento / 100));
+        incrementoCalculado = incremento;
+    } else if (precioVentaProducto !== undefined) {
+        // Si el precio de venta está definido, calcular el incremento
+        precioVenta = precioVentaProducto;
+        incrementoCalculado = ((precioVenta - precioCostoProducto) / precioCostoProducto) * 100;
+    } else {
+        return res.status(400).json({ message: 'Debe proporcionar el incremento o el precio de venta' });
+    }
+
+    // Calcular el precio de afiliados con un descuento del 10%
+    precioAfiliados = precioVenta * 0.9;
+
     try {
         const [result] = await pool.query(`
-            INSERT INTO productos (producto_codigo_barras, producto_descripcion, tipo_producto_id, marca_producto_id, producto_precio_costo, precio_venta, precio_venta_afiliados)
-            VALUES (?, ?, ?, ?, ?, ?, ?)
-        `, [codigoBarrasProducto, nombreProducto, idTipoProducto, idMarcaProducto, precioCostoProducto, precioVentaProducto, precioAfiliadosProducto]);
+            INSERT INTO productos (producto_codigo_barras, producto_descripcion, tipo_producto_id, marca_producto_id, producto_precio_costo, precio_venta, precio_venta_afiliados, incremento)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        `, [codigoBarrasProducto, nombreProducto, idTipoProducto, idMarcaProducto, precioCostoProducto, precioVenta, precioAfiliados, incrementoCalculado]);
         console.log('Resultado de la inserción de producto:', result);
         res.json({ message: 'Producto agregado exitosamente', id: result.insertId });
     } catch (error) {

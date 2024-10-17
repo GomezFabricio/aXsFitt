@@ -17,25 +17,26 @@ const ProductosList = ({ productos }) => {
         dataTableRef.current = $(tableRef.current).DataTable({
             data: productos,
             columns: [
-                { title: "ID Producto", data: "idProducto" },
-                { title: "Código de Barras", data: "codigoBarrasProducto" },
-                { title: "Nombre Producto", data: "nombreProducto" },
-                { title: "ID Tipo Producto", data: "idTipoProducto" },
-                { title: "ID Marca Producto", data: "idMarcaProducto" },
-                { title: "Precio Costo", data: "precioCostoProducto" },
-                { title: "Precio Venta", data: "precioVentaProducto" },
-                { title: "Precio Afiliados", data: "precioAfiliadosProducto" },
+                { title: "Código de Barras", data: "CodigoBarras" },
+                { title: "Nombre Producto", data: "Producto" },
+                { title: "Tipo Producto", data: "TipoProducto" },
+                { title: "Marca Producto", data: "MarcaProducto" },
+                { title: "Precio Costo", data: "PrecioCosto" },
+                { title: "Precio Venta", data: "PrecioVenta" },
+                { title: "Precio Afiliados", data: "PrecioAfiliados" },
                 {
                     title: "Acciones",
                     data: null,
                     render: (data, type, row) => {
                         return `
-                            <button>
-                                <a href="/productos/editar/${row.idProducto}">Editar</a>
-                            </button>
-                            <button>
-                                <a href="/productos/eliminar/${row.idProducto}">Eliminar</a>
-                            </button>
+                            <div class="action-buttons">
+                                <button>
+                                    <a href="/productos/editar/${row.CodigoBarras}">Editar</a>
+                                </button>
+                                <button>
+                                    <a href="/productos/eliminar/${row.CodigoBarras}">Eliminar</a>
+                                </button>
+                            </div>
                         `;
                     }
                 }
@@ -47,11 +48,10 @@ const ProductosList = ({ productos }) => {
         <table ref={tableRef} id="productosTable" className="display">
             <thead>
                 <tr>
-                    <th>ID Producto</th>
                     <th>Código de Barras</th>
                     <th>Nombre Producto</th>
-                    <th>ID Tipo Producto</th>
-                    <th>ID Marca Producto</th>
+                    <th>Tipo Producto</th>
+                    <th>Marca Producto</th>
                     <th>Precio Costo</th>
                     <th>Precio Venta</th>
                     <th>Precio Afiliados</th>
@@ -60,21 +60,20 @@ const ProductosList = ({ productos }) => {
             </thead>
             <tbody>
                 {Array.isArray(productos) && productos.map((producto) => (
-                    <tr key={producto.idProducto}>
-                        <td>{producto.idProducto}</td>
-                        <td>{producto.codigoBarrasProducto}</td>
-                        <td>{producto.nombreProducto}</td>
-                        <td>{producto.idTipoProducto}</td>
-                        <td>{producto.idMarcaProducto}</td>
-                        <td>{producto.precioCostoProducto}</td>
-                        <td>{producto.precioVentaProducto}</td>
-                        <td>{producto.precioAfiliadosProducto}</td>
-                        <td>
+                    <tr key={producto.CodigoBarras}>
+                        <td>{producto.CodigoBarras}</td>
+                        <td>{producto.Producto}</td>
+                        <td>{producto.TipoProducto}</td>
+                        <td>{producto.MarcaProducto}</td>
+                        <td>{producto.PrecioCosto}</td>
+                        <td>{producto.PrecioVenta}</td>
+                        <td>{producto.PrecioAfiliados}</td>
+                        <td className="action-buttons">
                             <button>
-                                <Link to={`/productos/editar/${producto.idProducto}`}>Editar</Link>
+                                <Link to={`/productos/editar/${producto.CodigoBarras}`}>Editar</Link>
                             </button>
                             <button>
-                                <Link to={`/productos/eliminar/${producto.idProducto}`}>Eliminar</Link>
+                                <Link to={`/productos/eliminar/${producto.CodigoBarras}`}>Eliminar</Link>
                             </button>
                         </td>
                     </tr>

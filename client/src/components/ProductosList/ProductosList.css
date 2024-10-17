@@ -25,6 +25,7 @@
 #productosTable th, #productosTable td {
     text-align: center;
     padding: 8px;
+    vertical-align: middle; /* Asegurarse de que el contenido esté centrado verticalmente */
 }
 
 /* Cambiar el color de los enlaces */
@@ -42,6 +43,7 @@
     cursor: pointer;
     margin: 2px;
     border-radius: 4px;
+    display: inline-block; /* Asegurarse de que los botones estén alineados horizontalmente */
 }
 
 /* Cambiar el color de los botones al pasar el mouse */
@@ -53,4 +55,16 @@
 #productosTable button a {
     color: #ffffff;
     text-decoration: none;
+}
+
+/* Ajustar el alto de las filas */
+#productosTable tbody tr {
+    height: auto; /* Ajustar el alto de las filas automáticamente */
+}
+
+/* Asegurarse de que los botones de acciones estén alineados horizontalmente */
+#productosTable td .action-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 5px; /* Espacio entre los botones */
 }
