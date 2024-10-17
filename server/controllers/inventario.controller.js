@@ -122,27 +122,7 @@ export const agregarMarca = async (req, res) => {
 // Agregar un producto
 export const agregarProducto = async (req, res) => {
     console.log('Entrando a agregarProducto');
-    const { codigoBarrasProducto, nombreProducto, idTipoProducto, idMarcaProducto, precioCostoProducto, incremento, precioVentaProducto, cantidad } = req.body;
-
-    let precioVenta;
-    let precioAfiliados;
-    let incrementoCalculado;
-
-    // Calcular el precio de venta y el incremento
-    if (incremento !== undefined) {
-        // Si el incremento está definido, calcular el precio de venta
-        precioVenta = precioCostoProducto + (precioCostoProducto * (incremento / 100));
-        incrementoCalculado = incremento;
-    } else if (precioVentaProducto !== undefined) {
-        // Si el precio de venta está definido, calcular el incremento
-        precioVenta = precioVentaProducto;
-        incrementoCalculado = ((precioVenta - precioCostoProducto) / precioCostoProducto) * 100;
-    } else {
-        return res.status(400).json({ message: 'Debe proporcionar el incremento o el precio de venta' });
-    }
-
-    // Calcular el precio de afiliados con un descuento del 10%
-    precioAfiliados = precioVenta * 0.9;
+    const { codigoBarrasProducto, nombreProducto, idTipoProducto, idMarcaProducto } = req.body;
 
     try {
         // Insertar el producto en la tabla productos
@@ -151,16 +131,8 @@ export const agregarProducto = async (req, res) => {
             VALUES (?, ?, ?, ?)
         `, [codigoBarrasProducto, nombreProducto, idTipoProducto, idMarcaProducto]);
 
-        const productoId = productoResult.insertId;
-
-        // Insertar los precios y la cantidad en la tabla inventario_principal
-        const [inventarioResult] = await pool.query(`
-            INSERT INTO inventario_principal (producto_id, inventario_precio_costo, inventario_precio_venta, inventario_precio_afiliado, inventario_cantidad)
-            VALUES (?, ?, ?, ?, ?)
-        `, [productoId, precioCostoProducto, precioVenta, precioAfiliados, cantidad]);
-
-        console.log('Resultado de la inserción de producto e inventario:', productoResult, inventarioResult);
-        res.json({ message: 'Producto agregado exitosamente', id: productoId });
+        console.log('Resultado de la inserción de producto:', productoResult);
+        res.json({ message: 'Producto agregado exitosamente', id: productoResult.insertId });
     } catch (error) {
         console.error('Error en agregarProducto:', error);
         res.status(500).json({ message: error.message });
