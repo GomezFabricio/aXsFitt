@@ -11,9 +11,9 @@ export const inventarioList = async (req, res) => {
                 tp.tipo_producto_nombre AS Tipo,
                 mp.marca_producto_nombre AS Marca,
                 ip.inventario_cantidad AS Cantidad,
-                p.producto_precio_costo AS PrecioCosto,
-                p.precio_venta AS PrecioVenta,
-                p.precio_venta_afiliados AS PrecioAfiliados
+                ip.inventario_precio_costo AS PrecioCosto,
+                ip.inventario_precio_venta AS PrecioVenta,
+                ip.inventario_precio_afiliado AS PrecioAfiliados
             FROM productos p
             JOIN tipos_productos tp ON p.tipo_producto_id = tp.tipo_producto_id
             JOIN marca_productos mp ON p.marca_producto_id = mp.marca_producto_id
@@ -72,10 +72,7 @@ export const productosList = async (req, res) => {
                 p.producto_codigo_barras AS CodigoBarras,
                 p.producto_descripcion AS Producto,
                 tp.tipo_producto_nombre AS TipoProducto,
-                mp.marca_producto_nombre AS MarcaProducto,
-                p.producto_precio_costo AS PrecioCosto,
-                p.precio_venta AS PrecioVenta,
-                p.precio_venta_afiliados AS PrecioAfiliados
+                mp.marca_producto_nombre AS MarcaProducto
             FROM productos p
             JOIN tipos_productos tp ON p.tipo_producto_id = tp.tipo_producto_id
             JOIN marca_productos mp ON p.marca_producto_id = mp.marca_producto_id
@@ -87,6 +84,7 @@ export const productosList = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
+
 // Agregar un tipo de producto
 export const agregarTipoProducto = async (req, res) => {
     console.log('Entrando a agregarTipoProducto');
@@ -124,7 +122,7 @@ export const agregarMarca = async (req, res) => {
 // Agregar un producto
 export const agregarProducto = async (req, res) => {
     console.log('Entrando a agregarProducto');
-    const { codigoBarrasProducto, nombreProducto, idTipoProducto, idMarcaProducto, precioCostoProducto, incremento, precioVentaProducto } = req.body;
+    const { codigoBarrasProducto, nombreProducto, idTipoProducto, idMarcaProducto, precioCostoProducto, incremento, precioVentaProducto, cantidad } = req.body;
 
     let precioVenta;
     let precioAfiliados;
@@ -147,12 +145,22 @@ export const agregarProducto = async (req, res) => {
     precioAfiliados = precioVenta * 0.9;
 
     try {
-        const [result] = await pool.query(`
-            INSERT INTO productos (producto_codigo_barras, producto_descripcion, tipo_producto_id, marca_producto_id, producto_precio_costo, precio_venta, precio_venta_afiliados, incremento)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-        `, [codigoBarrasProducto, nombreProducto, idTipoProducto, idMarcaProducto, precioCostoProducto, precioVenta, precioAfiliados, incrementoCalculado]);
-        console.log('Resultado de la inserción de producto:', result);
-        res.json({ message: 'Producto agregado exitosamente', id: result.insertId });
+        // Insertar el producto en la tabla productos
+        const [productoResult] = await pool.query(`
+            INSERT INTO productos (producto_codigo_barras, producto_descripcion, tipo_producto_id, marca_producto_id)
+            VALUES (?, ?, ?, ?)
+        `, [codigoBarrasProducto, nombreProducto, idTipoProducto, idMarcaProducto]);
+
+        const productoId = productoResult.insertId;
+
+        // Insertar los precios y la cantidad en la tabla inventario_principal
+        const [inventarioResult] = await pool.query(`
+            INSERT INTO inventario_principal (producto_id, inventario_precio_costo, inventario_precio_venta, inventario_precio_afiliado, inventario_cantidad)
+            VALUES (?, ?, ?, ?, ?)
+        `, [productoId, precioCostoProducto, precioVenta, precioAfiliados, cantidad]);
+
+        console.log('Resultado de la inserción de producto e inventario:', productoResult, inventarioResult);
+        res.json({ message: 'Producto agregado exitosamente', id: productoId });
     } catch (error) {
         console.error('Error en agregarProducto:', error);
         res.status(500).json({ message: error.message });

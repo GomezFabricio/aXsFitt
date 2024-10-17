@@ -117,11 +117,7 @@ CREATE TABLE productos (
   tipo_producto_id INTEGER UNSIGNED  NOT NULL  ,
   marca_producto_id INTEGER UNSIGNED  NOT NULL  ,
   producto_descripcion VARCHAR(60)  NULL  ,
-  producto_codigo_barras VARCHAR(100)  NULL  ,
-  producto_precio_costo DECIMAL(10,2)  NULL  ,
-  producto_incremento DECIMAL(5,2)  NULL  ,
-  precio_venta DECIMAL(10,2)  NULL  ,
-  precio_venta_afiliados DECIMAL(10,2)  NULL    ,
+  producto_codigo_barras VARCHAR(100)  NULL    ,
 PRIMARY KEY(producto_id)  ,
 INDEX productos_FKIndex1(tipo_producto_id)  ,
 INDEX productos_FKIndex2(marca_producto_id),
@@ -182,7 +178,11 @@ CREATE TABLE inventario_principal (
   inventario_id INTEGER UNSIGNED  NOT NULL   AUTO_INCREMENT,
   producto_id INTEGER UNSIGNED  NOT NULL  ,
   inventario_cantidad INTEGER UNSIGNED  NULL  ,
-  inventario_fecha_actualizacion DATE  NULL    ,
+  inventario_fecha_actualizacion DATE  NULL  ,
+  inventario_precio_costo DECIMAL(10,2)  NULL  ,
+  inventario_incremento DECIMAL  NULL  ,
+  inventario_precio_venta DECIMAL(10,2)  NULL  ,
+  inventario_precio_afiliado DECIMAL(10,2)  NULL    ,
 PRIMARY KEY(inventario_id)  ,
 INDEX inventario_principal_FKIndex1(producto_id),
   FOREIGN KEY(producto_id)
@@ -232,20 +232,20 @@ INDEX venta_FKIndex2(clientes_cliente_id),
 
 CREATE TABLE detalle_venta (
   detalle_venta_id INTEGER UNSIGNED  NOT NULL   AUTO_INCREMENT,
-  productos_producto_id INTEGER UNSIGNED  NOT NULL  ,
+  inventario_id INTEGER UNSIGNED  NOT NULL  ,
   venta_id INTEGER UNSIGNED  NOT NULL  ,
   detalle_venta_cantidad INTEGER UNSIGNED  NULL  ,
   detalle_venta_precio_unitario DECIMAL(10,2)  NULL  ,
   detalle_venta_subtotal DECIMAL(10,2)  NULL    ,
 PRIMARY KEY(detalle_venta_id)  ,
 INDEX detalle_venta_FKIndex1(venta_id)  ,
-INDEX detalle_venta_FKIndex2(productos_producto_id),
+INDEX detalle_venta_FKIndex2(inventario_id),
   FOREIGN KEY(venta_id)
     REFERENCES venta(venta_id)
       ON DELETE NO ACTION
       ON UPDATE NO ACTION,
-  FOREIGN KEY(productos_producto_id)
-    REFERENCES productos(producto_id)
+  FOREIGN KEY(inventario_id)
+    REFERENCES inventario_principal(inventario_id)
       ON DELETE NO ACTION
       ON UPDATE NO ACTION);
 

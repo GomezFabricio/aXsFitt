@@ -30,12 +30,14 @@ const InventarioList = ({ productos }) => {
                     data: null,
                     render: (data, type, row) => {
                         return `
-                            <button>
-                                <a href="/productos/editar/${row.producto_id}">Editar</a>
-                            </button>
-                            <button>
-                                <a href="/productos/eliminar/${row.producto_id}">Eliminar</a>
-                            </button>
+                            <div class="action-buttons">
+                                <button>
+                                    <a href="/productos/editar/${row.producto_id}">Editar</a>
+                                </button>
+                                <button>
+                                    <a href="/productos/eliminar/${row.producto_id}">Eliminar</a>
+                                </button>
+                            </div>
                         `;
                     }
                 }
@@ -69,7 +71,7 @@ const InventarioList = ({ productos }) => {
                         <td>{producto.PrecioCosto}</td>
                         <td>{producto.PrecioVenta}</td>
                         <td>{producto.PrecioAfiliados}</td>
-                        <td>
+                        <td className="action-buttons">
                             <button>
                                 <Link to={`/productos/editar/${producto.producto_id}`}>Editar</Link>
                             </button>

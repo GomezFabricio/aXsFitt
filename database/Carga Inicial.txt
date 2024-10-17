@@ -4,7 +4,6 @@ INSERT INTO `estados_usuarios` (`estado_usuario_id`, `estado_usuario_nombre`) VA
 (2, 'Inactivo'),
 (3, 'Suspendido');
 
-
 -- Inserción de datos en la tabla 'roles'
 INSERT INTO `roles` (`rol_id`, `rol_tipo_rol`) VALUES
 (1, 'Administrador'),
@@ -15,7 +14,8 @@ INSERT INTO `menu_opciones` (`opcion_id`, `rol_id`, `opcion_nombre`) VALUES
 (1, 1, 'Panel de Control'),
 (2, 1, 'Vendedores'),
 (3, 1, 'Clientes'),
-(4, 1, 'Usuarios');
+(4, 1, 'Usuarios'),
+(5, 1, 'Inventario');
 
 -- Inserción de datos en la tabla 'personas'
 INSERT INTO `personas` (`persona_id`, `persona_nombre`, `persona_apellido`, `persona_dni`, `persona_fecha_nacimiento`, `persona_domicilio`, `persona_telefono`, `persona_fecha_alta`) VALUES
