@@ -34,7 +34,7 @@ const Inventario = () => {
                 <h1>Inventario</h1>
                 <div className="buttons-container">
                     <button className="agregar-button" onClick={handleAgregarClick}>
-                        Agregar Producto
+                        Nuevo Ingreso
                     </button>
                 </div>
             </div>
