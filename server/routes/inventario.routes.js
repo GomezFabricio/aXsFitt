@@ -6,7 +6,8 @@ import {
     productosList, 
     agregarTipoProducto, 
     agregarMarca, 
-    agregarProducto 
+    agregarProducto,
+    agregarInventario // Importar la nueva función
 } from '../controllers/inventario.controller.js';
 
 const router = Router();
@@ -19,5 +20,6 @@ router.get('/inventario/productos-list', productosList);
 router.post('/inventario/agregar-tipo-producto', agregarTipoProducto); 
 router.post('/inventario/agregar-marca', agregarMarca); 
 router.post('/inventario/agregar-producto', agregarProducto); 
+router.post('/inventario/agregar-inventario', agregarInventario); // Agregar la nueva ruta
 
 export default router;

@@ -79,3 +79,13 @@ export const agregarProducto = async (producto) => {
         throw error.response.data;
     }
 };
+
+// Función para agregar inventario
+export const agregarInventario = async (inventario) => {
+    try {
+        const response = await axios.post('http://localhost:4000/inventario/agregar-inventario', inventario, config);
+        return response.data;
+    } catch (error) {
+        throw error.response.data;
+    }
+};

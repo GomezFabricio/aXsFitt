@@ -138,3 +138,39 @@ export const agregarProducto = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
+
+// Agregar inventario
+export const agregarInventario = async (req, res) => {
+    console.log('Entrando a agregarInventario');
+    const { productoId, cantidad, precioCosto, precioVenta, incremento } = req.body;
+
+    try {
+        let calculatedPrecioVenta = precioVenta;
+        let calculatedIncremento = incremento;
+
+        // Si el precio de venta no se proporciona, calcularlo usando el incremento
+        if (!precioVenta && incremento) {
+            calculatedPrecioVenta = precioCosto + incremento;
+        }
+
+        // Si el precio de venta se proporciona pero no el incremento, calcular el incremento
+        if (precioVenta && !incremento) {
+            calculatedIncremento = precioVenta - precioCosto;
+        }
+
+        // Calcular el precio de afiliado restando un 10% al precio de venta
+        const precioAfiliado = calculatedPrecioVenta * 0.9;
+
+        // Insertar el inventario en la tabla inventario_principal
+        const [inventarioResult] = await pool.query(`
+            INSERT INTO inventario_principal (producto_id, inventario_cantidad, inventario_precio_costo, inventario_precio_venta, inventario_precio_afiliado, inventario_incremento)
+            VALUES (?, ?, ?, ?, ?, ?)
+        `, [productoId, cantidad, precioCosto, calculatedPrecioVenta, precioAfiliado, calculatedIncremento]);
+
+        console.log('Resultado de la inserción de inventario:', inventarioResult);
+        res.json({ message: 'Inventario agregado exitosamente', id: inventarioResult.insertId });
+    } catch (error) {
+        console.error('Error en agregarInventario:', error);
+        res.status(500).json({ message: error.message });
+    }
+};
