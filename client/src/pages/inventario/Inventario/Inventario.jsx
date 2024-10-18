@@ -11,6 +11,7 @@ import './Inventario.css';
 const Inventario = () => {
     const [inventario, setInventario] = useState([]);
     const [showModal, setShowModal] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     useEffect(() => {
         const fetchInventario = async () => {
@@ -58,6 +59,7 @@ const Inventario = () => {
     });
 
     const handleSubmit = async (values, { setSubmitting }) => {
+        setIsSubmitting(true);
         try {
             await agregarInventario(values);
             handleInventarioAgregado();
@@ -65,6 +67,7 @@ const Inventario = () => {
         } catch (error) {
             console.error('Error agregando inventario:', error);
         } finally {
+            setIsSubmitting(false);
             setSubmitting(false);
         }
     };
@@ -91,7 +94,7 @@ const Inventario = () => {
                     onSubmit={handleSubmit}
                 >
                     {({ handleSubmit, setFieldValue }) => (
-                        <FormularioInventario handleSubmit={handleSubmit} onClose={handleCloseModal} setFieldValue={setFieldValue} />
+                        <FormularioInventario handleSubmit={handleSubmit} onClose={handleCloseModal} setFieldValue={setFieldValue} isSubmitting={isSubmitting} />
                     )}
                 </Formik>
             )}

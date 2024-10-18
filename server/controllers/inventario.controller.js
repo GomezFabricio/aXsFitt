@@ -69,6 +69,7 @@ export const productosList = async (req, res) => {
     try {
         const [result] = await pool.query(`
             SELECT 
+                p.producto_id AS idProducto,
                 p.producto_codigo_barras AS CodigoBarras,
                 p.producto_descripcion AS Producto,
                 tp.tipo_producto_nombre AS TipoProducto,
@@ -148,24 +149,27 @@ export const agregarInventario = async (req, res) => {
         let calculatedPrecioVenta = precioVenta;
         let calculatedIncremento = incremento;
 
-        // Si el precio de venta no se proporciona, calcularlo usando el incremento
+        // Si el precio de venta no se proporciona, calcularlo usando el incremento porcentual
         if (!precioVenta && incremento) {
-            calculatedPrecioVenta = precioCosto + incremento;
+            calculatedPrecioVenta = precioCosto + (precioCosto * (incremento / 100));
         }
 
-        // Si el precio de venta se proporciona pero no el incremento, calcular el incremento
+        // Si el precio de venta se proporciona pero no el incremento, calcular el incremento porcentual
         if (precioVenta && !incremento) {
-            calculatedIncremento = precioVenta - precioCosto;
+            calculatedIncremento = ((precioVenta - precioCosto) / precioCosto) * 100;
         }
 
         // Calcular el precio de afiliado restando un 10% al precio de venta
         const precioAfiliado = calculatedPrecioVenta * 0.9;
 
+        // Obtener la fecha actual
+        const fechaActualizacion = new Date();
+
         // Insertar el inventario en la tabla inventario_principal
         const [inventarioResult] = await pool.query(`
-            INSERT INTO inventario_principal (producto_id, inventario_cantidad, inventario_precio_costo, inventario_precio_venta, inventario_precio_afiliado, inventario_incremento)
-            VALUES (?, ?, ?, ?, ?, ?)
-        `, [productoId, cantidad, precioCosto, calculatedPrecioVenta, precioAfiliado, calculatedIncremento]);
+            INSERT INTO inventario_principal (producto_id, inventario_cantidad, inventario_precio_costo, inventario_precio_venta, inventario_precio_afiliado, inventario_incremento, inventario_fecha_actualizacion)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+        `, [productoId, cantidad, precioCosto, calculatedPrecioVenta, precioAfiliado, calculatedIncremento, fechaActualizacion]);
 
         console.log('Resultado de la inserción de inventario:', inventarioResult);
         res.json({ message: 'Inventario agregado exitosamente', id: inventarioResult.insertId });

@@ -3,13 +3,17 @@ import { Field, Form, ErrorMessage } from 'formik';
 import './FormularioInventario.css';
 import { productosList } from '../../api/inventario.api';
 
-const FormularioInventario = ({ handleSubmit, onClose, setFieldValue }) => {
+const FormularioInventario = ({ handleSubmit, onClose, setFieldValue, isSubmitting }) => {
     const [productos, setProductos] = useState([]);
 
     useEffect(() => {
         const fetchProductos = async () => {
-            const data = await productosList();
-            setProductos(data);
+            try {
+                const data = await productosList();
+                setProductos(data);
+            } catch (error) {
+                console.error('Error fetching productos:', error);
+            }
         };
 
         fetchProductos();
@@ -25,7 +29,7 @@ const FormularioInventario = ({ handleSubmit, onClose, setFieldValue }) => {
                     <Field as="select" id="productoId" name="productoId" className="input-inventario">
                         <option value="">Seleccione un producto</option>
                         {productos.map(producto => (
-                            <option key={producto.id} value={producto.id}>{producto.nombreProducto}</option>
+                            <option key={producto.idProducto} value={producto.idProducto}>{producto.Producto}</option>
                         ))}
                     </Field>
                     <ErrorMessage name="productoId" component="div" className="error-inventario" />
@@ -46,7 +50,7 @@ const FormularioInventario = ({ handleSubmit, onClose, setFieldValue }) => {
                     <Field type="number" id="precioVenta" name="precioVenta" className="input-inventario" />
                     <ErrorMessage name="precioVenta" component="div" className="error-inventario" />
 
-                    <button type="submit" className="button-inventario">Registrar</button>
+                    <button type="submit" className="button-inventario" disabled={isSubmitting}>Registrar</button>
                 </Form>
             </div>
         </div>
