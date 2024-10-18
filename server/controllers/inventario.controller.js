@@ -2,7 +2,6 @@ import { pool } from '../db.js';
 
 // Listar inventario con detalles
 export const inventarioList = async (req, res) => {
-    console.log('Entrando a inventarioList');
     try {
         const [result] = await pool.query(`
             SELECT 
@@ -20,7 +19,6 @@ export const inventarioList = async (req, res) => {
             JOIN marca_productos mp ON p.marca_producto_id = mp.marca_producto_id
             JOIN inventario_principal ip ON p.producto_id = ip.producto_id
         `);
-        console.log('Resultado de la consulta:', result);
         res.json(result);
     } catch (error) {
         console.error('Error en inventarioList:', error);
@@ -146,7 +144,14 @@ export const agregarInventario = async (req, res) => {
     console.log('Entrando a agregarInventario');
     const { productoId, cantidad, precioCosto, precioVenta, incremento, reingreso } = req.body;
 
+    console.log('Valores recibidos:', { productoId, cantidad, precioCosto, precioVenta, incremento, reingreso });
+
     try {
+        // Convertir valores a números
+        const precioCostoNum = parseFloat(precioCosto);
+        const precioVentaNum = precioVenta ? parseFloat(precioVenta) : null;
+        const incrementoNum = incremento ? parseFloat(incremento) : null;
+
         // Verificar si el producto ya está en el inventario
         const [existingProduct] = await pool.query(`
             SELECT * FROM inventario_principal WHERE producto_id = ?
@@ -156,21 +161,24 @@ export const agregarInventario = async (req, res) => {
             return res.status(200).json({ message: 'El producto ya se encuentra en el inventario. ¿Desea realizar un reingreso?', reingreso: true });
         }
 
-        let calculatedPrecioVenta = precioVenta;
-        let calculatedIncremento = incremento;
+        let calculatedPrecioVenta = precioVentaNum;
+        let calculatedIncremento = incrementoNum;
 
         // Si el precio de venta no se proporciona, calcularlo usando el incremento porcentual
-        if (!precioVenta && incremento) {
-            calculatedPrecioVenta = precioCosto + (precioCosto * (incremento / 100));
+        if (!precioVentaNum && incrementoNum) {
+            calculatedPrecioVenta = precioCostoNum + (precioCostoNum * (incrementoNum / 100));
+            console.log('Calculando precio de venta usando incremento:', { precioCostoNum, incrementoNum, calculatedPrecioVenta });
         }
 
         // Si el precio de venta se proporciona pero no el incremento, calcular el incremento porcentual
-        if (precioVenta && !incremento) {
-            calculatedIncremento = ((precioVenta - precioCosto) / precioCosto) * 100;
+        if (precioVentaNum && !incrementoNum) {
+            calculatedIncremento = ((precioVentaNum - precioCostoNum) / precioCostoNum) * 100;
+            console.log('Calculando incremento usando precio de venta:', { precioCostoNum, precioVentaNum, calculatedIncremento });
         }
 
         // Calcular el precio de afiliado restando un 10% al precio de venta
         const precioAfiliado = calculatedPrecioVenta * 0.9;
+        console.log('Calculando precio de afiliado:', { calculatedPrecioVenta, precioAfiliado });
 
         // Obtener la fecha actual
         const fechaActualizacion = new Date();
@@ -184,7 +192,7 @@ export const agregarInventario = async (req, res) => {
                 UPDATE inventario_principal
                 SET inventario_cantidad = ?, inventario_precio_costo = ?, inventario_precio_venta = ?, inventario_precio_afiliado = ?, inventario_incremento = ?, inventario_fecha_actualizacion = ?
                 WHERE producto_id = ?
-            `, [nuevaCantidad, precioCosto, calculatedPrecioVenta, precioAfiliado, calculatedIncremento, fechaActualizacion, productoId]);
+            `, [nuevaCantidad, precioCostoNum, calculatedPrecioVenta, precioAfiliado, calculatedIncremento, fechaActualizacion, productoId]);
 
             console.log('Resultado de la actualización de inventario:', updateResult);
             return res.json({ message: 'Inventario actualizado exitosamente', id: existingProduct[0].id });
@@ -193,7 +201,7 @@ export const agregarInventario = async (req, res) => {
             const [inventarioResult] = await pool.query(`
                 INSERT INTO inventario_principal (producto_id, inventario_cantidad, inventario_precio_costo, inventario_precio_venta, inventario_precio_afiliado, inventario_incremento, inventario_fecha_actualizacion)
                 VALUES (?, ?, ?, ?, ?, ?, ?)
-            `, [productoId, cantidad, precioCosto, calculatedPrecioVenta, precioAfiliado, calculatedIncremento, fechaActualizacion]);
+            `, [productoId, cantidad, precioCostoNum, calculatedPrecioVenta, precioAfiliado, calculatedIncremento, fechaActualizacion]);
 
             console.log('Resultado de la inserción de inventario:', inventarioResult);
             res.json({ message: 'Inventario agregado exitosamente', id: inventarioResult.insertId });

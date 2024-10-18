@@ -6,6 +6,8 @@ import { productosList } from '../../api/inventario.api';
 const FormularioInventario = ({ handleSubmit, onClose, setFieldValue, isSubmitting, errorMessage, showWarning, handleReingreso, isReingreso, formValues }) => {
     const [productos, setProductos] = useState([]);
     const [codigoBarras, setCodigoBarras] = useState('');
+    const [disablePrecioVenta, setDisablePrecioVenta] = useState(false);
+    const [disableIncremento, setDisableIncremento] = useState(false);
 
     useEffect(() => {
         const fetchProductos = async () => {
@@ -29,11 +31,39 @@ const FormularioInventario = ({ handleSubmit, onClose, setFieldValue, isSubmitti
         }
     };
 
+    const handleIncrementoChange = (event) => {
+        const incremento = event.target.value;
+        setFieldValue('incremento', incremento);
+        setDisablePrecioVenta(incremento !== '');
+        if (incremento !== '') {
+            setFieldValue('precioVenta', '');
+        }
+    };
+
+    const handlePrecioVentaChange = (event) => {
+        const precioVenta = event.target.value;
+        setFieldValue('precioVenta', precioVenta);
+        setDisableIncremento(precioVenta !== '');
+        if (precioVenta !== '') {
+            setFieldValue('incremento', '');
+        }
+    };
+
     useEffect(() => {
         if (formValues && formValues.codigoBarras) {
             setCodigoBarras(formValues.codigoBarras);
         }
+        if (formValues && formValues.precioVenta) {
+            setDisableIncremento(true);
+        }
     }, [formValues]);
+
+    useEffect(() => {
+        if (!isReingreso) {
+            setDisablePrecioVenta(false);
+            setDisableIncremento(false);
+        }
+    }, [isReingreso]);
 
     return (
         <div className="modal-inventario">
@@ -64,11 +94,11 @@ const FormularioInventario = ({ handleSubmit, onClose, setFieldValue, isSubmitti
                     <ErrorMessage name="precioCosto" component="div" className="error-inventario" />
 
                     <label htmlFor="incremento" className="label-inventario">Incremento (%):</label>
-                    <Field type="number" id="incremento" name="incremento" className="input-inventario" />
+                    <Field type="number" id="incremento" name="incremento" className="input-inventario" onChange={handleIncrementoChange} disabled={disableIncremento} />
                     <ErrorMessage name="incremento" component="div" className="error-inventario" />
 
                     <label htmlFor="precioVenta" className="label-inventario">Precio de Venta:</label>
-                    <Field type="number" id="precioVenta" name="precioVenta" className="input-inventario" />
+                    <Field type="number" id="precioVenta" name="precioVenta" className="input-inventario" onChange={handlePrecioVentaChange} disabled={disablePrecioVenta} />
                     <ErrorMessage name="precioVenta" component="div" className="error-inventario" />
 
                     <button type="submit" className="button-inventario" disabled={isSubmitting}>Registrar</button>
