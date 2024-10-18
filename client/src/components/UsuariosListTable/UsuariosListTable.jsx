@@ -1,4 +1,7 @@
+import React from 'react';
 import { Table } from 'react-bootstrap';
+import '@fortawesome/fontawesome-free/css/all.min.css';
+import '../../assets/styles/IconStyles.css';
 
 const UsuariosListTable = ({ usuarios, onEdit, onBaja }) => {
     return (
@@ -21,12 +24,12 @@ const UsuariosListTable = ({ usuarios, onEdit, onBaja }) => {
                         <td>{usuario.persona_dni}</td>
                         <td>{usuario.usuario_email}</td>
                         <td>{usuario.roles.join(', ')}</td>
-                        <td>
-                            <button onClick={() => onEdit(usuario.usuario_id)} className="btn btn-primary btn-sm me-2">
-                                Editar
+                        <td className="action-buttons">
+                            <button onClick={() => onEdit(usuario.usuario_id)} className="edit-button btn btn-sm me-2">
+                                <i className="fas fa-edit"></i>
                             </button>
-                            <button onClick={() => onBaja(usuario.usuario_id)} className="btn btn-danger btn-sm">
-                                Eliminar
+                            <button onClick={() => onBaja(usuario.usuario_id)} className="delete-button btn btn-sm">
+                                <i className="fas fa-trash-alt"></i>
                             </button>
                         </td>
                     </tr>

@@ -3,6 +3,8 @@ import 'datatables.net-dt/css/dataTables.dataTables.css';
 import $ from 'jquery';
 import 'datatables.net';
 import './TiposProductosList.css';
+import '@fortawesome/fontawesome-free/css/all.min.css';
+import '../../assets/styles/IconStyles.css';
 
 const TiposProductosList = ({ tiposProductos, onEdit, onDelete }) => {
     const tableRef = useRef(null);
@@ -22,22 +24,24 @@ const TiposProductosList = ({ tiposProductos, onEdit, onDelete }) => {
                     data: null,
                     render: function (data, type, row) {
                         return `
-                            <button onclick="handleEdit(${row.idTipoProducto})">Editar</button>
-                            <button onclick="handleDelete(${row.idTipoProducto})">Eliminar</button>
+                            <div class="action-buttons">
+                                <button class="edit-button">
+                                    <a href="/tipos-productos/editar/${row.idTipoProducto}">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                </button>
+                                <button class="delete-button">
+                                    <a href="/tipos-productos/eliminar/${row.idTipoProducto}">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </a>
+                                </button>
+                            </div>
                         `;
                     }
                 }
             ]
         });
     }, [tiposProductos]);
-
-    const handleEdit = (id) => {
-        if (onEdit) onEdit(id);
-    };
-
-    const handleDelete = (id) => {
-        if (onDelete) onDelete(id);
-    };
 
     return (
         <div id="tiposProductosTableContainer">
@@ -52,9 +56,13 @@ const TiposProductosList = ({ tiposProductos, onEdit, onDelete }) => {
                     {Array.isArray(tiposProductos) && tiposProductos.map((tipoProducto) => (
                         <tr key={tipoProducto.idTipoProducto}>
                             <td>{tipoProducto.nombreTipoProducto}</td>
-                            <td>
-                                <button onClick={() => handleEdit(tipoProducto.idTipoProducto)}>Editar</button>
-                                <button onClick={() => handleDelete(tipoProducto.idTipoProducto)}>Eliminar</button>
+                            <td className="action-buttons">
+                                <button className="edit-button" onClick={() => onEdit(tipoProducto.idTipoProducto)}>
+                                    <i className="fas fa-edit"></i>
+                                </button>
+                                <button className="delete-button" onClick={() => onDelete(tipoProducto.idTipoProducto)}>
+                                    <i className="fas fa-trash-alt"></i>
+                                </button>
                             </td>
                         </tr>
                     ))}

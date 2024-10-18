@@ -36,30 +36,11 @@
 
 /* Cambiar el color de los botones */
 #productosTable button {
-    background-color: #007bff;
-    color: #ffffff;
+    background: none; /* Hacer el fondo transparente */
     border: none;
-    padding: 5px 10px;
+    padding: 5px;
     cursor: pointer;
     margin: 2px;
-    border-radius: 4px;
-    display: inline-block; /* Asegurarse de que los botones estén alineados horizontalmente */
-}
-
-/* Cambiar el color de los botones al pasar el mouse */
-#productosTable button:hover {
-    background-color: #0056b3;
-}
-
-/* Asegurarse de que el texto de los botones sea legible */
-#productosTable button a {
-    color: #ffffff;
-    text-decoration: none;
-}
-
-/* Ajustar el alto de las filas */
-#productosTable tbody tr {
-    height: auto; /* Ajustar el alto de las filas automáticamente */
 }
 
 /* Asegurarse de que los botones de acciones estén alineados horizontalmente */

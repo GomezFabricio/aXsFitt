@@ -35,22 +35,16 @@
 
 /* Cambiar el color de los botones */
 #inventarioTable button {
-    background-color: #007bff;
-    color: #ffffff;
+    background: none; /* Hacer el fondo transparente */
     border: none;
-    padding: 5px 10px;
+    padding: 5px;
     cursor: pointer;
     margin: 2px;
-    border-radius: 4px;
 }
 
-/* Cambiar el color de los botones al pasar el mouse */
-#inventarioTable button:hover {
-    background-color: #0056b3;
-}
-
-/* Asegurarse de que el texto de los botones sea legible */
-#inventarioTable button a {
-    color: #ffffff;
-    text-decoration: none;
+/* Asegurarse de que los botones de acciones estén alineados horizontalmente */
+#inventarioTable td .action-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 5px; /* Espacio entre los botones */
 }

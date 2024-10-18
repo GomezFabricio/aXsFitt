@@ -4,8 +4,10 @@ import 'datatables.net-dt/css/dataTables.dataTables.css';
 import $ from 'jquery';
 import 'datatables.net';
 import './InventarioList.css';
+import '@fortawesome/fontawesome-free/css/all.min.css';
+import '../../assets/styles/IconStyles.css';
 
-const InventarioList = ({ productos }) => {
+const InventarioList = ({ inventario, onDelete, onEdit }) => {
     const tableRef = useRef(null);
     const dataTableRef = useRef(null);
 
@@ -15,7 +17,7 @@ const InventarioList = ({ productos }) => {
         }
 
         dataTableRef.current = $(tableRef.current).DataTable({
-            data: productos,
+            data: inventario,
             columns: [
                 { title: "Código de Barras", data: "CodigoBarras" },
                 { title: "Producto", data: "Producto" },
@@ -31,11 +33,11 @@ const InventarioList = ({ productos }) => {
                     render: (data, type, row) => {
                         return `
                             <div class="action-buttons">
-                                <button>
-                                    <a href="/productos/editar/${row.producto_id}">Editar</a>
+                                <button class="edit-button" data-id="${row.CodigoBarras}">
+                                    <i class="fas fa-edit"></i>
                                 </button>
-                                <button>
-                                    <a href="/productos/eliminar/${row.producto_id}">Eliminar</a>
+                                <button class="delete-button" data-id="${row.CodigoBarras}">
+                                    <i class="fas fa-trash-alt"></i>
                                 </button>
                             </div>
                         `;
@@ -43,7 +45,19 @@ const InventarioList = ({ productos }) => {
                 }
             ]
         });
-    }, [productos]);
+
+        // Manejar eventos de clic en los botones de editar y eliminar
+        $(tableRef.current).on('click', '.edit-button', function () {
+            const id = $(this).data('id');
+            onEdit(id);
+        });
+
+        $(tableRef.current).on('click', '.delete-button', function () {
+            const id = $(this).data('id');
+            onDelete(id);
+        });
+
+    }, [inventario, onDelete, onEdit]);
 
     return (
         <table ref={tableRef} id="inventarioTable" className="display">
@@ -61,22 +75,22 @@ const InventarioList = ({ productos }) => {
                 </tr>
             </thead>
             <tbody>
-                {Array.isArray(productos) && productos.map((producto) => (
-                    <tr key={producto.producto_id}>
-                        <td>{producto.CodigoBarras}</td>
-                        <td>{producto.Producto}</td>
-                        <td>{producto.Tipo}</td>
-                        <td>{producto.Marca}</td>
-                        <td>{producto.Cantidad}</td>
-                        <td>{producto.PrecioCosto}</td>
-                        <td>{producto.PrecioVenta}</td>
-                        <td>{producto.PrecioAfiliados}</td>
+                {Array.isArray(inventario) && inventario.map((item) => (
+                    <tr key={item.CodigoBarras}>
+                        <td>{item.CodigoBarras}</td>
+                        <td>{item.Producto}</td>
+                        <td>{item.Tipo}</td>
+                        <td>{item.Marca}</td>
+                        <td>{item.Cantidad}</td>
+                        <td>{item.PrecioCosto}</td>
+                        <td>{item.PrecioVenta}</td>
+                        <td>{item.PrecioAfiliados}</td>
                         <td className="action-buttons">
-                            <button>
-                                <Link to={`/productos/editar/${producto.producto_id}`}>Editar</Link>
+                            <button className="edit-button" onClick={() => onEdit(item.CodigoBarras)}>
+                                <i className="fas fa-edit"></i>
                             </button>
-                            <button>
-                                <Link to={`/productos/eliminar/${producto.producto_id}`}>Eliminar</Link>
+                            <button className="delete-button" onClick={() => onDelete(item.CodigoBarras)}>
+                                <i className="fas fa-trash-alt"></i>
                             </button>
                         </td>
                     </tr>

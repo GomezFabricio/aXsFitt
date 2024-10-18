@@ -78,7 +78,7 @@ CREATE TABLE usuarios (
   estado_usuario_id INTEGER UNSIGNED  NOT NULL  ,
   persona_id INTEGER UNSIGNED  NOT NULL  ,
   usuario_email VARCHAR(50)  NULL  ,
-  usuario_pass VARCHAR(20)  NULL    ,
+  usuario_pass VARCHAR(255)  NULL    ,
 PRIMARY KEY(usuario_id)  ,
 INDEX usuarios_FKIndex1(persona_id)  ,
 INDEX usuarios_FKIndex2(estado_usuario_id),

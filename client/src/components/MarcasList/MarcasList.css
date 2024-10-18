@@ -64,21 +64,18 @@
     text-decoration: none;
 }
 
+/* Cambiar el color de los botones */
 #marcasTable button {
-    background-color: #007bff;
-    color: #ffffff;
+    background: none; /* Hacer el fondo transparente */
     border: none;
-    padding: 5px 10px;
+    padding: 5px;
     cursor: pointer;
     margin: 2px;
-    border-radius: 4px;
 }
 
-#marcasTable button:hover {
-    background-color: #0056b3;
-}
-
-#marcasTable button a {
-    color: #ffffff;
-    text-decoration: none;
+/* Asegurarse de que los botones de acciones estén alineados horizontalmente */
+#marcasTable td .action-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 5px; /* Espacio entre los botones */
 }

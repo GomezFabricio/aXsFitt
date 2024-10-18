@@ -1,21 +1,25 @@
 import React, { useEffect, useState } from 'react';
-import { inventarioList } from '../../../api/inventario.api';
+import { Formik } from 'formik';
+import * as Yup from 'yup';
+import { inventarioList, agregarInventario } from '../../../api/inventario.api';
 import InventarioList from '../../../components/InventarioList/InventarioList';
 import MenuEnInventario from '../../../components/MenuEnInventario/MenuEnInventario';
+import FormularioInventario from '../../../components/FormularioInventario/FormularioInventario';
 import { useNavigate } from 'react-router-dom';
 import './Inventario.css';
 
 const Inventario = () => {
-    const [productos, setProductos] = useState([]);
+    const [inventario, setInventario] = useState([]);
+    const [showModal, setShowModal] = useState(false);
 
     useEffect(() => {
         const fetchInventario = async () => {
             try {
                 const data = await inventarioList();
-                setProductos(data);
+                setInventario(data);
             } catch (error) {
                 console.error('Error fetching inventario:', error);
-                setProductos([]);
+                setInventario([]);
             }
         };
 
@@ -25,7 +29,44 @@ const Inventario = () => {
     const navigate = useNavigate();
 
     const handleAgregarClick = () => {
-        navigate('/productos/nuevo'); // Navegamos a la página de agregar un nuevo producto
+        setShowModal(true);
+    };
+
+    const handleCloseModal = () => {
+        setShowModal(false);
+    };
+
+    const handleInventarioAgregado = async () => {
+        const data = await inventarioList();
+        setInventario(data);
+    };
+
+    const initialValues = {
+        productoId: '',
+        cantidad: '',
+        precioCosto: '',
+        incremento: '',
+        precioVenta: ''
+    };
+
+    const validationSchema = Yup.object({
+        productoId: Yup.number().required('Requerido'),
+        cantidad: Yup.number().required('Requerido'),
+        precioCosto: Yup.number().required('Requerido'),
+        incremento: Yup.number(),
+        precioVenta: Yup.number()
+    });
+
+    const handleSubmit = async (values, { setSubmitting }) => {
+        try {
+            await agregarInventario(values);
+            handleInventarioAgregado();
+            handleCloseModal();
+        } catch (error) {
+            console.error('Error agregando inventario:', error);
+        } finally {
+            setSubmitting(false);
+        }
     };
 
     return (
@@ -38,10 +79,22 @@ const Inventario = () => {
                     </button>
                 </div>
             </div>
-            <h2>En esta sección podrás ver y gestionar el inventario de productos.</h2>
+            <h2>En esta sección podrás ver y gestionar el inventario.</h2>
             <MenuEnInventario />
 
-            <InventarioList productos={productos} />
+            <InventarioList inventario={inventario} />
+
+            {showModal && (
+                <Formik
+                    initialValues={initialValues}
+                    validationSchema={validationSchema}
+                    onSubmit={handleSubmit}
+                >
+                    {({ handleSubmit, setFieldValue }) => (
+                        <FormularioInventario handleSubmit={handleSubmit} onClose={handleCloseModal} setFieldValue={setFieldValue} />
+                    )}
+                </Formik>
+            )}
         </div>
     );
 };
