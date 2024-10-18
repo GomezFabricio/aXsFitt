@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
-import { productosList, agregarProducto, eliminarProducto } from '../../../api/inventario.api';
+import { productosList, agregarProducto, eliminarProducto, editarProducto } from '../../../api/inventario.api';
 import ProductosList from '../../../components/ProductosList/ProductosList';
 import MenuEnInventario from '../../../components/MenuEnInventario/MenuEnInventario';
 import FormularioProducto from '../../../components/FormularioProducto/FormularioProducto';
@@ -11,7 +11,10 @@ import './Productos.css';
 const Productos = () => {
     const [productos, setProductos] = useState([]);
     const [showModal, setShowModal] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
+    const [formValues, setFormValues] = useState(null);
+    const [isEditing, setIsEditing] = useState(false);
 
     useEffect(() => {
         const fetchProductos = async () => {
@@ -30,27 +33,21 @@ const Productos = () => {
     const navigate = useNavigate();
 
     const handleAgregarClick = () => {
+        setFormValues(initialValues);
         setShowModal(true);
+        setErrorMessage('');
+        setIsEditing(false);
     };
 
     const handleCloseModal = () => {
         setShowModal(false);
+        setErrorMessage('');
     };
 
     const handleProductoAgregado = async () => {
         const data = await productosList();
         setProductos(data);
-    };
-
-    const handleDelete = async (idProducto) => {
-        try {
-            await eliminarProducto(idProducto);
-            const updatedProductos = productos.filter(producto => producto.idProducto !== idProducto);
-            setProductos(updatedProductos);
-        } catch (error) {
-            console.error('Error eliminando producto:', error);
-            setErrorMessage(error.message || 'No se puede eliminar el producto porque está asociado a uno o más registros de inventario.');
-        }
+        handleCloseModal();
     };
 
     const initialValues = {
@@ -68,15 +65,45 @@ const Productos = () => {
     });
 
     const handleSubmit = async (values, { setSubmitting }) => {
+        setIsSubmitting(true);
         try {
-            await agregarProducto(values);
-            handleProductoAgregado();
-            handleCloseModal();
+            if (isEditing) {
+                await editarProducto(formValues.idProducto, values);
+                handleProductoAgregado();
+            } else {
+                await agregarProducto(values);
+                handleProductoAgregado();
+            }
         } catch (error) {
-            console.error('Error agregando producto:', error);
+            console.error('Error agregando/editando producto:', error);
+            setErrorMessage(error.message || 'Error agregando/editando producto');
         } finally {
+            setIsSubmitting(false);
             setSubmitting(false);
         }
+    };
+
+    const handleDelete = async (idProducto) => {
+        try {
+            await eliminarProducto(idProducto);
+            const updatedProductos = productos.filter(producto => producto.idProducto !== idProducto);
+            setProductos(updatedProductos);
+        } catch (error) {
+            console.error('Error eliminando producto:', error);
+            setErrorMessage(error.message || 'Error eliminando producto');
+        }
+    };
+
+    const handleEdit = (producto) => {
+        setFormValues({
+            idProducto: producto.idProducto,
+            codigoBarrasProducto: producto.CodigoBarras,
+            nombreProducto: producto.Producto,
+            idTipoProducto: producto.idTipoProducto,
+            idMarcaProducto: producto.idMarcaProducto
+        });
+        setShowModal(true);
+        setIsEditing(true);
     };
 
     return (
@@ -94,16 +121,17 @@ const Productos = () => {
 
             {errorMessage && <div className="alert alert-danger">{errorMessage}</div>}
 
-            <ProductosList productos={productos} onDelete={handleDelete} />
+            <ProductosList productos={productos} onDelete={handleDelete} onEdit={handleEdit} />
 
             {showModal && (
                 <Formik
-                    initialValues={initialValues}
+                    initialValues={formValues || initialValues}
                     validationSchema={validationSchema}
                     onSubmit={handleSubmit}
+                    enableReinitialize
                 >
                     {({ handleSubmit, setFieldValue }) => (
-                        <FormularioProducto handleSubmit={handleSubmit} onClose={handleCloseModal} setFieldValue={setFieldValue} />
+                        <FormularioProducto handleSubmit={handleSubmit} onClose={handleCloseModal} setFieldValue={setFieldValue} isSubmitting={isSubmitting} errorMessage={errorMessage} isEditing={isEditing} />
                     )}
                 </Formik>
             )}

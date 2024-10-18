@@ -45,7 +45,7 @@ const ProductosList = ({ productos, onDelete, onEdit }) => {
                                 <td>{producto.TipoProducto}</td>
                                 <td>{producto.MarcaProducto}</td>
                                 <td className="action-buttons">
-                                    <button className="edit-button" onClick={() => onEdit(producto.idProducto)}>
+                                    <button className="edit-button" onClick={() => onEdit(producto)}>
                                         <i className="fas fa-edit"></i>
                                     </button>
                                     <button className="delete-button" onClick={() => onDelete(producto.idProducto)}>

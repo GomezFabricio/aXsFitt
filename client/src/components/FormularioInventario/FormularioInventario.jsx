@@ -3,7 +3,7 @@ import { Field, Form, ErrorMessage } from 'formik';
 import './FormularioInventario.css';
 import { productosList } from '../../api/inventario.api';
 
-const FormularioInventario = ({ handleSubmit, onClose, setFieldValue, isSubmitting, errorMessage, showWarning, handleReingreso, isReingreso, formValues }) => {
+const FormularioInventario = ({ handleSubmit, onClose, setFieldValue, isSubmitting, errorMessage, showWarning, handleReingreso, isReingreso, formValues, isEditing }) => {
     const [productos, setProductos] = useState([]);
     const [codigoBarras, setCodigoBarras] = useState('');
     const [disablePrecioVenta, setDisablePrecioVenta] = useState(false);
@@ -50,11 +50,14 @@ const FormularioInventario = ({ handleSubmit, onClose, setFieldValue, isSubmitti
     };
 
     useEffect(() => {
-        if (formValues && formValues.codigoBarras) {
-            setCodigoBarras(formValues.codigoBarras);
-        }
-        if (formValues && formValues.precioVenta) {
-            setDisableIncremento(true);
+        if (formValues) {
+            setCodigoBarras(formValues.codigoBarras || '');
+            setDisableIncremento(!!formValues.precioVenta);
+            setDisablePrecioVenta(!!formValues.incremento);
+        } else {
+            setCodigoBarras('');
+            setDisableIncremento(false);
+            setDisablePrecioVenta(false);
         }
     }, [formValues]);
 
@@ -69,15 +72,15 @@ const FormularioInventario = ({ handleSubmit, onClose, setFieldValue, isSubmitti
         <div className="modal-inventario">
             <div className="modal-content-inventario">
                 <span className="close-inventario" onClick={onClose}>&times;</span>
-                <h2>Registrar Nuevo Ingreso</h2>
+                <h2>{isEditing ? 'Editar Inventario' : isReingreso ? 'Reingreso de Inventario' : 'Registrar Nuevo Ingreso'}</h2>
                 {errorMessage && <div className="error-message">{errorMessage}</div>}
                 <Form className="form-inventario" onSubmit={handleSubmit}>
                     <label htmlFor="codigoBarras" className="label-inventario">Código de Barras:</label>
-                    <Field type="text" id="codigoBarras" name="codigoBarras" className="input-inventario" value={codigoBarras} onChange={handleCodigoBarrasChange} disabled={isReingreso} />
+                    <Field type="text" id="codigoBarras" name="codigoBarras" className="input-inventario" value={codigoBarras} onChange={handleCodigoBarrasChange} disabled={isReingreso || isEditing} />
                     <ErrorMessage name="codigoBarras" component="div" className="error-inventario" />
 
                     <label htmlFor="productoId" className="label-inventario">Producto:</label>
-                    <Field as="select" id="productoId" name="productoId" className="input-inventario" disabled={isReingreso}>
+                    <Field as="select" id="productoId" name="productoId" className="input-inventario" disabled={isReingreso || isEditing}>
                         <option value="">Seleccione un producto</option>
                         {productos.map(producto => (
                             <option key={producto.idProducto} value={producto.idProducto}>{producto.Producto}</option>
@@ -101,7 +104,7 @@ const FormularioInventario = ({ handleSubmit, onClose, setFieldValue, isSubmitti
                     <Field type="number" id="precioVenta" name="precioVenta" className="input-inventario" onChange={handlePrecioVentaChange} disabled={disablePrecioVenta} />
                     <ErrorMessage name="precioVenta" component="div" className="error-inventario" />
 
-                    <button type="submit" className="button-inventario" disabled={isSubmitting}>Registrar</button>
+                    <button type="submit" className="button-inventario" disabled={isSubmitting}>{isEditing ? 'Actualizar' : isReingreso ? 'Reingresar' : 'Registrar'}</button>
                 </Form>
 
                 {showWarning && (

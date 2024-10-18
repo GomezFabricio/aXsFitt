@@ -3,7 +3,7 @@ import { Field, Form, ErrorMessage } from 'formik';
 import './FormularioProducto.css';
 import { tiposProductosList, marcasList } from '../../api/inventario.api';
 
-const FormularioProducto = ({ handleSubmit, onClose, setFieldValue }) => {
+const FormularioProducto = ({ handleSubmit, onClose, setFieldValue, isEditing }) => {
     const [tiposProductos, setTiposProductos] = useState([]);
     const [marcas, setMarcas] = useState([]);
 
@@ -26,7 +26,7 @@ const FormularioProducto = ({ handleSubmit, onClose, setFieldValue }) => {
         <div className="modal-producto">
             <div className="modal-content-producto">
                 <span className="close-producto" onClick={onClose}>&times;</span>
-                <h2>Agregar Nuevo Producto</h2>
+                <h2>{isEditing ? 'Editar Producto' : 'Agregar Nuevo Producto'}</h2>
                 <Form className="form-producto" onSubmit={handleSubmit}>
                     <label htmlFor="codigoBarrasProducto" className="label-producto">Código de Barras:</label>
                     <Field type="text" id="codigoBarrasProducto" name="codigoBarrasProducto" className="input-producto" />
@@ -54,7 +54,7 @@ const FormularioProducto = ({ handleSubmit, onClose, setFieldValue }) => {
                     </Field>
                     <ErrorMessage name="idMarcaProducto" component="div" className="error-producto" />
 
-                    <button type="submit" className="button-producto">Agregar</button>
+                    <button type="submit" className="button-producto">{isEditing ? 'Editar' : 'Agregar'}</button>
                 </Form>
             </div>
         </div>

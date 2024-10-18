@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
-import { inventarioList, agregarInventario, obtenerInventarioPorId, eliminarInventario } from '../../../api/inventario.api';
+import { inventarioList, agregarInventario, obtenerInventarioPorId, eliminarInventario, editarInventario } from '../../../api/inventario.api';
 import InventarioList from '../../../components/InventarioList/InventarioList';
 import MenuEnInventario from '../../../components/MenuEnInventario/MenuEnInventario';
 import FormularioInventario from '../../../components/FormularioInventario/FormularioInventario';
@@ -16,6 +16,7 @@ const Inventario = () => {
     const [showWarning, setShowWarning] = useState(false);
     const [formValues, setFormValues] = useState(null);
     const [isReingreso, setIsReingreso] = useState(false);
+    const [isEditing, setIsEditing] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
@@ -39,6 +40,7 @@ const Inventario = () => {
         setShowModal(true);
         setErrorMessage('');
         setIsReingreso(false);
+        setIsEditing(false);
     };
 
     const handleCloseModal = () => {
@@ -50,6 +52,7 @@ const Inventario = () => {
     const handleInventarioAgregado = async () => {
         const data = await inventarioList();
         setInventario(data);
+        handleCloseModal();
     };
 
     const initialValues = {
@@ -72,17 +75,21 @@ const Inventario = () => {
     const handleSubmit = async (values, { setSubmitting }) => {
         setIsSubmitting(true);
         try {
-            const response = await agregarInventario(values);
-            if (response.reingreso) {
-                setFormValues(values);
-                setShowWarning(true);
-            } else {
+            if (isEditing) {
+                await editarInventario(formValues.productoId, values);
                 handleInventarioAgregado();
-                handleCloseModal();
+            } else {
+                const response = await agregarInventario(values);
+                if (response.reingreso) {
+                    setFormValues(values);
+                    setShowWarning(true);
+                } else {
+                    handleInventarioAgregado();
+                }
             }
         } catch (error) {
-            console.error('Error agregando inventario:', error);
-            setErrorMessage(error.message || 'Error agregando inventario');
+            console.error('Error agregando/editando inventario:', error);
+            setErrorMessage(error.message || 'Error agregando/editando inventario');
         } finally {
             setIsSubmitting(false);
             setSubmitting(false);
@@ -94,7 +101,6 @@ const Inventario = () => {
             try {
                 await agregarInventario({ ...formValues, reingreso: true });
                 handleInventarioAgregado();
-                handleCloseModal();
             } catch (error) {
                 console.error('Error realizando reingreso:', error);
                 setErrorMessage(error.message || 'Error realizando reingreso');
@@ -135,7 +141,21 @@ const Inventario = () => {
     };
 
     const handleEdit = async (idProducto) => {
-        // Implementar la lógica de edición aquí
+        try {
+            const inventarioData = await obtenerInventarioPorId(idProducto);
+            setFormValues({
+                productoId: inventarioData.idProducto,
+                codigoBarras: inventarioData.CodigoBarras,
+                cantidad: inventarioData.Cantidad,
+                precioCosto: inventarioData.PrecioCosto,
+                incremento: inventarioData.Incremento,
+                precioVenta: inventarioData.PrecioVenta
+            });
+            setShowModal(true);
+            setIsEditing(true);
+        } catch (error) {
+            console.error('Error obteniendo producto para edición:', error);
+        }
     };
 
     return (
@@ -162,9 +182,10 @@ const Inventario = () => {
                     initialValues={formValues || initialValues}
                     validationSchema={validationSchema}
                     onSubmit={handleSubmit}
+                    enableReinitialize
                 >
                     {({ handleSubmit, setFieldValue }) => (
-                        <FormularioInventario handleSubmit={handleSubmit} onClose={handleCloseModal} setFieldValue={setFieldValue} isSubmitting={isSubmitting} errorMessage={errorMessage} showWarning={showWarning} handleReingreso={handleReingreso} isReingreso={isReingreso} formValues={formValues} />
+                        <FormularioInventario handleSubmit={handleSubmit} onClose={handleCloseModal} setFieldValue={setFieldValue} isSubmitting={isSubmitting} errorMessage={errorMessage} showWarning={showWarning} handleReingreso={handleReingreso} isReingreso={isReingreso} formValues={formValues} isEditing={isEditing} />
                     )}
                 </Formik>
             )}
