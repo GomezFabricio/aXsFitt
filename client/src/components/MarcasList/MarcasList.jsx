@@ -1,73 +1,55 @@
-import React, { useEffect, useRef } from 'react';
-import 'datatables.net-dt/css/dataTables.dataTables.css';
-import $ from 'jquery';
-import 'datatables.net';
+import React, { useState } from 'react';
 import './MarcasList.css';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import '../../assets/styles/IconStyles.css';
 
 const MarcasList = ({ marcas, onEdit, onDelete }) => {
-    const tableRef = useRef(null);
-    const dataTableRef = useRef(null);
+    const [searchTerm, setSearchTerm] = useState('');
 
-    useEffect(() => {
-        if (dataTableRef.current) {
-            dataTableRef.current.destroy(); // Destruir la instancia existente de DataTables
-        }
+    const handleSearchChange = (event) => {
+        setSearchTerm(event.target.value);
+    };
 
-        dataTableRef.current = $(tableRef.current).DataTable({
-            data: marcas,
-            columns: [
-                { title: "Marca Producto", data: "nombreMarcaProducto" },
-                { 
-                    title: "Acciones", 
-                    data: null,
-                    render: function (data, type, row) {
-                        return `
-                            <div class="action-buttons">
-                                <button class="edit-button">
-                                    <a href="/marcas/editar/${row.idMarcaProducto}">
-                                        <i class="fas fa-edit"></i>
-                                    </a>
-                                </button>
-                                <button class="delete-button">
-                                    <a href="/marcas/eliminar/${row.idMarcaProducto}">
-                                        <i class="fas fa-trash-alt"></i>
-                                    </a>
-                                </button>
-                            </div>
-                        `;
-                    }
-                }
-            ]
-        });
-    }, [marcas]);
+    const filteredMarcas = marcas.filter(item =>
+        item.nombreMarcaProducto.toLowerCase().includes(searchTerm.toLowerCase())
+    );
 
     return (
         <div id="marcasTableContainer">
-            <table ref={tableRef} id="marcasTable" className="display">
-                <thead>
-                    <tr>
-                        <th>Marca Producto</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {Array.isArray(marcas) && marcas.map((marca) => (
-                        <tr key={marca.idMarcaProducto}>
-                            <td>{marca.nombreMarcaProducto}</td>
-                            <td className="action-buttons">
-                                <button className="edit-button" onClick={() => onEdit(marca.idMarcaProducto)}>
-                                    <i className="fas fa-edit"></i>
-                                </button>
-                                <button className="delete-button" onClick={() => onDelete(marca.idMarcaProducto)}>
-                                    <i className="fas fa-trash-alt"></i>
-                                </button>
-                            </td>
+            <input
+                type="text"
+                placeholder="Buscar..."
+                value={searchTerm}
+                onChange={handleSearchChange}
+                className="search-input"
+            />
+            {Array.isArray(filteredMarcas) && filteredMarcas.length > 0 ? (
+                <table id="marcasTable" className="display">
+                    <thead>
+                        <tr>
+                            <th>Marca Producto</th>
+                            <th>Acciones</th>
                         </tr>
-                    ))}
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        {filteredMarcas.map((marca) => (
+                            <tr key={marca.idMarcaProducto}>
+                                <td>{marca.nombreMarcaProducto}</td>
+                                <td className="action-buttons">
+                                    <button className="edit-button" onClick={() => onEdit(marca.idMarcaProducto)}>
+                                        <i className="fas fa-edit"></i>
+                                    </button>
+                                    <button className="delete-button" onClick={() => onDelete(marca.idMarcaProducto)}>
+                                        <i className="fas fa-trash-alt"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            ) : (
+                <p>No hay datos disponibles en las marcas.</p>
+            )}
         </div>
     );
 };

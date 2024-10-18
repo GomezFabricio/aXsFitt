@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
-import { tiposProductosList, agregarTipoProducto } from '../../../api/inventario.api';
+import { tiposProductosList, agregarTipoProducto, eliminarTipoProducto } from '../../../api/inventario.api';
 import TiposProductosList from '../../../components/TiposProductosList/TiposProductosList';
 import MenuEnInventario from '../../../components/MenuEnInventario/MenuEnInventario';
 import FormularioTiposProductos from '../../../components/FormularioTiposProductos/FormularioTiposProductos';
@@ -11,6 +11,7 @@ import './TiposProductos.css';
 const TiposProductos = () => {
     const [tiposProductos, setTiposProductos] = useState([]);
     const [showModal, setShowModal] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
 
     useEffect(() => {
         const fetchTiposProductos = async () => {
@@ -39,6 +40,17 @@ const TiposProductos = () => {
     const handleTipoProductoAgregado = async () => {
         const data = await tiposProductosList();
         setTiposProductos(data);
+    };
+
+    const handleDelete = async (idTipoProducto) => {
+        try {
+            await eliminarTipoProducto(idTipoProducto);
+            const updatedTiposProductos = tiposProductos.filter(tipoProducto => tipoProducto.idTipoProducto !== idTipoProducto);
+            setTiposProductos(updatedTiposProductos);
+        } catch (error) {
+            console.error('Error eliminando tipo de producto:', error);
+            setErrorMessage(error.message || 'No se puede eliminar el tipo de producto porque está asociado a uno o más productos.');
+        }
     };
 
     const initialValues = {
@@ -74,7 +86,9 @@ const TiposProductos = () => {
             <h2>En esta sección podrás ver y gestionar los tipos de productos.</h2>
             <MenuEnInventario />
 
-            <TiposProductosList tiposProductos={tiposProductos} />
+            {errorMessage && <div className="alert alert-danger">{errorMessage}</div>}
+
+            <TiposProductosList tiposProductos={tiposProductos} onDelete={handleDelete} />
 
             {showModal && (
                 <Formik

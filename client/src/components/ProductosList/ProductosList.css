@@ -1,8 +1,13 @@
-/* Cambiar el color de fondo de la tabla */
+/* Estilos para la tabla de productos */
 #productosTable {
     background-color: #f9f9f9;
     width: 100%;
     border-collapse: collapse;
+    margin: 20px 0;
+    font-size: 1em;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    min-width: 400px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
 }
 
 /* Cambiar el color de fondo de las filas */
@@ -25,13 +30,7 @@
 #productosTable th, #productosTable td {
     text-align: center;
     padding: 8px;
-    vertical-align: middle; /* Asegurarse de que el contenido esté centrado verticalmente */
-}
-
-/* Cambiar el color de los enlaces */
-#productosTable a {
-    color: #007bff;
-    text-decoration: none;
+    border: 1px solid #dddddd;
 }
 
 /* Cambiar el color de los botones */
@@ -41,6 +40,8 @@
     padding: 5px;
     cursor: pointer;
     margin: 2px;
+    color: #009879;
+    font-size: 1.2em;
 }
 
 /* Asegurarse de que los botones de acciones estén alineados horizontalmente */
@@ -48,4 +49,20 @@
     display: flex;
     justify-content: center;
     gap: 5px; /* Espacio entre los botones */
+}
+
+/* Cambiar el color de los botones al pasar el cursor */
+#productosTable button:hover {
+    color: #005f5f;
+}
+
+/* Estilos para el campo de búsqueda */
+.search-input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 20px;
+    font-size: 1em;
+    border: 1px solid #dddddd;
+    border-radius: 4px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }

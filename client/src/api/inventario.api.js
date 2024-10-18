@@ -99,3 +99,43 @@ export const obtenerInventarioPorId = async (id) => {
         throw error.response.data;
     }
 };
+
+// Función para eliminar inventario
+export const eliminarInventario = async (id) => {
+    try {
+        const response = await axios.delete(`http://localhost:4000/inventario/eliminar-inventario/${id}`, config);
+        return response.data;
+    } catch (error) {
+        throw error.response.data;
+    }
+};
+
+// Función para eliminar marca
+export const eliminarMarca = async (id) => {
+    try {
+        const response = await axios.delete(`http://localhost:4000/inventario/eliminar-marca/${id}`, config);
+        return response.data;
+    } catch (error) {
+        throw error.response.data;
+    }
+};
+
+// Función para eliminar tipo de producto
+export const eliminarTipoProducto = async (id) => {
+    try {
+        const response = await axios.delete(`http://localhost:4000/inventario/eliminar-tipo-producto/${id}`, config);
+        return response.data;
+    } catch (error) {
+        throw error.response.data;
+    }
+};
+
+// Función para eliminar producto
+export const eliminarProducto = async (id) => {
+    try {
+        const response = await axios.delete(`http://localhost:4000/inventario/eliminar-producto/${id}`, config);
+        return response.data;
+    } catch (error) {
+        throw error.response.data;
+    }
+};

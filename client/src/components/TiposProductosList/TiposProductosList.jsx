@@ -1,73 +1,55 @@
-import React, { useEffect, useRef } from 'react';
-import 'datatables.net-dt/css/dataTables.dataTables.css';
-import $ from 'jquery';
-import 'datatables.net';
+import React, { useState } from 'react';
 import './TiposProductosList.css';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import '../../assets/styles/IconStyles.css';
 
 const TiposProductosList = ({ tiposProductos, onEdit, onDelete }) => {
-    const tableRef = useRef(null);
-    const dataTableRef = useRef(null);
+    const [searchTerm, setSearchTerm] = useState('');
 
-    useEffect(() => {
-        if (dataTableRef.current) {
-            dataTableRef.current.destroy(); // Destruir la instancia existente de DataTables
-        }
+    const handleSearchChange = (event) => {
+        setSearchTerm(event.target.value);
+    };
 
-        dataTableRef.current = $(tableRef.current).DataTable({
-            data: tiposProductos,
-            columns: [
-                { title: "Tipo Producto", data: "nombreTipoProducto" },
-                { 
-                    title: "Acciones", 
-                    data: null,
-                    render: function (data, type, row) {
-                        return `
-                            <div class="action-buttons">
-                                <button class="edit-button">
-                                    <a href="/tipos-productos/editar/${row.idTipoProducto}">
-                                        <i class="fas fa-edit"></i>
-                                    </a>
-                                </button>
-                                <button class="delete-button">
-                                    <a href="/tipos-productos/eliminar/${row.idTipoProducto}">
-                                        <i class="fas fa-trash-alt"></i>
-                                    </a>
-                                </button>
-                            </div>
-                        `;
-                    }
-                }
-            ]
-        });
-    }, [tiposProductos]);
+    const filteredTiposProductos = tiposProductos.filter(item =>
+        item.nombreTipoProducto.toLowerCase().includes(searchTerm.toLowerCase())
+    );
 
     return (
         <div id="tiposProductosTableContainer">
-            <table ref={tableRef} id="tiposProductosTable" className="display">
-                <thead>
-                    <tr>
-                        <th>Tipo Producto</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {Array.isArray(tiposProductos) && tiposProductos.map((tipoProducto) => (
-                        <tr key={tipoProducto.idTipoProducto}>
-                            <td>{tipoProducto.nombreTipoProducto}</td>
-                            <td className="action-buttons">
-                                <button className="edit-button" onClick={() => onEdit(tipoProducto.idTipoProducto)}>
-                                    <i className="fas fa-edit"></i>
-                                </button>
-                                <button className="delete-button" onClick={() => onDelete(tipoProducto.idTipoProducto)}>
-                                    <i className="fas fa-trash-alt"></i>
-                                </button>
-                            </td>
+            <input
+                type="text"
+                placeholder="Buscar..."
+                value={searchTerm}
+                onChange={handleSearchChange}
+                className="search-input"
+            />
+            {Array.isArray(filteredTiposProductos) && filteredTiposProductos.length > 0 ? (
+                <table id="tiposProductosTable" className="display">
+                    <thead>
+                        <tr>
+                            <th>Tipo Producto</th>
+                            <th>Acciones</th>
                         </tr>
-                    ))}
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        {filteredTiposProductos.map((tipoProducto) => (
+                            <tr key={tipoProducto.idTipoProducto}>
+                                <td>{tipoProducto.nombreTipoProducto}</td>
+                                <td className="action-buttons">
+                                    <button className="edit-button" onClick={() => onEdit(tipoProducto.idTipoProducto)}>
+                                        <i className="fas fa-edit"></i>
+                                    </button>
+                                    <button className="delete-button" onClick={() => onDelete(tipoProducto.idTipoProducto)}>
+                                        <i className="fas fa-trash-alt"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            ) : (
+                <p>No hay datos disponibles en los tipos de productos.</p>
+            )}
         </div>
     );
 };

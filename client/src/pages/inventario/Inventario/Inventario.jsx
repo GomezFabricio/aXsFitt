@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
-import { inventarioList, agregarInventario, obtenerInventarioPorId } from '../../../api/inventario.api';
+import { inventarioList, agregarInventario, obtenerInventarioPorId, eliminarInventario } from '../../../api/inventario.api';
 import InventarioList from '../../../components/InventarioList/InventarioList';
 import MenuEnInventario from '../../../components/MenuEnInventario/MenuEnInventario';
 import FormularioInventario from '../../../components/FormularioInventario/FormularioInventario';
@@ -16,6 +16,7 @@ const Inventario = () => {
     const [showWarning, setShowWarning] = useState(false);
     const [formValues, setFormValues] = useState(null);
     const [isReingreso, setIsReingreso] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
         const fetchInventario = async () => {
@@ -120,7 +121,17 @@ const Inventario = () => {
     };
 
     const handleDelete = async (idProducto) => {
-        // Implementar la lógica de eliminación aquí
+        setIsLoading(true);
+        try {
+            await eliminarInventario(idProducto);
+            const updatedInventario = inventario.filter(item => item.idProducto !== idProducto);
+            setInventario(updatedInventario);
+        } catch (error) {
+            console.error('Error eliminando producto del inventario:', error);
+            setErrorMessage(error.message || 'Error eliminando producto del inventario');
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     const handleEdit = async (idProducto) => {
@@ -140,7 +151,11 @@ const Inventario = () => {
             <h2>En esta sección podrás ver y gestionar el inventario.</h2>
             <MenuEnInventario />
 
-            <InventarioList inventario={inventario} onDelete={handleDelete} onEdit={handleEdit} onReingreso={handleReingresoClick} />
+            {isLoading ? (
+                <div className="loading">Cargando...</div>
+            ) : (
+                <InventarioList inventario={inventario} onDelete={handleDelete} onEdit={handleEdit} onReingreso={handleReingresoClick} />
+            )}
 
             {showModal && (
                 <Formik

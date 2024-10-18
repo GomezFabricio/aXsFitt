@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
-import { productosList, agregarProducto } from '../../../api/inventario.api';
+import { productosList, agregarProducto, eliminarProducto } from '../../../api/inventario.api';
 import ProductosList from '../../../components/ProductosList/ProductosList';
 import MenuEnInventario from '../../../components/MenuEnInventario/MenuEnInventario';
 import FormularioProducto from '../../../components/FormularioProducto/FormularioProducto';
@@ -11,6 +11,7 @@ import './Productos.css';
 const Productos = () => {
     const [productos, setProductos] = useState([]);
     const [showModal, setShowModal] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
 
     useEffect(() => {
         const fetchProductos = async () => {
@@ -39,6 +40,17 @@ const Productos = () => {
     const handleProductoAgregado = async () => {
         const data = await productosList();
         setProductos(data);
+    };
+
+    const handleDelete = async (idProducto) => {
+        try {
+            await eliminarProducto(idProducto);
+            const updatedProductos = productos.filter(producto => producto.idProducto !== idProducto);
+            setProductos(updatedProductos);
+        } catch (error) {
+            console.error('Error eliminando producto:', error);
+            setErrorMessage(error.message || 'No se puede eliminar el producto porque está asociado a uno o más registros de inventario.');
+        }
     };
 
     const initialValues = {
@@ -80,7 +92,9 @@ const Productos = () => {
             <h2>En esta sección podrás ver y gestionar los productos.</h2>
             <MenuEnInventario />
 
-            <ProductosList productos={productos} />
+            {errorMessage && <div className="alert alert-danger">{errorMessage}</div>}
+
+            <ProductosList productos={productos} onDelete={handleDelete} />
 
             {showModal && (
                 <Formik

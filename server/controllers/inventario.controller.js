@@ -247,3 +247,92 @@ export const obtenerInventarioPorId = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
+
+// Eliminar inventario
+export const eliminarInventario = async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const [result] = await pool.query(`
+            DELETE FROM inventario_principal WHERE producto_id = ?
+        `, [id]);
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ message: 'Producto no encontrado' });
+        }
+
+        res.json({ message: 'Producto eliminado exitosamente' });
+    } catch (error) {
+        console.error('Error eliminando producto del inventario:', error);
+        res.status(500).json({ message: error.message });
+    }
+};
+
+// Eliminar marca
+export const eliminarMarca = async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const [result] = await pool.query(`
+            DELETE FROM marca_productos WHERE marca_producto_id = ?
+        `, [id]);
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ message: 'Marca no encontrada' });
+        }
+
+        res.json({ message: 'Marca eliminada exitosamente' });
+    } catch (error) {
+        if (error.code === 'ER_ROW_IS_REFERENCED_2') {
+            return res.status(400).json({ message: 'No se puede eliminar la marca porque está asociada a uno o más productos.' });
+        }
+        console.error('Error eliminando marca:', error);
+        res.status(500).json({ message: error.message });
+    }
+};
+
+// Eliminar tipo de producto
+export const eliminarTipoProducto = async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const [result] = await pool.query(`
+            DELETE FROM tipos_productos WHERE tipo_producto_id = ?
+        `, [id]);
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ message: 'Tipo de producto no encontrado' });
+        }
+
+        res.json({ message: 'Tipo de producto eliminado exitosamente' });
+    } catch (error) {
+        if (error.code === 'ER_ROW_IS_REFERENCED_2') {
+            return res.status(400).json({ message: 'No se puede eliminar el tipo de producto porque está asociado a uno o más productos.' });
+        }
+        console.error('Error eliminando tipo de producto:', error);
+        res.status(500).json({ message: error.message });
+    }
+};
+
+// Eliminar producto
+export const eliminarProducto = async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const [result] = await pool.query(`
+            DELETE FROM productos WHERE producto_id = ?
+        `, [id]);
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ message: 'Producto no encontrado' });
+        }
+
+        res.json({ message: 'Producto eliminado exitosamente' });
+    } catch (error) {
+        if (error.code === 'ER_ROW_IS_REFERENCED_2') {
+            return res.status(400).json({ message: 'No se puede eliminar el producto porque está asociado a uno o más registros de inventario.' });
+        }
+        console.error('Error eliminando producto:', error);
+        res.status(500).json({ message: error.message });
+    }
+};
