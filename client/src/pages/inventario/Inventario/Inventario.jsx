@@ -12,6 +12,9 @@ const Inventario = () => {
     const [inventario, setInventario] = useState([]);
     const [showModal, setShowModal] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
+    const [showWarning, setShowWarning] = useState(false);
+    const [formValues, setFormValues] = useState(null);
 
     useEffect(() => {
         const fetchInventario = async () => {
@@ -31,10 +34,13 @@ const Inventario = () => {
 
     const handleAgregarClick = () => {
         setShowModal(true);
+        setErrorMessage('');
     };
 
     const handleCloseModal = () => {
         setShowModal(false);
+        setErrorMessage('');
+        setShowWarning(false);
     };
 
     const handleInventarioAgregado = async () => {
@@ -44,6 +50,7 @@ const Inventario = () => {
 
     const initialValues = {
         productoId: '',
+        codigoBarras: '',
         cantidad: '',
         precioCosto: '',
         incremento: '',
@@ -61,14 +68,33 @@ const Inventario = () => {
     const handleSubmit = async (values, { setSubmitting }) => {
         setIsSubmitting(true);
         try {
-            await agregarInventario(values);
-            handleInventarioAgregado();
-            handleCloseModal();
+            const response = await agregarInventario(values);
+            if (response.reingreso) {
+                setFormValues(values);
+                setShowWarning(true);
+            } else {
+                handleInventarioAgregado();
+                handleCloseModal();
+            }
         } catch (error) {
             console.error('Error agregando inventario:', error);
+            setErrorMessage(error.message || 'Error agregando inventario');
         } finally {
             setIsSubmitting(false);
             setSubmitting(false);
+        }
+    };
+
+    const handleReingreso = async () => {
+        if (formValues) {
+            try {
+                await agregarInventario({ ...formValues, reingreso: true });
+                handleInventarioAgregado();
+                handleCloseModal();
+            } catch (error) {
+                console.error('Error realizando reingreso:', error);
+                setErrorMessage(error.message || 'Error realizando reingreso');
+            }
         }
     };
 
@@ -94,7 +120,7 @@ const Inventario = () => {
                     onSubmit={handleSubmit}
                 >
                     {({ handleSubmit, setFieldValue }) => (
-                        <FormularioInventario handleSubmit={handleSubmit} onClose={handleCloseModal} setFieldValue={setFieldValue} isSubmitting={isSubmitting} />
+                        <FormularioInventario handleSubmit={handleSubmit} onClose={handleCloseModal} setFieldValue={setFieldValue} isSubmitting={isSubmitting} errorMessage={errorMessage} showWarning={showWarning} handleReingreso={handleReingreso} />
                     )}
                 </Formik>
             )}

@@ -3,8 +3,9 @@ import { Field, Form, ErrorMessage } from 'formik';
 import './FormularioInventario.css';
 import { productosList } from '../../api/inventario.api';
 
-const FormularioInventario = ({ handleSubmit, onClose, setFieldValue, isSubmitting }) => {
+const FormularioInventario = ({ handleSubmit, onClose, setFieldValue, isSubmitting, errorMessage, showWarning, handleReingreso }) => {
     const [productos, setProductos] = useState([]);
+    const [codigoBarras, setCodigoBarras] = useState('');
 
     useEffect(() => {
         const fetchProductos = async () => {
@@ -19,12 +20,26 @@ const FormularioInventario = ({ handleSubmit, onClose, setFieldValue, isSubmitti
         fetchProductos();
     }, []);
 
+    const handleCodigoBarrasChange = (event) => {
+        const codigoBarras = event.target.value;
+        setCodigoBarras(codigoBarras);
+        const producto = productos.find(p => p.CodigoBarras === codigoBarras);
+        if (producto) {
+            setFieldValue('productoId', producto.idProducto);
+        }
+    };
+
     return (
         <div className="modal-inventario">
             <div className="modal-content-inventario">
                 <span className="close-inventario" onClick={onClose}>&times;</span>
                 <h2>Registrar Nuevo Ingreso</h2>
+                {errorMessage && <div className="error-message">{errorMessage}</div>}
                 <Form className="form-inventario" onSubmit={handleSubmit}>
+                    <label htmlFor="codigoBarras" className="label-inventario">Código de Barras:</label>
+                    <Field type="text" id="codigoBarras" name="codigoBarras" className="input-inventario" value={codigoBarras} onChange={handleCodigoBarrasChange} />
+                    <ErrorMessage name="codigoBarras" component="div" className="error-inventario" />
+
                     <label htmlFor="productoId" className="label-inventario">Producto:</label>
                     <Field as="select" id="productoId" name="productoId" className="input-inventario">
                         <option value="">Seleccione un producto</option>
@@ -52,6 +67,16 @@ const FormularioInventario = ({ handleSubmit, onClose, setFieldValue, isSubmitti
 
                     <button type="submit" className="button-inventario" disabled={isSubmitting}>Registrar</button>
                 </Form>
+
+                {showWarning && (
+                    <div className="warning-modal">
+                        <div className="warning-content">
+                            <p>El producto ya se encuentra registrado en el inventario. ¿Desea realizar un reingreso?</p>
+                            <button onClick={handleReingreso}>Aceptar</button>
+                            <button onClick={onClose}>Cancelar</button>
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );

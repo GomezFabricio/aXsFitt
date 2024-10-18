@@ -143,9 +143,18 @@ export const agregarProducto = async (req, res) => {
 // Agregar inventario
 export const agregarInventario = async (req, res) => {
     console.log('Entrando a agregarInventario');
-    const { productoId, cantidad, precioCosto, precioVenta, incremento } = req.body;
+    const { productoId, cantidad, precioCosto, precioVenta, incremento, reingreso } = req.body;
 
     try {
+        // Verificar si el producto ya está en el inventario
+        const [existingProduct] = await pool.query(`
+            SELECT * FROM inventario_principal WHERE producto_id = ?
+        `, [productoId]);
+
+        if (existingProduct.length > 0 && !reingreso) {
+            return res.status(200).json({ message: 'El producto ya se encuentra en el inventario. ¿Desea realizar un reingreso?', reingreso: true });
+        }
+
         let calculatedPrecioVenta = precioVenta;
         let calculatedIncremento = incremento;
 
@@ -165,14 +174,29 @@ export const agregarInventario = async (req, res) => {
         // Obtener la fecha actual
         const fechaActualizacion = new Date();
 
-        // Insertar el inventario en la tabla inventario_principal
-        const [inventarioResult] = await pool.query(`
-            INSERT INTO inventario_principal (producto_id, inventario_cantidad, inventario_precio_costo, inventario_precio_venta, inventario_precio_afiliado, inventario_incremento, inventario_fecha_actualizacion)
-            VALUES (?, ?, ?, ?, ?, ?, ?)
-        `, [productoId, cantidad, precioCosto, calculatedPrecioVenta, precioAfiliado, calculatedIncremento, fechaActualizacion]);
+        if (reingreso) {
+            // Sumar la cantidad ingresada a la cantidad existente
+            const nuevaCantidad = existingProduct[0].inventario_cantidad + cantidad;
 
-        console.log('Resultado de la inserción de inventario:', inventarioResult);
-        res.json({ message: 'Inventario agregado exitosamente', id: inventarioResult.insertId });
+            // Actualizar el inventario existente
+            const [updateResult] = await pool.query(`
+                UPDATE inventario_principal
+                SET inventario_cantidad = ?, inventario_precio_costo = ?, inventario_precio_venta = ?, inventario_precio_afiliado = ?, inventario_incremento = ?, inventario_fecha_actualizacion = ?
+                WHERE producto_id = ?
+            `, [nuevaCantidad, precioCosto, calculatedPrecioVenta, precioAfiliado, calculatedIncremento, fechaActualizacion, productoId]);
+
+            console.log('Resultado de la actualización de inventario:', updateResult);
+            return res.json({ message: 'Inventario actualizado exitosamente', id: existingProduct[0].id });
+        } else {
+            // Insertar el inventario en la tabla inventario_principal
+            const [inventarioResult] = await pool.query(`
+                INSERT INTO inventario_principal (producto_id, inventario_cantidad, inventario_precio_costo, inventario_precio_venta, inventario_precio_afiliado, inventario_incremento, inventario_fecha_actualizacion)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
+            `, [productoId, cantidad, precioCosto, calculatedPrecioVenta, precioAfiliado, calculatedIncremento, fechaActualizacion]);
+
+            console.log('Resultado de la inserción de inventario:', inventarioResult);
+            res.json({ message: 'Inventario agregado exitosamente', id: inventarioResult.insertId });
+        }
     } catch (error) {
         console.error('Error en agregarInventario:', error);
         res.status(500).json({ message: error.message });
