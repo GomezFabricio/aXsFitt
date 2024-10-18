@@ -336,3 +336,101 @@ export const eliminarProducto = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
+
+// Editar inventario
+export const editarInventario = async (req, res) => {
+    const { id } = req.params;
+    const { cantidad, precioCosto, precioVenta, incremento } = req.body;
+
+    try {
+        const [result] = await pool.query(`
+            UPDATE inventario_principal
+            SET inventario_cantidad = ?, inventario_precio_costo = ?, inventario_precio_venta = ?, inventario_incremento = ?
+            WHERE producto_id = ?
+        `, [cantidad, precioCosto, precioVenta, incremento, id]);
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ message: 'Inventario no encontrado' });
+        }
+
+        res.json({ message: 'Inventario actualizado exitosamente' });
+    } catch (error) {
+        console.error('Error editando inventario:', error);
+        res.status(500).json({ message: error.message });
+    }
+};
+
+// Editar producto
+export const editarProducto = async (req, res) => {
+    const { id } = req.params;
+    const { codigoBarrasProducto, nombreProducto, idTipoProducto, idMarcaProducto } = req.body;
+
+    try {
+        const [result] = await pool.query(`
+            UPDATE productos
+            SET producto_codigo_barras = ?, producto_descripcion = ?, tipo_producto_id = ?, marca_producto_id = ?
+            WHERE producto_id = ?
+        `, [codigoBarrasProducto, nombreProducto, idTipoProducto, idMarcaProducto, id]);
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ message: 'Producto no encontrado' });
+        }
+
+        res.json({ message: 'Producto actualizado exitosamente' });
+    } catch (error) {
+        console.error('Error editando producto:', error);
+        res.status(500).json({ message: error.message });
+    }
+};
+
+// Editar marca
+export const editarMarca = async (req, res) => {
+    const { id } = req.params;
+    const { nombreMarcaProducto } = req.body;
+
+    console.log('Editar Marca - ID:', id);
+    console.log('Editar Marca - Body:', req.body);
+
+    try {
+        const [result] = await pool.query(`
+            UPDATE marca_productos
+            SET marca_producto_nombre = ?
+            WHERE marca_producto_id = ?
+        `, [nombreMarcaProducto, id]);
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ message: 'Marca no encontrada' });
+        }
+
+        res.json({ message: 'Marca actualizada exitosamente' });
+    } catch (error) {
+        console.error('Error editando marca:', error);
+        res.status(500).json({ message: error.message });
+    }
+};
+
+// Editar tipo de producto
+export const editarTipoProducto = async (req, res) => {
+    const { id } = req.params;
+    const { nombreTipoProducto } = req.body;
+
+    console.log('Editar Tipo de Producto - ID:', id);
+    console.log('Editar Tipo de Producto - Body:', req.body);
+
+    try {
+        const [result] = await pool.query(`
+            UPDATE tipos_productos
+            SET tipo_producto_nombre = ?
+            WHERE tipo_producto_id = ?
+        `, [nombreTipoProducto, id]);
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ message: 'Tipo de producto no encontrado' });
+        }
+
+        res.json({ message: 'Tipo de producto actualizado exitosamente' });
+    } catch (error) {
+        console.error('Error editando tipo de producto:', error);
+        res.status(500).json({ message: error.message });
+    }
+};

@@ -12,7 +12,11 @@ import {
     eliminarInventario,
     eliminarMarca,
     eliminarTipoProducto,
-    eliminarProducto
+    eliminarProducto,
+    editarInventario,
+    editarProducto,
+    editarMarca,
+    editarTipoProducto
 } from '../controllers/inventario.controller.js';
 
 const router = Router();
@@ -32,5 +36,10 @@ router.delete('/inventario/eliminar-inventario/:id', eliminarInventario);
 router.delete('/inventario/eliminar-marca/:id', eliminarMarca);
 router.delete('/inventario/eliminar-tipo-producto/:id', eliminarTipoProducto);
 router.delete('/inventario/eliminar-producto/:id', eliminarProducto);
+
+router.put('/inventario/editar-inventario/:id', editarInventario);
+router.put('/inventario/editar-producto/:id', editarProducto);
+router.put('/inventario/editar-marca/:id', editarMarca);
+router.put('/inventario/editar-tipo-producto/:id', editarTipoProducto);
 
 export default router;

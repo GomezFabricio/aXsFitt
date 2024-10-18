@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
-import { marcasList, agregarMarca, eliminarMarca } from '../../../api/inventario.api';
+import { marcasList, agregarMarca, eliminarMarca, editarMarca } from '../../../api/inventario.api';
 import MarcasList from '../../../components/MarcasList/MarcasList';
 import MenuEnInventario from '../../../components/MenuEnInventario/MenuEnInventario';
 import FormularioMarcas from '../../../components/FormularioMarcas/FormularioMarcas';
@@ -12,6 +12,8 @@ const MarcasProductos = () => {
     const [marcas, setMarcas] = useState([]);
     const [showModal, setShowModal] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
+    const [formValues, setFormValues] = useState(null);
+    const [isEditing, setIsEditing] = useState(false);
 
     useEffect(() => {
         const fetchMarcas = async () => {
@@ -30,7 +32,9 @@ const MarcasProductos = () => {
     const navigate = useNavigate();
 
     const handleAgregarClick = () => {
+        setFormValues(initialValues);
         setShowModal(true);
+        setIsEditing(false);
     };
 
     const handleCloseModal = () => {
@@ -53,21 +57,34 @@ const MarcasProductos = () => {
         }
     };
 
+    const handleEdit = (marca) => {
+        setFormValues({
+            idMarcaProducto: marca.idMarcaProducto,
+            nombreMarcaProducto: marca.nombreMarcaProducto,
+        });
+        setIsEditing(true);
+        setShowModal(true);
+    };
+
     const initialValues = {
-        nombreMarca: '',
+        nombreMarcaProducto: '',
     };
 
     const validationSchema = Yup.object({
-        nombreMarca: Yup.string().required('El nombre de la marca es obligatorio'),
+        nombreMarcaProducto: Yup.string().required('El nombre de la marca es obligatorio'),
     });
 
     const handleSubmit = async (values, { setSubmitting }) => {
         try {
-            await agregarMarca(values.nombreMarca);
+            if (isEditing) {
+                await editarMarca(formValues.idMarcaProducto, values);
+            } else {
+                await agregarMarca(values.nombreMarcaProducto);
+            }
             handleMarcaAgregada();
             handleCloseModal();
         } catch (error) {
-            console.error('Error agregando marca:', error);
+            console.error('Error agregando/editando marca:', error);
         } finally {
             setSubmitting(false);
         }
@@ -88,16 +105,17 @@ const MarcasProductos = () => {
 
             {errorMessage && <div className="alert alert-danger">{errorMessage}</div>}
 
-            <MarcasList marcas={marcas} onDelete={handleDelete} />
+            <MarcasList marcas={marcas} onDelete={handleDelete} onEdit={handleEdit} />
 
             {showModal && (
                 <Formik
-                    initialValues={initialValues}
+                    initialValues={formValues || initialValues}
                     validationSchema={validationSchema}
                     onSubmit={handleSubmit}
+                    enableReinitialize
                 >
                     {({ handleSubmit }) => (
-                        <FormularioMarcas handleSubmit={handleSubmit} onClose={handleCloseModal} />
+                        <FormularioMarcas handleSubmit={handleSubmit} onClose={handleCloseModal} isEditing={isEditing} />
                     )}
                 </Formik>
             )}

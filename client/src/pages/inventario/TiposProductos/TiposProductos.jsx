@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
-import { tiposProductosList, agregarTipoProducto, eliminarTipoProducto } from '../../../api/inventario.api';
+import { tiposProductosList, agregarTipoProducto, eliminarTipoProducto, editarTipoProducto } from '../../../api/inventario.api';
 import TiposProductosList from '../../../components/TiposProductosList/TiposProductosList';
 import MenuEnInventario from '../../../components/MenuEnInventario/MenuEnInventario';
 import FormularioTiposProductos from '../../../components/FormularioTiposProductos/FormularioTiposProductos';
@@ -12,6 +12,8 @@ const TiposProductos = () => {
     const [tiposProductos, setTiposProductos] = useState([]);
     const [showModal, setShowModal] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
+    const [formValues, setFormValues] = useState(null);
+    const [isEditing, setIsEditing] = useState(false);
 
     useEffect(() => {
         const fetchTiposProductos = async () => {
@@ -30,7 +32,9 @@ const TiposProductos = () => {
     const navigate = useNavigate();
 
     const handleAgregarClick = () => {
+        setFormValues(initialValues);
         setShowModal(true);
+        setIsEditing(false);
     };
 
     const handleCloseModal = () => {
@@ -53,6 +57,15 @@ const TiposProductos = () => {
         }
     };
 
+    const handleEdit = (tipoProducto) => {
+        setFormValues({
+            idTipoProducto: tipoProducto.idTipoProducto,
+            nombreTipoProducto: tipoProducto.nombreTipoProducto,
+        });
+        setIsEditing(true);
+        setShowModal(true);
+    };
+
     const initialValues = {
         nombreTipoProducto: '',
     };
@@ -63,11 +76,15 @@ const TiposProductos = () => {
 
     const handleSubmit = async (values, { setSubmitting }) => {
         try {
-            await agregarTipoProducto(values.nombreTipoProducto);
+            if (isEditing) {
+                await editarTipoProducto(formValues.idTipoProducto, values);
+            } else {
+                await agregarTipoProducto(values.nombreTipoProducto);
+            }
             handleTipoProductoAgregado();
             handleCloseModal();
         } catch (error) {
-            console.error('Error agregando tipo de producto:', error);
+            console.error('Error agregando/editando tipo de producto:', error);
         } finally {
             setSubmitting(false);
         }
@@ -88,16 +105,17 @@ const TiposProductos = () => {
 
             {errorMessage && <div className="alert alert-danger">{errorMessage}</div>}
 
-            <TiposProductosList tiposProductos={tiposProductos} onDelete={handleDelete} />
+            <TiposProductosList tiposProductos={tiposProductos} onDelete={handleDelete} onEdit={handleEdit} />
 
             {showModal && (
                 <Formik
-                    initialValues={initialValues}
+                    initialValues={formValues || initialValues}
                     validationSchema={validationSchema}
                     onSubmit={handleSubmit}
+                    enableReinitialize
                 >
                     {({ handleSubmit }) => (
-                        <FormularioTiposProductos handleSubmit={handleSubmit} onClose={handleCloseModal} />
+                        <FormularioTiposProductos handleSubmit={handleSubmit} onClose={handleCloseModal} isEditing={isEditing} />
                     )}
                 </Formik>
             )}

@@ -139,3 +139,43 @@ export const eliminarProducto = async (id) => {
         throw error.response.data;
     }
 };
+
+// Función para editar inventario
+export const editarInventario = async (id, inventario) => {
+    try {
+        const response = await axios.put(`http://localhost:4000/inventario/editar-inventario/${id}`, inventario, config);
+        return response.data;
+    } catch (error) {
+        throw error.response.data;
+    }
+};
+
+// Función para editar producto
+export const editarProducto = async (id, producto) => {
+    try {
+        const response = await axios.put(`http://localhost:4000/inventario/editar-producto/${id}`, producto, config);
+        return response.data;
+    } catch (error) {
+        throw error.response.data;
+    }
+};
+
+// Función para editar marca
+export const editarMarca = async (id, marca) => {
+    try {
+        const response = await axios.put(`http://localhost:4000/inventario/editar-marca/${id}`, marca, config);
+        return response.data;
+    } catch (error) {
+        throw error.response.data;
+    }
+};
+
+// Función para editar tipo de producto
+export const editarTipoProducto = async (id, tipoProducto) => {
+    try {
+        const response = await axios.put(`http://localhost:4000/inventario/editar-tipo-producto/${id}`, tipoProducto, config);
+        return response.data;
+    } catch (error) {
+        throw error.response.data;
+    }
+};

@@ -36,7 +36,7 @@ const MarcasList = ({ marcas, onEdit, onDelete }) => {
                             <tr key={marca.idMarcaProducto}>
                                 <td>{marca.nombreMarcaProducto}</td>
                                 <td className="action-buttons">
-                                    <button className="edit-button" onClick={() => onEdit(marca.idMarcaProducto)}>
+                                    <button className="edit-button" onClick={() => onEdit(marca)}>
                                         <i className="fas fa-edit"></i>
                                     </button>
                                     <button className="delete-button" onClick={() => onDelete(marca.idMarcaProducto)}>
