@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
-import { inventarioList, agregarInventario } from '../../../api/inventario.api';
+import { inventarioList, agregarInventario, obtenerInventarioPorId } from '../../../api/inventario.api';
 import InventarioList from '../../../components/InventarioList/InventarioList';
 import MenuEnInventario from '../../../components/MenuEnInventario/MenuEnInventario';
 import FormularioInventario from '../../../components/FormularioInventario/FormularioInventario';
@@ -15,6 +15,7 @@ const Inventario = () => {
     const [errorMessage, setErrorMessage] = useState('');
     const [showWarning, setShowWarning] = useState(false);
     const [formValues, setFormValues] = useState(null);
+    const [isReingreso, setIsReingreso] = useState(false);
 
     useEffect(() => {
         const fetchInventario = async () => {
@@ -33,8 +34,10 @@ const Inventario = () => {
     const navigate = useNavigate();
 
     const handleAgregarClick = () => {
+        setFormValues(initialValues);
         setShowModal(true);
         setErrorMessage('');
+        setIsReingreso(false);
     };
 
     const handleCloseModal = () => {
@@ -98,6 +101,32 @@ const Inventario = () => {
         }
     };
 
+    const handleReingresoClick = async (idProducto) => {
+        try {
+            const inventarioData = await obtenerInventarioPorId(idProducto);
+            setFormValues({
+                productoId: inventarioData.idProducto,
+                codigoBarras: inventarioData.CodigoBarras,
+                cantidad: '',
+                precioCosto: inventarioData.PrecioCosto,
+                incremento: '',
+                precioVenta: inventarioData.PrecioVenta
+            });
+            setShowModal(true);
+            setIsReingreso(true);
+        } catch (error) {
+            console.error('Error obteniendo producto para reingreso:', error);
+        }
+    };
+
+    const handleDelete = async (idProducto) => {
+        // Implementar la lógica de eliminación aquí
+    };
+
+    const handleEdit = async (idProducto) => {
+        // Implementar la lógica de edición aquí
+    };
+
     return (
         <div className="container-page">
             <div className="header">
@@ -111,16 +140,16 @@ const Inventario = () => {
             <h2>En esta sección podrás ver y gestionar el inventario.</h2>
             <MenuEnInventario />
 
-            <InventarioList inventario={inventario} />
+            <InventarioList inventario={inventario} onDelete={handleDelete} onEdit={handleEdit} onReingreso={handleReingresoClick} />
 
             {showModal && (
                 <Formik
-                    initialValues={initialValues}
+                    initialValues={formValues || initialValues}
                     validationSchema={validationSchema}
                     onSubmit={handleSubmit}
                 >
                     {({ handleSubmit, setFieldValue }) => (
-                        <FormularioInventario handleSubmit={handleSubmit} onClose={handleCloseModal} setFieldValue={setFieldValue} isSubmitting={isSubmitting} errorMessage={errorMessage} showWarning={showWarning} handleReingreso={handleReingreso} />
+                        <FormularioInventario handleSubmit={handleSubmit} onClose={handleCloseModal} setFieldValue={setFieldValue} isSubmitting={isSubmitting} errorMessage={errorMessage} showWarning={showWarning} handleReingreso={handleReingreso} isReingreso={isReingreso} formValues={formValues} />
                     )}
                 </Formik>
             )}

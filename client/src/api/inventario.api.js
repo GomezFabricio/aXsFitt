@@ -89,3 +89,13 @@ export const agregarInventario = async (inventario) => {
         throw error.response.data;
     }
 };
+
+// Función para obtener inventario por ID
+export const obtenerInventarioPorId = async (id) => {
+    try {
+        const response = await axios.get(`http://localhost:4000/inventario/obtener-inventario/${id}`, config);
+        return response.data;
+    } catch (error) {
+        throw error.response.data;
+    }
+};

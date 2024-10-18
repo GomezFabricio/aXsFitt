@@ -3,7 +3,7 @@ import { Field, Form, ErrorMessage } from 'formik';
 import './FormularioInventario.css';
 import { productosList } from '../../api/inventario.api';
 
-const FormularioInventario = ({ handleSubmit, onClose, setFieldValue, isSubmitting, errorMessage, showWarning, handleReingreso }) => {
+const FormularioInventario = ({ handleSubmit, onClose, setFieldValue, isSubmitting, errorMessage, showWarning, handleReingreso, isReingreso, formValues }) => {
     const [productos, setProductos] = useState([]);
     const [codigoBarras, setCodigoBarras] = useState('');
 
@@ -29,6 +29,12 @@ const FormularioInventario = ({ handleSubmit, onClose, setFieldValue, isSubmitti
         }
     };
 
+    useEffect(() => {
+        if (formValues && formValues.codigoBarras) {
+            setCodigoBarras(formValues.codigoBarras);
+        }
+    }, [formValues]);
+
     return (
         <div className="modal-inventario">
             <div className="modal-content-inventario">
@@ -37,11 +43,11 @@ const FormularioInventario = ({ handleSubmit, onClose, setFieldValue, isSubmitti
                 {errorMessage && <div className="error-message">{errorMessage}</div>}
                 <Form className="form-inventario" onSubmit={handleSubmit}>
                     <label htmlFor="codigoBarras" className="label-inventario">Código de Barras:</label>
-                    <Field type="text" id="codigoBarras" name="codigoBarras" className="input-inventario" value={codigoBarras} onChange={handleCodigoBarrasChange} />
+                    <Field type="text" id="codigoBarras" name="codigoBarras" className="input-inventario" value={codigoBarras} onChange={handleCodigoBarrasChange} disabled={isReingreso} />
                     <ErrorMessage name="codigoBarras" component="div" className="error-inventario" />
 
                     <label htmlFor="productoId" className="label-inventario">Producto:</label>
-                    <Field as="select" id="productoId" name="productoId" className="input-inventario">
+                    <Field as="select" id="productoId" name="productoId" className="input-inventario" disabled={isReingreso}>
                         <option value="">Seleccione un producto</option>
                         {productos.map(producto => (
                             <option key={producto.idProducto} value={producto.idProducto}>{producto.Producto}</option>

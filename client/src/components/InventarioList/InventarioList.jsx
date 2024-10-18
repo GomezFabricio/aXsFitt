@@ -1,5 +1,4 @@
 import React, { useEffect, useRef } from 'react';
-import { Link } from 'react-router-dom';
 import 'datatables.net-dt/css/dataTables.dataTables.css';
 import $ from 'jquery';
 import 'datatables.net';
@@ -7,7 +6,7 @@ import './InventarioList.css';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import '../../assets/styles/IconStyles.css';
 
-const InventarioList = ({ inventario, onDelete, onEdit }) => {
+const InventarioList = ({ inventario, onDelete, onEdit, onReingreso }) => {
     const tableRef = useRef(null);
     const dataTableRef = useRef(null);
 
@@ -33,11 +32,14 @@ const InventarioList = ({ inventario, onDelete, onEdit }) => {
                     render: (data, type, row) => {
                         return `
                             <div class="action-buttons">
-                                <button class="edit-button" data-id="${row.CodigoBarras}">
+                                <button class="edit-button" data-id="${row.idProducto}">
                                     <i class="fas fa-edit"></i>
                                 </button>
-                                <button class="delete-button" data-id="${row.CodigoBarras}">
+                                <button class="delete-button" data-id="${row.idProducto}">
                                     <i class="fas fa-trash-alt"></i>
+                                </button>
+                                <button class="reingreso-button" data-id="${row.idProducto}">
+                                    <i class="fas fa-plus-circle"></i>
                                 </button>
                             </div>
                         `;
@@ -46,18 +48,32 @@ const InventarioList = ({ inventario, onDelete, onEdit }) => {
             ]
         });
 
-        // Manejar eventos de clic en los botones de editar y eliminar
-        $(tableRef.current).on('click', '.edit-button', function () {
+        // Manejar eventos de clic en los botones de editar, eliminar y reingreso
+        const handleEditClick = function () {
             const id = $(this).data('id');
             onEdit(id);
-        });
+        };
 
-        $(tableRef.current).on('click', '.delete-button', function () {
+        const handleDeleteClick = function () {
             const id = $(this).data('id');
             onDelete(id);
-        });
+        };
 
-    }, [inventario, onDelete, onEdit]);
+        const handleReingresoClick = function () {
+            const id = $(this).data('id');
+            onReingreso(id);
+        };
+
+        $(tableRef.current).on('click', '.edit-button', handleEditClick);
+        $(tableRef.current).on('click', '.delete-button', handleDeleteClick);
+        $(tableRef.current).on('click', '.reingreso-button', handleReingresoClick);
+
+        return () => {
+            $(tableRef.current).off('click', '.edit-button', handleEditClick);
+            $(tableRef.current).off('click', '.delete-button', handleDeleteClick);
+            $(tableRef.current).off('click', '.reingreso-button', handleReingresoClick);
+        };
+    }, [inventario, onDelete, onEdit, onReingreso]);
 
     return (
         <table ref={tableRef} id="inventarioTable" className="display">
@@ -86,11 +102,14 @@ const InventarioList = ({ inventario, onDelete, onEdit }) => {
                         <td>{item.PrecioVenta}</td>
                         <td>{item.PrecioAfiliados}</td>
                         <td className="action-buttons">
-                            <button className="edit-button" onClick={() => onEdit(item.CodigoBarras)}>
+                            <button className="edit-button" onClick={() => onEdit(item.idProducto)}>
                                 <i className="fas fa-edit"></i>
                             </button>
-                            <button className="delete-button" onClick={() => onDelete(item.CodigoBarras)}>
+                            <button className="delete-button" onClick={() => onDelete(item.idProducto)}>
                                 <i className="fas fa-trash-alt"></i>
+                            </button>
+                            <button className="reingreso-button" onClick={() => onReingreso(item.idProducto)}>
+                                <i className="fas fa-plus-circle"></i>
                             </button>
                         </td>
                     </tr>

@@ -6,6 +6,7 @@ export const inventarioList = async (req, res) => {
     try {
         const [result] = await pool.query(`
             SELECT 
+                p.producto_id AS idProducto,
                 p.producto_codigo_barras AS CodigoBarras,
                 p.producto_descripcion AS Producto,
                 tp.tipo_producto_nombre AS Tipo,
@@ -199,6 +200,42 @@ export const agregarInventario = async (req, res) => {
         }
     } catch (error) {
         console.error('Error en agregarInventario:', error);
+        res.status(500).json({ message: error.message });
+    }
+};
+
+// Obtener inventario por ID
+export const obtenerInventarioPorId = async (req, res) => {
+    console.log('Entrando a obtenerInventarioPorId');
+    const { id } = req.params;
+
+    try {
+        const [result] = await pool.query(`
+            SELECT 
+                p.producto_id AS idProducto,
+                p.producto_codigo_barras AS CodigoBarras,
+                p.producto_descripcion AS Producto,
+                tp.tipo_producto_nombre AS TipoProducto,
+                mp.marca_producto_nombre AS MarcaProducto,
+                ip.inventario_cantidad AS Cantidad,
+                ip.inventario_precio_costo AS PrecioCosto,
+                ip.inventario_precio_venta AS PrecioVenta,
+                ip.inventario_precio_afiliado AS PrecioAfiliados
+            FROM productos p
+            JOIN tipos_productos tp ON p.tipo_producto_id = tp.tipo_producto_id
+            JOIN marca_productos mp ON p.marca_producto_id = mp.marca_producto_id
+            JOIN inventario_principal ip ON p.producto_id = ip.producto_id
+            WHERE p.producto_id = ?
+        `, [id]);
+
+        if (result.length === 0) {
+            return res.status(404).json({ message: 'Inventario no encontrado' });
+        }
+
+        console.log('Resultado de la consulta de inventario por ID:', result[0]);
+        res.json(result[0]);
+    } catch (error) {
+        console.error('Error en obtenerInventarioPorId:', error);
         res.status(500).json({ message: error.message });
     }
 };
