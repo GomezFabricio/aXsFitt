@@ -10,17 +10,78 @@ INSERT INTO `roles` (`rol_id`, `rol_tipo_rol`) VALUES
 (2, 'Vendedor');
 
 -- Inserción de datos en la tabla 'menu_opciones'
-INSERT INTO `menu_opciones` (`opcion_id`, `rol_id`, `opcion_nombre`) VALUES
-(1, 1, 'Panel de Control'),
-(2, 1, 'Vendedores'),
-(3, 1, 'Clientes'),
-(4, 1, 'Usuarios'),
-(5, 1, 'Inventario');
+INSERT INTO `menu_opciones` (`menu_opcion_id`, `menu_opcion_nombre`) VALUES
+(1, 'Panel de Control'),
+(2, 'Vendedores'),
+(3, 'Clientes'),
+(4, 'Usuarios'),
+(5, 'Inventario'),
+(6, 'Ventas');
+
+-- Inserción de datos en la tabla 'estados_afiliacion'
+INSERT INTO `estados_afiliacion` (`estado_afiliacion_id`, `estado_afiliacion_nombre`) VALUES
+(1, 'Activo'),
+(2, 'Inactivo');
+
+-- Inserción de datos en la tabla 'estado_vendedores'
+INSERT INTO `estado_vendedores` (`estado_vendedor_id`, `estado_vendedor_nombre`) VALUES
+(1, 'Activo'),
+(2, 'Inactivo');
 
 -- Inserción de datos en la tabla 'personas'
 INSERT INTO `personas` (`persona_id`, `persona_nombre`, `persona_apellido`, `persona_dni`, `persona_fecha_nacimiento`, `persona_domicilio`, `persona_telefono`, `persona_fecha_alta`) VALUES
 (1, 'Fabricio', 'Gomez', '44464371', '2002-09-30', 'Circuito 5', '3704686739', '2024-09-23');
 
-INSERT INTO `usuarios` (`usuario_id`, `estado_usuario_id`, `persona_id`, `usuario_email`, `usuario_pass`) VALUES (NULL, '1', '1', 'fabricio.gomez4371@gmail.com', '$2a$10$J9Ig8zdVjuQ5vaLISoSTz.AsdDt3d9B7R4st27NdVVCOw0hZYwgb2');
+-- Inserción de datos en la tabla 'usuarios'
+INSERT INTO `usuarios` (`usuario_id`, `estado_usuario_id`, `persona_id`, `usuario_email`, `usuario_pass`) VALUES
+(1, 1, 1, 'fabricio.gomez4371@gmail.com', '$2a$10$J9Ig8zdVjuQ5vaLISoSTz.AsdDt3d9B7R4st27NdVVCOw0hZYwgb2');
 
-INSERT INTO `usuarios_roles` (`usuario_rol_id`, `usuario_id`, `rol_id`) VALUES (NULL, '1', '1');
+-- Inserción de datos en la tabla 'usuarios_roles'
+INSERT INTO `usuarios_roles` (`usuario_rol_id`, `usuario_id`, `rol_id`) VALUES
+(1, 1, 1); -- Fabricio como Administrador
+
+-- Inserción de datos en la tabla 'marca_productos'
+INSERT INTO `marca_productos` (`marca_producto_id`, `marca_producto_nombre`) VALUES
+(1, 'Marca A'),
+(2, 'Marca B');
+
+-- Inserción de datos en la tabla 'tipos_productos'
+INSERT INTO `tipos_productos` (`tipo_producto_id`, `tipo_producto_nombre`) VALUES
+(1, 'Tipo A'),
+(2, 'Tipo B');
+
+-- Inserción de datos en la tabla 'productos'
+INSERT INTO `productos` (`producto_id`, `tipo_producto_id`, `marca_producto_id`, `producto_descripcion`, `producto_codigo_barras`) VALUES
+(1, 1, 1, 'Producto 1', '1234567890123'),
+(2, 2, 2, 'Producto 2', '1234567890124');
+
+-- Inserción de datos en la tabla 'inventario_principal'
+INSERT INTO `inventario_principal` (`inventario_id`, `producto_id`, `inventario_cantidad`, `inventario_fecha_actualizacion`, `inventario_precio_costo`, `inventario_incremento`, `inventario_precio_venta`, `inventario_precio_afiliado`) VALUES
+(1, 1, 100, '2024-09-23', 10.00, 20.00, 12.00, 11.00),
+(2, 2, 200, '2024-09-23', 20.00, 30.00, 26.00, 22.00);
+
+-- Inserción de datos en la tabla 'clientes'
+INSERT INTO `clientes` (`cliente_id`, `persona_id`, `estado_afiliacion_id`, `cliente_fecha_afiliacion`, `cliente_fecha_baja_afiliacion`) VALUES
+(1, 1, 1, '2024-09-23', NULL);
+
+-- Inserción de datos en la tabla 'vendedores'
+INSERT INTO `vendedores` (`vendedor_id`, `estado_vendedor_id`, `persona_id`, `vendedor_fecha_ingreso`) VALUES
+(1, 1, 1, '2024-09-23');
+
+-- Inserción de datos en la tabla 'venta'
+INSERT INTO `venta` (`venta_id`, `clientes_cliente_id`, `vendedor_id`, `venta_fecha`, `venta_total`) VALUES
+(1, 1, 1, '2024-09-23', 100.00);
+
+-- Inserción de datos en la tabla 'detalle_venta'
+INSERT INTO `detalle_venta` (`detalle_venta_id`, `inventario_id`, `venta_id`, `detalle_venta_cantidad`, `detalle_venta_precio_unitario`, `detalle_venta_subtotal`) VALUES
+(1, 1, 1, 2, 50.00, 100.00);
+
+-- Inserción de datos en la tabla 'menu_roles'
+INSERT INTO `menu_roles` (`menu_roles_id`, `menu_opcion_id`, `rol_id`) VALUES
+(1, 1, 1), -- Panel de Control para Administrador
+(2, 2, 1), -- Vendedores para Administrador
+(3, 3, 1), -- Clientes para Administrador
+(4, 4, 1), -- Usuarios para Administrador
+(5, 5, 1), -- Inventario para Administrador
+(6, 6, 1), -- Ventas para Administrador
+(7, 6, 2); -- Ventas para Vendedor

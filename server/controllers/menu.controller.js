@@ -11,13 +11,14 @@ export const getMenuByRole = async (req, res) => {
 
         // Obtener las opciones del menú basadas en el rol
         const [menuOptions] = await pool.query(
-            `SELECT opcion_nombre 
-            FROM menu_opciones 
-            WHERE rol_id = ?`,
+            `SELECT mo.menu_opcion_nombre 
+            FROM menu_opciones mo
+            JOIN menu_roles mr ON mo.menu_opcion_id = mr.menu_opcion_id
+            WHERE mr.rol_id = ?`,
             [rolId]
         );
 
-        res.json({ menu: menuOptions.map(option => option.opcion_nombre) });
+        res.json({ menu: menuOptions.map(option => option.menu_opcion_nombre) });
     } catch (error) {
         console.error('Error en getMenuByRole:', error);
         return res.status(500).json({ message: error.message });
