@@ -3,13 +3,14 @@ import { useNavigate } from 'react-router-dom';
 import RolCard from '../../../components/RolCard/RolCard';
 import { getRolesByUserIdRequest } from '../../../api/usuarios.api'; 
 import { getMenuByRole } from '../../../api/login.api';
-import { jwtDecode } from 'jwt-decode'; // Importación nombrada
+import { jwtDecode } from 'jwt-decode'; 
 import './SeleccionRol.css';
 
 const SeleccionRol = () => {
     const navigate = useNavigate();
     const [roles, setRoles] = useState([]);
     const [error, setError] = useState(null);
+    const [loading, setLoading] = useState(true); // Estado de carga
 
     useEffect(() => {
         const fetchRoles = async () => {
@@ -26,12 +27,20 @@ const SeleccionRol = () => {
                     const response = await getRolesByUserIdRequest(userId);
                     console.log('Respuesta de la API:', response.data);
                     setRoles(response.data);
+
+                    // Redirigir automáticamente si hay un solo rol
+                    if (response.data.length === 1) {
+                        handleRolClick(response.data[0].rol_id);
+                    }
                 } catch (err) {
                     console.error('Error al obtener los roles:', err);
                     setError('Error al obtener los roles. Intenta nuevamente.');
+                } finally {
+                    setLoading(false); // Finalizar carga
                 }
             } else {
                 setError('No se encontró el token. Por favor, inicia sesión nuevamente.');
+                setLoading(false); // Finalizar carga
             }
         };
 
@@ -63,6 +72,10 @@ const SeleccionRol = () => {
             console.error('Error al obtener el menú:', error);
         }
     };
+
+    if (loading) {
+        return <div className="loading">Cargando...</div>; // Indicador de carga
+    }
 
     if (error) {
         return <div className="error">{error}</div>;
