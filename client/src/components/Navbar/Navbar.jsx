@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode'; 
+import { getRolesByUserIdRequest } from '../../api/usuarios.api'; 
 import './NavBar.css';
 
 const NavBar = () => {
@@ -8,6 +9,7 @@ const NavBar = () => {
     const [error, setError] = useState(null);
     const [user, setUser] = useState(null);
     const [dropdownVisible, setDropdownVisible] = useState(false);
+    const [roles, setRoles] = useState([]);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -28,6 +30,18 @@ const NavBar = () => {
                     firstName: decodedToken.firstName,
                     lastName: decodedToken.lastName,
                 });
+
+                // Obtener los roles del usuario
+                const fetchRoles = async () => {
+                    try {
+                        const response = await getRolesByUserIdRequest(decodedToken.userId);
+                        setRoles(response.data);
+                    } catch (err) {
+                        console.error('Error al obtener los roles:', err);
+                    }
+                };
+
+                fetchRoles();
             } catch (err) {
                 console.error('Error al decodificar el token:', err);
             }
@@ -70,7 +84,9 @@ const NavBar = () => {
                             <div className="dropdown-content">
                                 <Link to="/mi-perfil">Mi perfil</Link>
                                 <Link to="/seguridad-privacidad">Seguridad y Privacidad</Link>
-                                <Link to="/seleccion-rol">Roles</Link>
+                                {roles.length > 1 && (
+                                    <Link to="/seleccion-rol">Roles</Link>
+                                )}
                                 <button onClick={handleLogout}>Salir</button>
                             </div>
                         )}
