@@ -21,6 +21,11 @@ import MarcasProductos from './pages/inventario/MarcasProductos/MarcasProductos'
 import Productos from './pages/inventario/Productos/Productos';
 import TiposProductos from './pages/inventario/TiposProductos/TiposProductos';
 
+import ClientesList from './pages/clientes/ClientesList/ClientesList';
+import ClientesCreate from './pages/clientes/ClientesCreate/ClientesCreate';
+import ClientesEdit from './pages/clientes/ClientesEdit/ClientesEdit';
+import ClientesInactivosList from './pages/clientes/ClientesInactivosList/ClientesInactivosList';
+
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './assets/styles/variables.css';
 import './assets/styles/pages.css';
@@ -187,6 +192,51 @@ function App() {
             <ProtectedRoute>
               <Navbar />
               <TiposProductos />
+              <Footer />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Rutas del módulo de clientes */}
+        <Route
+          path="/clientes"
+          element={
+            <ProtectedRoute>
+              <Navbar />
+              <ClientesList />
+              <Footer />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/clientes/alta"
+          element={
+            <ProtectedRoute>
+              <Navbar />
+              <ClientesCreate />
+              <Footer />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/clientes/editar/:id"
+          element={
+            <ProtectedRoute>
+              <Navbar />
+              <ClientesEdit />
+              <Footer />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/clientes/inactivos"
+          element={
+            <ProtectedRoute>
+              <Navbar />
+              <ClientesInactivosList />
               <Footer />
             </ProtectedRoute>
           }
