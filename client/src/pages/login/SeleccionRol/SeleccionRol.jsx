@@ -10,22 +10,18 @@ const SeleccionRol = () => {
     const navigate = useNavigate();
     const [roles, setRoles] = useState([]);
     const [error, setError] = useState(null);
-    const [loading, setLoading] = useState(true); // Estado de carga
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const fetchRoles = async () => {
             const token = localStorage.getItem('token');
             if (token) {
                 try {
-                    const decodedToken = jwtDecode(token); // Uso correcto
+                    const decodedToken = jwtDecode(token);
                     const userId = decodedToken.userId;
-
-                    console.log('Token decodificado:', decodedToken);
-                    console.log('User ID:', userId);
 
                     // Obtener los roles del usuario desde el servidor
                     const response = await getRolesByUserIdRequest(userId);
-                    console.log('Respuesta de la API:', response.data);
                     setRoles(response.data);
 
                     // Redirigir automáticamente si hay un solo rol
@@ -36,11 +32,11 @@ const SeleccionRol = () => {
                     console.error('Error al obtener los roles:', err);
                     setError('Error al obtener los roles. Intenta nuevamente.');
                 } finally {
-                    setLoading(false); // Finalizar carga
+                    setLoading(false);
                 }
             } else {
                 setError('No se encontró el token. Por favor, inicia sesión nuevamente.');
-                setLoading(false); // Finalizar carga
+                setLoading(false);
             }
         };
 
@@ -50,7 +46,7 @@ const SeleccionRol = () => {
     const handleRolClick = async (rolId) => {
         try {
             // Obtener el menú para el rol seleccionado
-            const response = await getMenuByRole({ rolId }); // Enviar el rolId
+            const response = await getMenuByRole({ rolId });
             const menuOptions = response.data.menu;
     
             // Almacenar el menú en localStorage
@@ -74,7 +70,7 @@ const SeleccionRol = () => {
     };
 
     if (loading) {
-        return <div className="loading">Cargando...</div>; // Indicador de carga
+        return <div className="loading">Cargando...</div>;
     }
 
     if (error) {
@@ -90,7 +86,7 @@ const SeleccionRol = () => {
                         <RolCard
                             key={rol.rol_id} 
                             rolNombre={rol.rol_tipo_rol}
-                            onClick={() => handleRolClick(rol.rol_id)} // Enviar rolId al click
+                            onClick={() => handleRolClick(rol.rol_id)}
                         />
                     ))
                 ) : (
