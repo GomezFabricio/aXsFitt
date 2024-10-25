@@ -5,6 +5,7 @@ import { createPersona, updatePersona } from './personas.controller.js';
 /*                          DAR DE ALTA A UN CLIENTE                          */
 /* -------------------------------------------------------------------------- */
 export const createCliente = async (req, res) => {
+    console.log("Datos recibidos en createCliente:", req.body);
     try {
         const { personaData } = req.body;
 

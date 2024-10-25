@@ -26,10 +26,10 @@ const UsuariosListTable = ({ usuarios, onEdit, onBaja }) => {
                         <td>{usuario.roles.join(', ')}</td>
                         <td className="action-buttons">
                             <button onClick={() => onEdit(usuario.usuario_id)} className="edit-button btn btn-sm me-2">
-                                <i className="fas fa-edit"></i>
+                                <i className="fas fa-edit icon"></i>
                             </button>
                             <button onClick={() => onBaja(usuario.usuario_id)} className="delete-button btn btn-sm">
-                                <i className="fas fa-trash-alt"></i>
+                                <i className="fas fa-trash-alt icon"></i>
                             </button>
                         </td>
                     </tr>

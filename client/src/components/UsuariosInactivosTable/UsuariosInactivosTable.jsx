@@ -1,4 +1,6 @@
 import { Table } from 'react-bootstrap';
+import '@fortawesome/fontawesome-free/css/all.min.css';
+import '../../assets/styles/IconStyles.css';
 
 const UsuariosInactivosTable = ({ usuarios, onReactivarClick }) => {
     return (
@@ -21,9 +23,9 @@ const UsuariosInactivosTable = ({ usuarios, onReactivarClick }) => {
                         <td>{usuario.persona_dni}</td>
                         <td>{usuario.usuario_email}</td>
                         <td>{usuario.roles.join(', ')}</td>
-                        <td>
-                            <button onClick={() => onReactivarClick(usuario.usuario_id)} className="btn btn-primary btn-sm">
-                                Alta
+                        <td className="action-buttons">
+                            <button onClick={() => onReactivarClick(usuario.usuario_id)} className="reingreso-button btn btn-sm">
+                                <i className="fas fa-check icon"></i> Alta
                             </button>
                         </td>
                     </tr>

@@ -53,14 +53,14 @@ const InventarioList = ({ inventario, onDelete, onEdit, onReingreso }) => {
                                 <td>{item.PrecioVenta}</td>
                                 <td>{item.PrecioAfiliados}</td>
                                 <td className="action-buttons">
-                                    <button className="edit-button" onClick={() => onEdit(item.idProducto)}>
-                                        <i className="fas fa-edit"></i>
+                                    <button className="edit-button btn btn-sm me-2" onClick={() => onEdit(item.idProducto)}>
+                                        <i className="fas fa-edit icon"></i>
                                     </button>
-                                    <button className="delete-button" onClick={() => onDelete(item.idProducto)}>
-                                        <i className="fas fa-trash-alt"></i>
+                                    <button className="delete-button btn btn-sm me-2" onClick={() => onDelete(item.idProducto)}>
+                                        <i className="fas fa-trash-alt icon"></i>
                                     </button>
-                                    <button className="reingreso-button" onClick={() => onReingreso(item.idProducto)}>
-                                        <i className="fas fa-plus-circle"></i>
+                                    <button className="reingreso-button btn btn-sm me-2" onClick={() => onReingreso(item.idProducto)}>
+                                        <i className="fas fa-plus-circle icon"></i>
                                     </button>
                                 </td>
                             </tr>

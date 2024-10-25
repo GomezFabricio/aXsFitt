@@ -4,9 +4,14 @@ import '@fortawesome/fontawesome-free/css/all.min.css';
 import '../../assets/styles/IconStyles.css';
 
 const ClientesListTable = ({ clientes, onEdit, onBaja }) => {
-    return (
+    const formatDate = (dateString) => {
+        const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
+        return new Date(dateString).toLocaleDateString(undefined, options);
+    };
+
+    return (    
         <Table striped bordered hover className="clientes-table">
-            <thead>
+            <thead> 
                 <tr>
                     <th>Nombre</th>
                     <th>Apellido</th>
@@ -14,7 +19,7 @@ const ClientesListTable = ({ clientes, onEdit, onBaja }) => {
                     <th>Teléfono</th>
                     <th>Fecha de Nacimiento</th>
                     <th>Domicilio</th>
-                    <th>Acciones</th>
+                    <th>Acciones</th>   
                 </tr>
             </thead>
             <tbody>
@@ -24,13 +29,13 @@ const ClientesListTable = ({ clientes, onEdit, onBaja }) => {
                         <td>{cliente.persona_apellido}</td>
                         <td>{cliente.persona_dni}</td>
                         <td>{cliente.persona_telefono}</td>
-                        <td>{cliente.persona_fecha_nacimiento}</td>
+                        <td>{formatDate(cliente.persona_fecha_nacimiento)}</td>
                         <td>{cliente.persona_domicilio}</td>
                         <td className="action-buttons">
                             <button onClick={() => onEdit(cliente.cliente_id)} className="edit-button btn btn-sm me-2">
                                 <i className="fas fa-edit"></i>
                             </button>
-                            <button onClick={() => onBaja(cliente.cliente_id)} className="delete-button btn btn-sm">
+                            <button onClick={() => onBaja(cliente.cliente_id)} className="delete-button btn btn-sm me-2">
                                 <i className="fas fa-trash-alt"></i>
                             </button>
                         </td>

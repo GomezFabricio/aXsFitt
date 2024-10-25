@@ -6,6 +6,7 @@ import loginRoutes from './routes/login.routes.js';
 import menuRoutes from './routes/menu.routes.js';
 import usuariosRolesRoutes from './routes/usuarios_roles.routes.js';
 import usuariosRoutes from './routes/usuarios.routes.js';
+import clientesRoues from './routes/clientes.routes.js';
 import inventarioRoutes from './routes/inventario.routes.js';
 import authMiddleware from './middlewares/auth.middleware.js';
 
@@ -32,6 +33,7 @@ app.use(menuRoutes); // La ruta del menú
 app.use(vendedoresRoutes); // Las rutas de vendedores requieren autenticación
 app.use(usuariosRolesRoutes); // Nuevas rutas para seleccionar y cambiar roles
 app.use(usuariosRoutes); // Las rutas de usuarios requieren autenticación
+app.use(clientesRoues); // Las rutas de clientes requieren autenticación
 
 // Iniciar el servidor
 app.listen(PORT, () => {
