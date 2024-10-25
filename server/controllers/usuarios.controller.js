@@ -1,7 +1,15 @@
-// controllers/usuarios.controller.js
 import { pool } from '../db.js';
 import bcrypt from 'bcrypt';
 import { createPersona, updatePersona } from './personas.controller.js';
+import jwt from 'jsonwebtoken';
+import { SECRET_KEY } from '../config.js';
+
+// Función para obtener el ID del usuario logueado desde el token
+const getUserIdFromToken = (req) => {
+    const token = req.headers.authorization.split(' ')[1];
+    const decodedToken = jwt.verify(token, SECRET_KEY);
+    return decodedToken.userId;
+};
 
 export const createUser = async (req, res) => {
     try {
@@ -54,23 +62,26 @@ export const createUser = async (req, res) => {
     }
 };
 
-// Funcion para obtener todos los usuarios, incluso los datos de la persona asociada, sus roles y con el estado activo
+// Función para obtener todos los usuarios, excluyendo al usuario logueado
 export const getAllUsers = async (req, res) => {
     try {
+        const loggedInUserId = getUserIdFromToken(req);
+
         const [rows] = await pool.query(
             `SELECT u.usuario_id, u.persona_id, p.persona_nombre, p.persona_apellido, p.persona_dni, u.usuario_email, u.estado_usuario_id, r.rol_tipo_rol
             FROM usuarios u
             JOIN personas p ON u.persona_id = p.persona_id
             JOIN usuarios_roles ur ON u.usuario_id = ur.usuario_id
             JOIN roles r ON ur.rol_id = r.rol_id
-            WHERE u.estado_usuario_id = 1`
+            WHERE u.estado_usuario_id = 1 AND u.usuario_id != ?`,
+            [loggedInUserId]
         );
 
         res.json(rows);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
-}
+};
 
 export const getInactiveUsers = async (req, res) => {
     try {
@@ -87,10 +98,9 @@ export const getInactiveUsers = async (req, res) => {
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
-}
+};
 
-// Funcion para obtener un usuario por su id, incluyendo los datos de la persona asociada y sus roles
-
+// Función para obtener un usuario por su id, incluyendo los datos de la persona asociada y sus roles
 export const getUserById = async (req, res) => {
     const { id } = req.params;
 
@@ -134,10 +144,9 @@ export const getUserById = async (req, res) => {
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
-}
+};
 
-// Funcion para actualizar un usuario 
-
+// Función para actualizar un usuario
 export const updateUser = async (req, res) => {
     const { id } = req.params;
     const { persona, usuario, roles } = req.body;
@@ -193,10 +202,9 @@ export const updateUser = async (req, res) => {
         console.error('Error actualizando usuario:', error);
         res.status(500).json({ message: 'Error al actualizar el usuario', error: error.message });
     }
-}
-    
-// Funcion para cambiar el estado de un usuario a inactivo 
+};
 
+// Función para cambiar el estado de un usuario a inactivo
 export const deactivateUser = async (req, res) => {
     const { id } = req.params;
 
@@ -207,10 +215,9 @@ export const deactivateUser = async (req, res) => {
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
-}
+};
 
-// Funcion para cambiar el estado de un usuario a activo 
-
+// Función para cambiar el estado de un usuario a activo
 export const activateUser = async (req, res) => {
     const { id } = req.params;
 
@@ -221,5 +228,4 @@ export const activateUser = async (req, res) => {
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
-}
-
+};
