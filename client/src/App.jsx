@@ -25,7 +25,9 @@ import ClientesList from './pages/clientes/ClientesList/ClientesList';
 import ClientesCreate from './pages/clientes/ClientesCreate/ClientesCreate';
 import ClientesEdit from './pages/clientes/ClientesEdit/ClientesEdit';
 import ClientesInactivosList from './pages/clientes/ClientesInactivosList/ClientesInactivosList';
+
 import VentasHome from './pages/ventas/VentasHome/VentasHome';
+import VentasList from './pages/ventas/VentasList/VentasList';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './assets/styles/variables.css';
@@ -243,12 +245,24 @@ function App() {
           }
         />
 
+        {/* Rutas del módulo de ventas */}
         <Route
           path="/ventas"
           element={
             <ProtectedRoute>
               <Navbar />
               <VentasHome />
+              <Footer />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/ventas/listado"
+          element={
+            <ProtectedRoute>
+              <Navbar />
+              <VentasList />
               <Footer />
             </ProtectedRoute>
           }

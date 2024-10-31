@@ -23,8 +23,6 @@ app.use(express.json());
 // Rutas
 app.use(loginRoutes); // La ruta de login no requiere autenticación
 
-app.use(inventarioRoutes); // Las rutas de inventario requieren autenticación
-
 // Aplica el middleware de autenticación antes de las rutas que requieren autenticación
 app.use(authMiddleware); // Aplica el middleware de autenticación
 
@@ -34,6 +32,8 @@ app.use(vendedoresRoutes); // Las rutas de vendedores requieren autenticación
 app.use(usuariosRolesRoutes); // Nuevas rutas para seleccionar y cambiar roles
 app.use(usuariosRoutes); // Las rutas de usuarios requieren autenticación
 app.use(clientesRoues); // Las rutas de clientes requieren autenticación
+app.use(inventarioRoutes); // Las rutas de inventario requieren autenticación
+
 
 // Iniciar el servidor
 app.listen(PORT, () => {
