@@ -25,6 +25,7 @@ import ClientesList from './pages/clientes/ClientesList/ClientesList';
 import ClientesCreate from './pages/clientes/ClientesCreate/ClientesCreate';
 import ClientesEdit from './pages/clientes/ClientesEdit/ClientesEdit';
 import ClientesInactivosList from './pages/clientes/ClientesInactivosList/ClientesInactivosList';
+import VentasHome from './pages/ventas/VentasHome/VentasHome';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './assets/styles/variables.css';
@@ -237,6 +238,17 @@ function App() {
             <ProtectedRoute>
               <Navbar />
               <ClientesInactivosList />
+              <Footer />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/ventas"
+          element={
+            <ProtectedRoute>
+              <Navbar />
+              <VentasHome />
               <Footer />
             </ProtectedRoute>
           }
