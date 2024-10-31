@@ -28,6 +28,7 @@ import ClientesInactivosList from './pages/clientes/ClientesInactivosList/Client
 
 import VentasHome from './pages/ventas/VentasHome/VentasHome';
 import VentasList from './pages/ventas/VentasList/VentasList';
+import RegistrarVenta from './pages/ventas/RegistrarVenta/RegistrarVenta';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './assets/styles/variables.css';
@@ -263,6 +264,17 @@ function App() {
             <ProtectedRoute>
               <Navbar />
               <VentasList />
+              <Footer />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/ventas/registrar"
+          element={
+            <ProtectedRoute>
+              <Navbar />
+              <RegistrarVenta />
               <Footer />
             </ProtectedRoute>
           }
