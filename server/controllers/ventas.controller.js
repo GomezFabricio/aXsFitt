@@ -1,3 +1,4 @@
+import ExcelJS from 'exceljs';
 import { pool } from '../db.js';
 
 /* -------------------------------------------------------------------------- */
@@ -199,14 +200,10 @@ export const eliminarVenta = async (req, res) => {
     }
 };
 
-/* -------------------------------------------------------------------------- */
-/*                          GENERAR FACTURA                                   */
-/* -------------------------------------------------------------------------- */
-export const generarFactura = async (req, res) => {
-    const { id } = req.params;
-
+// Función para generar el reporte de ventas en formato Excel
+export const generarReporteVentas = async (req, res) => {
     try {
-        const [venta] = await pool.query(
+        const [ventas] = await pool.query(
             `SELECT 
                 v.venta_id, 
                 v.venta_fecha, 
@@ -219,37 +216,80 @@ export const generarFactura = async (req, res) => {
                 ventas v
             JOIN clientes cl ON v.clientes_cliente_id = cl.cliente_id
             JOIN personas c ON cl.persona_id = c.persona_id
-            JOIN vendedores vnd ON v.vendedor_id = vnd.vendedor_id
-            JOIN personas ven ON vnd.persona_id = ven.persona_id
-            WHERE v.venta_id = ?`,
-            [id]
+            LEFT JOIN vendedores vnd ON v.vendedor_id = vnd.vendedor_id
+            LEFT JOIN personas ven ON vnd.persona_id = ven.persona_id`
         );
 
-        if (venta.length === 0) {
-            return res.status(404).json({ message: 'Venta no encontrada' });
+        const workbook = new ExcelJS.Workbook();
+        const worksheet = workbook.addWorksheet('Reporte de Ventas');
+
+        worksheet.columns = [
+            { header: 'ID Venta', key: 'venta_id', width: 10 },
+            { header: 'Fecha', key: 'venta_fecha', width: 15 },
+            { header: 'Cliente', key: 'cliente', width: 25 },
+            { header: 'Vendedor', key: 'vendedor', width: 25 },
+            { header: 'Total', key: 'venta_total', width: 15 },
+            { header: 'ID Detalle', key: 'detalle_id', width: 10 },
+            { header: 'Cantidad', key: 'cantidad', width: 10 },
+            { header: 'Precio Unitario', key: 'precio_unitario', width: 15 },
+            { header: 'Subtotal', key: 'subtotal', width: 15 },
+            { header: 'Producto', key: 'producto', width: 25 },
+        ];
+
+        for (const venta of ventas) {
+            const [detalles] = await pool.query(
+                `SELECT 
+                    dv.detalle_venta_id, 
+                    dv.detalle_venta_cantidad, 
+                    dv.detalle_venta_precio_unitario, 
+                    dv.detalle_venta_subtotal, 
+                    p.producto_descripcion AS productoDescripcion 
+                FROM 
+                    detalle_venta dv
+                JOIN inventario_principal ip ON dv.inventario_id = ip.inventario_id
+                JOIN productos p ON ip.producto_id = p.producto_id
+                WHERE dv.venta_id = ?`,
+                [venta.venta_id]
+            );
+
+            if (detalles.length > 0) {
+                detalles.forEach((detalle, index) => {
+                    worksheet.addRow({
+                        venta_id: index === 0 ? venta.venta_id : '',
+                        venta_fecha: index === 0 ? new Date(venta.venta_fecha).toLocaleDateString() : '',
+                        cliente: index === 0 ? `${venta.clienteNombre} ${venta.clienteApellido}` : '',
+                        vendedor: index === 0 ? (venta.vendedorNombre && venta.vendedorApellido ? `${venta.vendedorNombre} ${venta.vendedorApellido}` : '') : '',
+                        venta_total: index === 0 ? venta.venta_total : '',
+                        detalle_id: detalle.detalle_venta_id,
+                        cantidad: detalle.detalle_venta_cantidad,
+                        precio_unitario: detalle.detalle_venta_precio_unitario,
+                        subtotal: detalle.detalle_venta_subtotal,
+                        producto: detalle.productoDescripcion,
+                    });
+                });
+            } else {
+                worksheet.addRow({
+                    venta_id: venta.venta_id,
+                    venta_fecha: new Date(venta.venta_fecha).toLocaleDateString(),
+                    cliente: `${venta.clienteNombre} ${venta.clienteApellido}`,
+                    vendedor: venta.vendedorNombre && venta.vendedorApellido ? `${venta.vendedorNombre} ${venta.vendedorApellido}` : '',
+                    venta_total: venta.venta_total,
+                    detalle_id: '',
+                    cantidad: '',
+                    precio_unitario: '',
+                    subtotal: '',
+                    producto: '',
+                });
+            }
         }
 
-        const [detalles] = await pool.query(
-            `SELECT 
-                dv.detalle_venta_id, 
-                dv.detalle_venta_cantidad, 
-                dv.detalle_venta_precio_unitario, 
-                dv.detalle_venta_subtotal, 
-                p.producto_descripcion AS productoDescripcion 
-            FROM 
-                detalle_venta dv
-            JOIN inventario_principal ip ON dv.inventario_id = ip.inventario_id
-            JOIN productos p ON ip.producto_id = p.producto_id
-            WHERE dv.venta_id = ?`,
-            [id]
-        );
+        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        res.setHeader('Content-Disposition', 'attachment; filename=Reporte_Ventas.xlsx');
 
-        // Aquí puedes generar la factura en el formato que desees (PDF, HTML, etc.)
-        // Por simplicidad, vamos a devolver los datos de la venta y los detalles en formato JSON
-
-        res.json({ venta: venta[0], detalles });
+        await workbook.xlsx.write(res);
+        res.end();
     } catch (error) {
-        console.error('Error en generarFactura:', error);
+        console.error('Error en generarReporteVentas:', error);
         res.status(500).json({ message: error.message });
     }
 };

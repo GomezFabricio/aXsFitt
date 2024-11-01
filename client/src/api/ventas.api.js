@@ -37,7 +37,23 @@ export const eliminarVentaRequest = async (id) => {
     return await axios.delete(`http://localhost:4000/ventas/${id}`, config);
 };
 
-// Generar una factura para una venta específica
-export const generarFacturaRequest = async (id) => {
-    return await axios.get(`http://localhost:4000/ventas/${id}/factura`, config);
+// Descargar el reporte de ventas en formato Excel
+export const descargarReporteVentasRequest = async () => {
+    try {
+        const response = await axios.get('http://localhost:4000/ventas/reporte', {
+            responseType: 'blob',
+            ...config,
+        });
+
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', 'Reporte_Ventas.xlsx');
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+    } catch (error) {
+        console.error('Error descargando el reporte de ventas:', error);
+        throw error;
+    }
 };

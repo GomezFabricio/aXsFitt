@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import './VentasHome.css';
+import { descargarReporteVentasRequest } from '../../../api/ventas.api';
 
 const VentasHome = () => {
     const navigate = useNavigate();
@@ -13,12 +14,12 @@ const VentasHome = () => {
         navigate('/ventas/listado');
     };
 
-    const handleReportesClick = () => {
-        navigate('/ventas/reportes');
-    };
-
-    const handleConfiguracionClick = () => {
-        navigate('/ventas/configuracion');
+    const handleReportesClick = async () => {
+        try {
+            await descargarReporteVentasRequest();
+        } catch (error) {
+            console.error('Error descargando el reporte de ventas:', error);
+        }
     };
 
     return (
@@ -43,8 +44,6 @@ const VentasHome = () => {
                     Configuración de Ventas
                 </button>
             </div>
-
-
         </div>
     );
 };

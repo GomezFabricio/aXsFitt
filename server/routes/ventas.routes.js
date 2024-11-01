@@ -4,11 +4,14 @@ import {
     obtenerVentas, 
     obtenerVentaPorId, 
     actualizarVenta, 
-    eliminarVenta, 
-    generarFactura 
+    eliminarVenta,
+    generarReporteVentas 
 } from '../controllers/ventas.controller.js';
 
 const router = Router();
+
+/* Generar reporte de ventas */
+router.get('/ventas/reporte', generarReporteVentas);
 
 /* Registrar una nueva venta */
 router.post('/ventas', registrarVenta);
@@ -24,8 +27,5 @@ router.put('/ventas/:id', actualizarVenta);
 
 /* Eliminar una venta */
 router.delete('/ventas/:id', eliminarVenta);
-
-/* Generar una factura para una venta específica */
-router.get('/ventas/:id/factura', generarFactura);
 
 export default router;
