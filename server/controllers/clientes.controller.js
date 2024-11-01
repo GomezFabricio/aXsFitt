@@ -46,6 +46,7 @@ export const createCliente = async (req, res) => {
 /* -------------------------------------------------------------------------- */
 export const updateCliente = async (req, res) => {
     const { id } = req.params;
+    const { personaData, cliente_fecha_afiliacion } = req.body;
 
     try {
         // Consulta SQL para obtener el ID de la persona asociado al cliente
@@ -61,13 +62,25 @@ export const updateCliente = async (req, res) => {
         const personaId = cliente[0].persona_id;
 
         // Actualizar la información de la persona
-        req.params.id = personaId;
-        await updatePersona(req);
+        await updatePersona({ params: { id: personaId }, body: personaData });
 
-        res.status(200).json({ message: 'Cliente actualizado exitosamente' });
+        // Actualizar la información del cliente
+        const [result] = await pool.query(
+            `UPDATE clientes 
+            SET 
+                cliente_fecha_afiliacion = ?
+            WHERE cliente_id = ?`,
+            [cliente_fecha_afiliacion, id]
+        );
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ message: 'Cliente no encontrado' });
+        }
+
+        res.json({ message: 'Cliente actualizado correctamente' });
     } catch (error) {
         console.error('Error actualizando cliente:', error);
-        res.status(500).json({ message: 'Error al actualizar el cliente', error: error.message });
+        res.status(500).json({ message: error.message });
     }
 };
 
