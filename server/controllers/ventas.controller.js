@@ -68,8 +68,8 @@ export const obtenerVentas = async (req, res) => {
                 ventas v
             JOIN clientes cl ON v.clientes_cliente_id = cl.cliente_id
             JOIN personas c ON cl.persona_id = c.persona_id
-            JOIN vendedores vnd ON v.vendedor_id = vnd.vendedor_id
-            JOIN personas ven ON vnd.persona_id = ven.persona_id`
+            LEFT JOIN vendedores vnd ON v.vendedor_id = vnd.vendedor_id
+            LEFT JOIN personas ven ON vnd.persona_id = ven.persona_id`
         );
 
         res.json(ventas);
