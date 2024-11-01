@@ -25,3 +25,13 @@
     background-color: var(--color-principal-hover);
     transform: translateY(-2px);
 }
+
+.button-disabled{
+    background-color: #a8a8a8;
+}
+
+.button-disabled:hover{
+    background-color: #bbbbbb;
+    transform: none;
+    cursor: not-allowed;
+}

@@ -39,7 +39,7 @@ const VentasHome = () => {
                 <button className="ventas-button" onClick={handleReportesClick}>
                     Reportes de Ventas
                 </button>
-                <button className="ventas-button" onClick={handleConfiguracionClick}>
+                <button className="ventas-button button-disabled">
                     Configuración de Ventas
                 </button>
             </div>

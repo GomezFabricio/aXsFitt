@@ -15,7 +15,7 @@ const VentasListTable = ({ ventas, onVerDetalles }) => {
                 <tr>
                     <th>Fecha</th>
                     <th>Cliente</th>
-                    <th>Vendedor</th>
+                    {/* <th>Vendedor</th> */}
                     <th>Total</th>
                     <th>Acciones</th>
                 </tr>
@@ -25,7 +25,7 @@ const VentasListTable = ({ ventas, onVerDetalles }) => {
                     <tr key={venta.venta_id}>
                         <td>{formatDate(venta.venta_fecha)}</td>
                         <td>{`${venta.clienteNombre} ${venta.clienteApellido}`}</td>
-                        <td>{venta.vendedorNombre && venta.vendedorApellido ? `${venta.vendedorNombre} ${venta.vendedorApellido}` : ''}</td>
+                        {/* <td>{venta.vendedorNombre && venta.vendedorApellido ? `${venta.vendedorNombre} ${venta.vendedorApellido}` : ''}</td> */}
                         <td>{venta.venta_total}</td>
                         <td className="action-buttons">
                             <button onClick={() => onVerDetalles(venta.venta_id)} className="details-button btn btn-sm">
