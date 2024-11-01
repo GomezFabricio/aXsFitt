@@ -4,12 +4,21 @@ import { pool } from '../db.js';
 /*                          REGISTRAR UNA NUEVA VENTA                         */
 /* -------------------------------------------------------------------------- */
 export const registrarVenta = async (req, res) => {
-    const { clienteId, vendedorId, productos, total } = req.body;
+    const { clienteId, productos, total } = req.body;
+    const { personaId } = req.user; // Obtener personaId del token JWT
 
     try {
-        // Registrar la venta en la tabla 'venta'
+        // Verificar si la persona es un vendedor
+        const [vendedor] = await pool.query(
+            `SELECT vendedor_id FROM vendedores WHERE persona_id = ?`,
+            [personaId]
+        );
+
+        const vendedorId = vendedor.length > 0 ? vendedor[0].vendedor_id : null;
+
+        // Registrar la venta en la tabla 'ventas'
         const [ventaResult] = await pool.query(
-            `INSERT INTO venta (clientes_cliente_id, vendedor_id, venta_fecha, venta_total)
+            `INSERT INTO ventas (clientes_cliente_id, vendedor_id, venta_fecha, venta_total)
             VALUES (?, ?, NOW(), ?)`,
             [clienteId, vendedorId, total]
         );
@@ -56,7 +65,7 @@ export const obtenerVentas = async (req, res) => {
                 ven.persona_nombre AS vendedorNombre, 
                 ven.persona_apellido AS vendedorApellido 
             FROM 
-                venta v
+                ventas v
             JOIN clientes cl ON v.clientes_cliente_id = cl.cliente_id
             JOIN personas c ON cl.persona_id = c.persona_id
             JOIN vendedores vnd ON v.vendedor_id = vnd.vendedor_id
@@ -87,7 +96,7 @@ export const obtenerVentaPorId = async (req, res) => {
                 ven.persona_nombre AS vendedorNombre, 
                 ven.persona_apellido AS vendedorApellido 
             FROM 
-                venta v
+                ventas v
             JOIN clientes cl ON v.clientes_cliente_id = cl.cliente_id
             JOIN personas c ON cl.persona_id = c.persona_id
             JOIN vendedores vnd ON v.vendedor_id = vnd.vendedor_id
@@ -132,7 +141,7 @@ export const actualizarVenta = async (req, res) => {
     try {
         // Actualizar la venta en la tabla 'venta'
         await pool.query(
-            `UPDATE venta
+            `UPDATE ventas
             SET clientes_cliente_id = ?, vendedor_id = ?, venta_total = ?
             WHERE venta_id = ?`,
             [clienteId, vendedorId, total, id]
@@ -177,7 +186,7 @@ export const eliminarVenta = async (req, res) => {
         await pool.query(`DELETE FROM detalle_venta WHERE venta_id = ?`, [id]);
 
         // Eliminar la venta
-        const [result] = await pool.query(`DELETE FROM venta WHERE venta_id = ?`, [id]);
+        const [result] = await pool.query(`DELETE FROM ventas WHERE venta_id = ?`, [id]);
 
         if (result.affectedRows === 0) {
             return res.status(404).json({ message: 'Venta no encontrada' });
@@ -207,7 +216,7 @@ export const generarFactura = async (req, res) => {
                 ven.persona_nombre AS vendedorNombre, 
                 ven.persona_apellido AS vendedorApellido 
             FROM 
-                venta v
+                ventas v
             JOIN clientes cl ON v.clientes_cliente_id = cl.cliente_id
             JOIN personas c ON cl.persona_id = c.persona_id
             JOIN vendedores vnd ON v.vendedor_id = vnd.vendedor_id

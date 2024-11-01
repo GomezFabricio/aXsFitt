@@ -1,12 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Select from 'react-select';
 import { Modal, Button } from 'react-bootstrap';
 import './RegistrarVentaForm.css';
 
-const RegistrarVentaForm = ({ clientes, productos, venta, setVenta, onRegistrarVenta }) => {
+const RegistrarVentaForm = ({ clientes, productos = [], venta, setVenta, onRegistrarVenta }) => {
     const [modalIsOpen, setModalIsOpen] = useState(false);
     const [selectedProduct, setSelectedProduct] = useState(null);
     const [cantidad, setCantidad] = useState(1);
+
+    useEffect(() => {
+        console.log('Productos en RegistrarVentaForm:', productos); // Verificar que los productos se pasen correctamente
+    }, [productos]);
 
     const handleClienteChange = (selectedOption) => {
         setVenta({ ...venta, clienteId: selectedOption.value });

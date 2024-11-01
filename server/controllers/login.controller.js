@@ -48,11 +48,12 @@ export const login = async (req, res) => {
             return res.status(403).json({ message: 'No tiene roles asignados' });
         }
 
-        // Generar un token JWT con el userId, nombre y apellido
+        // Generar un token JWT con el userId, nombre, apellido y personaId
         const token = jwt.sign({
             userId: user.usuario_id,
             firstName: user.persona_nombre,
-            lastName: user.persona_apellido
+            lastName: user.persona_apellido,
+            personaId: user.persona_id
         }, SECRET_KEY, { expiresIn: '2h' });
 
         // Devolver solo el token y los roles

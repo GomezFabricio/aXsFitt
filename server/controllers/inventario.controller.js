@@ -2,6 +2,7 @@ import { pool } from '../db.js';
 
 // Listar inventario con detalles
 export const inventarioList = async (req, res) => {
+    console.log('Entrando a inventarioList');
     try {
         const [result] = await pool.query(`
             SELECT 

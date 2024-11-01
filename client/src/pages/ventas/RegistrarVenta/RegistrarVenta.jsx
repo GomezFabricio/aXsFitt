@@ -24,8 +24,13 @@ const RegistrarVenta = () => {
         }
 
         async function loadProductos() {
-            const responseProductos = await inventarioList();
-            setProductos(responseProductos);
+            try {
+                const responseProductos = await inventarioList();
+                console.log('Productos recibidos:', responseProductos);
+                setProductos(responseProductos); // Asegurarse de que los datos se asignen correctamente
+            } catch (error) {
+                console.error('Error cargando productos:', error);
+            }
         }
 
         loadClientes();
