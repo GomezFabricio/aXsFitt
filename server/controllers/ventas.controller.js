@@ -99,8 +99,8 @@ export const obtenerVentaPorId = async (req, res) => {
                 ventas v
             JOIN clientes cl ON v.clientes_cliente_id = cl.cliente_id
             JOIN personas c ON cl.persona_id = c.persona_id
-            JOIN vendedores vnd ON v.vendedor_id = vnd.vendedor_id
-            JOIN personas ven ON vnd.persona_id = ven.persona_id
+            LEFT JOIN vendedores vnd ON v.vendedor_id = vnd.vendedor_id
+            LEFT JOIN personas ven ON vnd.persona_id = ven.persona_id
             WHERE v.venta_id = ?`,
             [id]
         );
@@ -124,7 +124,7 @@ export const obtenerVentaPorId = async (req, res) => {
             [id]
         );
 
-        res.json({ venta: venta[0], detalles });
+        res.json({ ...venta[0], detalles });
     } catch (error) {
         console.error('Error en obtenerVentaPorId:', error);
         res.status(500).json({ message: error.message });
