@@ -1,5 +1,6 @@
 import { pool } from '../db.js';
 import { createPersona, updatePersona } from './personas.controller.js';
+import { createUser } from './usuarios.controller.js';
 
 /* -------------------------------------------------------------------------- */
 /*                          DAR DE ALTA A UN CLIENTE                          */
@@ -7,10 +8,10 @@ import { createPersona, updatePersona } from './personas.controller.js';
 export const createCliente = async (req, res) => {
     console.log("Datos recibidos en createCliente:", req.body);
     try {
-        const { personaData } = req.body;
+        const { personaData, usuarioData } = req.body;
 
         // Validar los datos aquí
-        if (!personaData) {
+        if (!personaData || !usuarioData) {
             return res.status(400).json({ message: 'Datos incompletos' });
         }
 
@@ -18,6 +19,18 @@ export const createCliente = async (req, res) => {
         const personaResponse = await createPersona(personaData);
         if (!personaResponse || !personaResponse.id) {
             return res.status(500).json({ message: 'Error al crear la persona' });
+        }
+
+        // Crear el usuario
+        const usuarioRequestData = {
+            persona: { persona_id: personaResponse.id },
+            usuario: usuarioData,
+            roles: [] // No asignar roles al cliente
+        };
+
+        const usuarioResponse = await createUser({ body: usuarioRequestData });
+        if (!usuarioResponse || !usuarioResponse.id) {
+            return res.status(500).json({ message: 'Error al crear el usuario' });
         }
 
         // Crear el cliente
