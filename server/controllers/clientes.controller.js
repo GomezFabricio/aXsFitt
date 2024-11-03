@@ -237,7 +237,7 @@ export const deactivateClientesAutomatically = async () => {
         const [clientes] = await pool.query(
             `SELECT c.cliente_id 
             FROM clientes c
-            LEFT JOIN venta v ON c.cliente_id = v.clientes_cliente_id
+            LEFT JOIN ventas v ON c.cliente_id = v.cliente_id
             WHERE v.venta_fecha IS NULL OR v.venta_fecha < DATE_SUB(NOW(), INTERVAL 45 DAY)`
         );
 
