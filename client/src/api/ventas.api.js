@@ -57,3 +57,18 @@ export const descargarReporteVentasRequest = async () => {
         throw error;
     }
 };
+
+// Procesar pago con Mercado Pago
+export const procesarPagoMercadoPagoRequest = async (data) => {
+    return await axios.post('http://localhost:4000/ventas/pago-mercadopago', data, config);
+};
+
+// Procesar pago en efectivo
+export const procesarPagoEfectivoRequest = async (data) => {
+    return await axios.post('http://localhost:4000/ventas/pago-efectivo', data, config);
+};
+
+// Procesar pago con tarjeta
+export const procesarPagoTarjetaRequest = async (data) => {
+    return await axios.post('http://localhost:4000/ventas/pago-tarjeta', data, config);
+};

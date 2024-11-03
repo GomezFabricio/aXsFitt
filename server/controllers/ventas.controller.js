@@ -1,5 +1,5 @@
 import ExcelJS from 'exceljs';
-import { mercadopago } from '../config/config.js';
+import mercadopago from '../config_mercado_pago.js';
 import { pool } from '../db.js';
 
 /* -------------------------------------------------------------------------- */
@@ -201,7 +201,9 @@ export const eliminarVenta = async (req, res) => {
     }
 };
 
-// Función para generar el reporte de ventas en formato Excel
+/* -------------------------------------------------------------------------- */
+/*                          GENERAR REPORTE DE VENTAS                         */
+/* -------------------------------------------------------------------------- */
 export const generarReporteVentas = async (req, res) => {
     try {
         const [ventas] = await pool.query(
@@ -295,40 +297,126 @@ export const generarReporteVentas = async (req, res) => {
     }
 };
 
-// Funciones de Pago
-
 /* -------------------------------------------------------------------------- */
 /*                          PROCESAR PAGO CON MERCADO PAGO                    */
 /* -------------------------------------------------------------------------- */
 export const procesarPagoMercadoPago = async (req, res) => {
     const { token, transactionAmount, description, installments, paymentMethodId, email } = req.body;
 
-    const paymentData = {
-        transaction_amount: transactionAmount,
-        token,
-        description,
-        installments,
-        payment_method_id: paymentMethodId,
-        payer: {
-            email,
-        },
-    };
+    // Validación de datos de entrada
+    if (!token || !transactionAmount || !paymentMethodId || !email) {
+        return res.status(400).json({ message: 'Datos de pago incompletos.' });
+    }
 
     try {
+        // Crear el pago en Mercado Pago
+        const paymentData = {
+            transaction_amount: transactionAmount,
+            token,
+            description,
+            installments,
+            payment_method_id: paymentMethodId,
+            payer: {
+                email,
+            },
+            external_reference: 'ventaId', // Asegúrate de establecer esta referencia correctamente
+        };
+
         const response = await mercadopago.payment.save(paymentData);
         const payment = response.body;
 
-        // Crear el comprobante de pago
-        const [comprobanteResult] = await pool.query(
-            `INSERT INTO comprobantes (venta_id, metodo_pago_id, comprobante_url, comprobante_fecha, comprobante_monto)
-            VALUES (?, ?, ?, NOW(), ?)`,
-            [payment.external_reference, 2, payment.receipt_url, payment.transaction_amount]
+        // Verificar el estado del pago
+        if (payment.status !== 'approved') {
+            return res.status(400).json({ message: 'El pago no fue aprobado.' });
+        }
+
+        // Crear el comprobante de pago usando la función existente
+        const comprobanteId = await crearComprobante(
+            payment.external_reference,
+            2, // o el método correspondiente
+            payment.receipt_url,
+            payment.transaction_amount
         );
 
-        res.status(200).json({ message: 'Pago procesado exitosamente', payment, comprobanteId: comprobanteResult.insertId });
+        res.status(200).json({ message: 'Pago procesado exitosamente', payment, comprobanteId });
     } catch (error) {
         console.error('Error procesando el pago con Mercado Pago:', error);
-        res.status(500).json({ message: error.message });
+        res.status(500).json({ message: 'Ocurrió un error al procesar el pago. Por favor, intenta nuevamente.' });
+    }
+};
+
+/* -------------------------------------------------------------------------- */
+/*                          PROCESAR PAGO EN EFECTIVO                         */
+/* -------------------------------------------------------------------------- */
+export const procesarPagoEfectivo = async (req, res) => {
+    const { ventaId, monto } = req.body;
+
+    // Validación de datos de entrada
+    if (!ventaId || !monto) {
+        return res.status(400).json({ message: 'Datos de pago incompletos.' });
+    }
+
+    try {
+        // Crear el comprobante de pago en efectivo
+        const comprobanteId = await crearComprobante(
+            ventaId,
+            1, // ID del método de pago en efectivo
+            null, // No hay URL de comprobante para pagos en efectivo
+            monto
+        );
+
+        res.status(200).json({ message: 'Pago en efectivo registrado exitosamente', comprobanteId });
+    } catch (error) {
+        console.error('Error procesando el pago en efectivo:', error);
+        res.status(500).json({ message: 'Ocurrió un error al procesar el pago en efectivo. Por favor, intenta nuevamente.' });
+    }
+};
+
+/* -------------------------------------------------------------------------- */
+/*                          PROCESAR PAGO CON TARJETA                         */
+/* -------------------------------------------------------------------------- */
+export const procesarPagoTarjeta = async (req, res) => {
+    const { token, transactionAmount, description, installments, paymentMethodId, email } = req.body;
+
+    // Validación de datos de entrada
+    if (!token || !transactionAmount || !paymentMethodId || !email) {
+        return res.status(400).json({ message: 'Datos de pago incompletos.' });
+    }
+
+    try {
+        // Crear el pago en Mercado Pago
+        const paymentData = {
+            transaction_amount: transactionAmount,
+            token,
+            description,
+            installments,
+            payment_method_id: paymentMethodId,
+            payer: {
+                email,
+            },
+            external_reference: 'ventaId', // Asegúrate de establecer esta referencia correctamente
+        };
+
+        const response = await mercadopago.payment.save(paymentData);
+        const payment = response.body;
+
+        // Verificar el estado del pago
+        if (payment.status !== 'approved') {
+            return res.status(400).json({ message: 'El pago no fue aprobado.' });
+        }
+
+        // Crear el comprobante de pago usando la función existente
+        const comprobanteId = await crearComprobante(
+            payment.external_reference,
+            3, // ID del método de pago con tarjeta
+            payment.receipt_url,
+            payment.transaction_amount
+        );
+
+        res.status(200).json({ message: 'Pago con tarjeta procesado exitosamente', payment, comprobanteId });
+    } catch (error) {
+        console.error('Error procesando el pago con tarjeta:', error);
+        res.status(500).json({ message: 'Ocurrió un error al procesar el pago con tarjeta. Por favor, intenta nuevamente.' });
     }
 };
 
