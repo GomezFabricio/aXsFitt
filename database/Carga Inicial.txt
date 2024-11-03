@@ -68,12 +68,12 @@ INSERT INTO `clientes` (`cliente_id`, `persona_id`, `estado_afiliacion_id`, `cli
 INSERT INTO `vendedores` (`vendedor_id`, `estado_vendedor_id`, `persona_id`, `vendedor_fecha_ingreso`) VALUES
 (1, 1, 1, '2024-09-23');
 
--- Inserción de datos en la tabla 'venta'
-INSERT INTO `venta` (`venta_id`, `clientes_cliente_id`, `vendedor_id`, `venta_fecha`, `venta_total`) VALUES
+-- Inserción de datos en la tabla 'ventas'
+INSERT INTO `ventas` (`ventas_id`, `cliente_id`, `vendedor_id`, `venta_fecha`, `venta_total`) VALUES
 (1, 1, 1, '2024-09-23', 100.00);
 
 -- Inserción de datos en la tabla 'detalle_venta'
-INSERT INTO `detalle_venta` (`detalle_venta_id`, `inventario_id`, `venta_id`, `detalle_venta_cantidad`, `detalle_venta_precio_unitario`, `detalle_venta_subtotal`) VALUES
+INSERT INTO `detalle_venta` (`detalle_venta_id`, `inventario_id`, `ventas_id`, `detalle_venta_cantidad`, `detalle_venta_precio_unitario`, `detalle_venta_subtotal`) VALUES
 (1, 1, 1, 2, 50.00, 100.00);
 
 -- Inserción de datos en la tabla 'menu_roles'
