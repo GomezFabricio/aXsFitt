@@ -5,7 +5,8 @@ import {
     obtenerVentaPorId, 
     actualizarVenta, 
     eliminarVenta,
-    generarReporteVentas 
+    generarReporteVentas,
+    procesarPagoMercadoPago
 } from '../controllers/ventas.controller.js';
 
 const router = Router();
@@ -27,5 +28,8 @@ router.put('/ventas/:id', actualizarVenta);
 
 /* Eliminar una venta */
 router.delete('/ventas/:id', eliminarVenta);
+
+/* Procesar pago con Mercado Pago */
+router.post('/ventas/pago-mercadopago', procesarPagoMercadoPago);
 
 export default router;

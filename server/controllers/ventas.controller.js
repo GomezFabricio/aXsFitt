@@ -1,4 +1,5 @@
 import ExcelJS from 'exceljs';
+import { mercadopago } from '../config/config.js';
 import { pool } from '../db.js';
 
 /* -------------------------------------------------------------------------- */
@@ -19,7 +20,7 @@ export const registrarVenta = async (req, res) => {
 
         // Registrar la venta en la tabla 'ventas'
         const [ventaResult] = await pool.query(
-            `INSERT INTO ventas (clientes_cliente_id, vendedor_id, venta_fecha, venta_total)
+            `INSERT INTO ventas (cliente_id, vendedor_id, venta_fecha, venta_total)
             VALUES (?, ?, NOW(), ?)`,
             [clienteId, vendedorId, total]
         );
@@ -67,7 +68,7 @@ export const obtenerVentas = async (req, res) => {
                 ven.persona_apellido AS vendedorApellido 
             FROM 
                 ventas v
-            JOIN clientes cl ON v.clientes_cliente_id = cl.cliente_id
+            JOIN clientes cl ON v.cliente_id = cl.cliente_id
             JOIN personas c ON cl.persona_id = c.persona_id
             LEFT JOIN vendedores vnd ON v.vendedor_id = vnd.vendedor_id
             LEFT JOIN personas ven ON vnd.persona_id = ven.persona_id`
@@ -98,7 +99,7 @@ export const obtenerVentaPorId = async (req, res) => {
                 ven.persona_apellido AS vendedorApellido 
             FROM 
                 ventas v
-            JOIN clientes cl ON v.clientes_cliente_id = cl.cliente_id
+            JOIN clientes cl ON v.cliente_id = cl.cliente_id
             JOIN personas c ON cl.persona_id = c.persona_id
             LEFT JOIN vendedores vnd ON v.vendedor_id = vnd.vendedor_id
             LEFT JOIN personas ven ON vnd.persona_id = ven.persona_id
@@ -143,7 +144,7 @@ export const actualizarVenta = async (req, res) => {
         // Actualizar la venta en la tabla 'venta'
         await pool.query(
             `UPDATE ventas
-            SET clientes_cliente_id = ?, vendedor_id = ?, venta_total = ?
+            SET cliente_id = ?, vendedor_id = ?, venta_total = ?
             WHERE venta_id = ?`,
             [clienteId, vendedorId, total, id]
         );
@@ -214,7 +215,7 @@ export const generarReporteVentas = async (req, res) => {
                 ven.persona_apellido AS vendedorApellido 
             FROM 
                 ventas v
-            JOIN clientes cl ON v.clientes_cliente_id = cl.cliente_id
+            JOIN clientes cl ON v.cliente_id = cl.cliente_id
             JOIN personas c ON cl.persona_id = c.persona_id
             LEFT JOIN vendedores vnd ON v.vendedor_id = vnd.vendedor_id
             LEFT JOIN personas ven ON vnd.persona_id = ven.persona_id`
@@ -291,5 +292,60 @@ export const generarReporteVentas = async (req, res) => {
     } catch (error) {
         console.error('Error en generarReporteVentas:', error);
         res.status(500).json({ message: error.message });
+    }
+};
+
+// Funciones de Pago
+
+/* -------------------------------------------------------------------------- */
+/*                          PROCESAR PAGO CON MERCADO PAGO                    */
+/* -------------------------------------------------------------------------- */
+export const procesarPagoMercadoPago = async (req, res) => {
+    const { token, transactionAmount, description, installments, paymentMethodId, email } = req.body;
+
+    const paymentData = {
+        transaction_amount: transactionAmount,
+        token,
+        description,
+        installments,
+        payment_method_id: paymentMethodId,
+        payer: {
+            email,
+        },
+    };
+
+    try {
+        const response = await mercadopago.payment.save(paymentData);
+        const payment = response.body;
+
+        // Crear el comprobante de pago
+        const [comprobanteResult] = await pool.query(
+            `INSERT INTO comprobantes (venta_id, metodo_pago_id, comprobante_url, comprobante_fecha, comprobante_monto)
+            VALUES (?, ?, ?, NOW(), ?)`,
+            [payment.external_reference, 2, payment.receipt_url, payment.transaction_amount]
+        );
+
+        res.status(200).json({ message: 'Pago procesado exitosamente', payment, comprobanteId: comprobanteResult.insertId });
+    } catch (error) {
+        console.error('Error procesando el pago con Mercado Pago:', error);
+        res.status(500).json({ message: error.message });
+    }
+};
+
+/* -------------------------------------------------------------------------- */
+/*                          CREAR COMPROBANTE DE PAGO                         */
+/* -------------------------------------------------------------------------- */
+export const crearComprobante = async (ventaId, metodoPagoId, comprobanteUrl, monto) => {
+    try {
+        const [comprobanteResult] = await pool.query(
+            `INSERT INTO comprobantes (venta_id, metodo_pago_id, comprobante_url, comprobante_fecha, comprobante_monto)
+            VALUES (?, ?, ?, NOW(), ?)`,
+            [ventaId, metodoPagoId, comprobanteUrl, monto]
+        );
+
+        return comprobanteResult.insertId;
+    } catch (error) {
+        console.error('Error creando el comprobante:', error);
+        throw error;
     }
 };
