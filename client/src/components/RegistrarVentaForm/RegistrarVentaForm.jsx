@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Select from 'react-select';
 import { Modal, Button, Form } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom'; // Importar useNavigate
 import './RegistrarVentaForm.css';
 
 const RegistrarVentaForm = ({ clientes, productos = [], venta, setVenta, onRegistrarVenta, onProcesarPago }) => {
@@ -14,6 +15,8 @@ const RegistrarVentaForm = ({ clientes, productos = [], venta, setVenta, onRegis
     const [showConfirmationModal, setShowConfirmationModal] = useState(false);
     const [qrCode, setQrCode] = useState(null);
     const [paymentStatus, setPaymentStatus] = useState(null); // Estado para el resultado del pago
+
+    const navigate = useNavigate(); // Definir navigate
 
     useEffect(() => {
         console.log('Productos en RegistrarVentaForm:', productos); // Verificar que los productos se pasen correctamente

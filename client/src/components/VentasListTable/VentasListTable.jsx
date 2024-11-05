@@ -33,7 +33,7 @@ const VentasListTable = ({ ventas, onVerDetalles, selectedVenta, setSelectedVent
                     {ventas.map((venta) => (
                         <tr key={venta.ventas_id}>
                             <td>{formatDate(venta.venta_fecha)}</td>
-                            <td>{`${venta.clienteNombre} ${venta.clienteApellido}`}</td>
+                            <td>{venta.clienteNombre && venta.clienteApellido ? `${venta.clienteNombre} ${venta.clienteApellido}` : ''}</td>
                             <td>{venta.vendedorNombre && venta.vendedorApellido ? `${venta.vendedorNombre} ${venta.vendedorApellido}` : ''}</td>
                             <td>{venta.venta_total}</td>
                             <td className="action-buttons">

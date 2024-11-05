@@ -68,8 +68,8 @@ export const obtenerVentas = async (req, res) => {
                 ven.persona_apellido AS vendedorApellido 
             FROM 
                 ventas v
-            JOIN clientes cl ON v.cliente_id = cl.cliente_id
-            JOIN personas c ON cl.persona_id = c.persona_id
+            LEFT JOIN clientes cl ON v.cliente_id = cl.cliente_id
+            LEFT JOIN personas c ON cl.persona_id = c.persona_id
             LEFT JOIN vendedores vnd ON v.vendedor_id = vnd.vendedor_id
             LEFT JOIN personas ven ON vnd.persona_id = ven.persona_id`
         );
@@ -99,8 +99,8 @@ export const obtenerVentaPorId = async (req, res) => {
                 ven.persona_apellido AS vendedorApellido 
             FROM 
                 ventas v
-            JOIN clientes cl ON v.cliente_id = cl.cliente_id
-            JOIN personas c ON cl.persona_id = c.persona_id
+            LEFT JOIN clientes cl ON v.cliente_id = cl.cliente_id
+            LEFT JOIN personas c ON cl.persona_id = c.persona_id
             LEFT JOIN vendedores vnd ON v.vendedor_id = vnd.vendedor_id
             LEFT JOIN personas ven ON vnd.persona_id = ven.persona_id
             WHERE v.ventas_id = ?`,

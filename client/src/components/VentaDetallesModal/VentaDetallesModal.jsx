@@ -23,9 +23,8 @@ const VentaDetallesModal = ({ show, onHide, venta }) => {
             </Modal.Header>
             <Modal.Body>
                 <div className="factura">
-                    <h2>Factura</h2>
                     <p><strong>Fecha:</strong> {formatDate(venta.venta_fecha)}</p>
-                    <p><strong>Cliente:</strong> {`${venta.clienteNombre} ${venta.clienteApellido}`}</p>
+                    <p><strong>Cliente:</strong> {venta.clienteNombre && venta.clienteApellido ? `${venta.clienteNombre} ${venta.clienteApellido}` : ''}</p>
                     {venta.vendedorNombre && venta.vendedorApellido && (
                         <p><strong>Vendedor:</strong> {`${venta.vendedorNombre} ${venta.vendedorApellido}`}</p>
                     )}
