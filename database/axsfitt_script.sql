@@ -230,8 +230,8 @@ INDEX inventario_principal_FKIndex1(producto_id),
 
 
 CREATE TABLE ventas (
-  venta_id INTEGER UNSIGNED  NOT NULL   AUTO_INCREMENT,
-  cliente_id INTEGER UNSIGNED  NOT NULL  ,
+  ventas_id INTEGER UNSIGNED  NOT NULL   AUTO_INCREMENT,
+  cliente_id INTEGER UNSIGNED  NULL  ,
   vendedor_id INTEGER UNSIGNED  NOT NULL  ,
   venta_fecha DATE  NULL  ,
   venta_total DECIMAL(10,2)  NULL    ,
@@ -251,7 +251,7 @@ INDEX venta_FKIndex2(cliente_id),
 
 CREATE TABLE detalle_venta (
   detalle_venta_id INTEGER UNSIGNED  NOT NULL   AUTO_INCREMENT,
-  venta_id INTEGER UNSIGNED  NOT NULL  ,
+  ventas_id INTEGER UNSIGNED  NOT NULL  ,
   inventario_id INTEGER UNSIGNED  NOT NULL  ,
   detalle_venta_cantidad INTEGER UNSIGNED  NULL  ,
   detalle_venta_precio_unitario DECIMAL(10,2)  NULL  ,
@@ -272,7 +272,7 @@ INDEX detalle_venta_FKIndex2(inventario_id),
 
 CREATE TABLE comprobantes (
   comprobante_id INTEGER UNSIGNED  NOT NULL   AUTO_INCREMENT,
-  venta_id INTEGER UNSIGNED  NOT NULL  ,
+  ventas_id INTEGER UNSIGNED  NOT NULL  ,
   metodo_pago_id INTEGER UNSIGNED  NOT NULL  ,
   comprobante_url VARCHAR(255)  NULL  ,
   comprobante_fecha DATE  NULL  ,

@@ -12,33 +12,37 @@ const config = {
 
 // Registrar una nueva venta
 export const registrarVentaRequest = async (data) => {
-    console.log('Datos enviados a la API para registrar venta:', data);
+    console.log('API: registrarVentaRequest', data);
     return await axios.post('http://localhost:4000/ventas', data, config);
 };
 
 // Obtener todas las ventas
 export const obtenerVentasRequest = async () => {
+    console.log('API: obtenerVentasRequest');
     return await axios.get('http://localhost:4000/ventas', config);
 };
 
 // Obtener una venta por su ID
 export const obtenerVentaPorIdRequest = async (id) => {
+    console.log('API: obtenerVentaPorIdRequest', id);
     return await axios.get(`http://localhost:4000/ventas/${id}`, config);
 };
 
 // Actualizar una venta
 export const actualizarVentaRequest = async (id, data) => {
-    console.log('Datos enviados a la API para actualizar venta:', data);
+    console.log('API: actualizarVentaRequest', id, data);
     return await axios.put(`http://localhost:4000/ventas/${id}`, data, config);
 };
 
 // Eliminar una venta
 export const eliminarVentaRequest = async (id) => {
+    console.log('API: eliminarVentaRequest', id);
     return await axios.delete(`http://localhost:4000/ventas/${id}`, config);
 };
 
 // Descargar el reporte de ventas en formato Excel
 export const descargarReporteVentasRequest = async () => {
+    console.log('API: descargarReporteVentasRequest');
     try {
         const response = await axios.get('http://localhost:4000/ventas/reporte', {
             responseType: 'blob',
@@ -60,15 +64,18 @@ export const descargarReporteVentasRequest = async () => {
 
 // Procesar pago con Mercado Pago
 export const procesarPagoMercadoPagoRequest = async (data) => {
+    console.log('API: procesarPagoMercadoPagoRequest', data);
     return await axios.post('http://localhost:4000/ventas/pago-mercadopago', data, config);
 };
 
 // Procesar pago en efectivo
 export const procesarPagoEfectivoRequest = async (data) => {
+    console.log('API: procesarPagoEfectivoRequest', data);
     return await axios.post('http://localhost:4000/ventas/pago-efectivo', data, config);
 };
 
 // Procesar pago con tarjeta
 export const procesarPagoTarjetaRequest = async (data) => {
+    console.log('API: procesarPagoTarjetaRequest', data);
     return await axios.post('http://localhost:4000/ventas/pago-tarjeta', data, config);
 };

@@ -31,7 +31,7 @@ export const registrarVenta = async (req, res) => {
         for (const producto of productos) {
             const { inventarioId, cantidad, precioUnitario, subtotal } = producto;
             await pool.query(
-                `INSERT INTO detalle_venta (inventario_id, venta_id, detalle_venta_cantidad, detalle_venta_precio_unitario, detalle_venta_subtotal)
+                `INSERT INTO detalle_venta (inventario_id, ventas_id, detalle_venta_cantidad, detalle_venta_precio_unitario, detalle_venta_subtotal)
                 VALUES (?, ?, ?, ?, ?)`,
                 [inventarioId, ventaId, cantidad, precioUnitario, subtotal]
             );
@@ -59,7 +59,7 @@ export const obtenerVentas = async (req, res) => {
     try {
         const [ventas] = await pool.query(
             `SELECT 
-                v.venta_id, 
+                v.ventas_id, 
                 v.venta_fecha, 
                 v.venta_total, 
                 c.persona_nombre AS clienteNombre, 
@@ -90,7 +90,7 @@ export const obtenerVentaPorId = async (req, res) => {
     try {
         const [venta] = await pool.query(
             `SELECT 
-                v.venta_id, 
+                v.ventas_id, 
                 v.venta_fecha, 
                 v.venta_total, 
                 c.persona_nombre AS clienteNombre, 
@@ -103,7 +103,7 @@ export const obtenerVentaPorId = async (req, res) => {
             JOIN personas c ON cl.persona_id = c.persona_id
             LEFT JOIN vendedores vnd ON v.vendedor_id = vnd.vendedor_id
             LEFT JOIN personas ven ON vnd.persona_id = ven.persona_id
-            WHERE v.venta_id = ?`,
+            WHERE v.ventas_id = ?`,
             [id]
         );
 
@@ -122,7 +122,7 @@ export const obtenerVentaPorId = async (req, res) => {
                 detalle_venta dv
             JOIN inventario_principal ip ON dv.inventario_id = ip.inventario_id
             JOIN productos p ON ip.producto_id = p.producto_id
-            WHERE dv.venta_id = ?`,
+            WHERE dv.ventas_id = ?`,
             [id]
         );
 
@@ -132,75 +132,6 @@ export const obtenerVentaPorId = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
-
-/* -------------------------------------------------------------------------- */
-/*                          ACTUALIZAR UNA VENTA                              */
-/* -------------------------------------------------------------------------- */
-export const actualizarVenta = async (req, res) => {
-    const { id } = req.params;
-    const { clienteId, vendedorId, productos, total } = req.body;
-
-    try {
-        // Actualizar la venta en la tabla 'venta'
-        await pool.query(
-            `UPDATE ventas
-            SET cliente_id = ?, vendedor_id = ?, venta_total = ?
-            WHERE venta_id = ?`,
-            [clienteId, vendedorId, total, id]
-        );
-
-        // Eliminar los detalles de la venta existentes
-        await pool.query(`DELETE FROM detalle_venta WHERE venta_id = ?`, [id]);
-
-        // Registrar los nuevos detalles de la venta en la tabla 'detalle_venta'
-        for (const producto of productos) {
-            const { inventarioId, cantidad, precioUnitario, subtotal } = producto;
-            await pool.query(
-                `INSERT INTO detalle_venta (inventario_id, venta_id, detalle_venta_cantidad, detalle_venta_precio_unitario, detalle_venta_subtotal)
-                VALUES (?, ?, ?, ?, ?)`,
-                [inventarioId, id, cantidad, precioUnitario, subtotal]
-            );
-
-            // Actualizar la cantidad en el inventario
-            await pool.query(
-                `UPDATE inventario_principal
-                SET inventario_cantidad = inventario_cantidad - ?
-                WHERE inventario_id = ?`,
-                [cantidad, inventarioId]
-            );
-        }
-
-        res.json({ message: 'Venta actualizada exitosamente' });
-    } catch (error) {
-        console.error('Error en actualizarVenta:', error);
-        res.status(500).json({ message: error.message });
-    }
-};
-
-/* -------------------------------------------------------------------------- */
-/*                          ELIMINAR UNA VENTA                                */
-/* -------------------------------------------------------------------------- */
-export const eliminarVenta = async (req, res) => {
-    const { id } = req.params;
-
-    try {
-        // Eliminar los detalles de la venta
-        await pool.query(`DELETE FROM detalle_venta WHERE venta_id = ?`, [id]);
-
-        // Eliminar la venta
-        const [result] = await pool.query(`DELETE FROM ventas WHERE venta_id = ?`, [id]);
-
-        if (result.affectedRows === 0) {
-            return res.status(404).json({ message: 'Venta no encontrada' });
-        }
-
-        res.json({ message: 'Venta eliminada exitosamente' });
-    } catch (error) {
-        console.error('Error en eliminarVenta:', error);
-        res.status(500).json({ message: error.message });
-    }
-};
-
 /* -------------------------------------------------------------------------- */
 /*                          GENERAR REPORTE DE VENTAS                         */
 /* -------------------------------------------------------------------------- */
@@ -298,6 +229,69 @@ export const generarReporteVentas = async (req, res) => {
 };
 
 /* -------------------------------------------------------------------------- */
+/*                          PROCESAR PAGO EN EFECTIVO                         */
+/* -------------------------------------------------------------------------- */
+export const procesarPagoEfectivo = async (req, res) => {
+    const { clienteId, productos, total } = req.body;
+    const { personaId } = req.user; // Obtener personaId del token JWT
+
+    // Validación de datos de entrada
+    if (!productos || !total) {
+        return res.status(400).json({ message: 'Datos de pago incompletos.' });
+    }
+
+    try {
+        // Verificar si la persona es un vendedor
+        const [vendedor] = await pool.query(
+            `SELECT vendedor_id FROM vendedores WHERE persona_id = ?`,
+            [personaId]
+        );
+
+        const vendedorId = vendedor.length > 0 ? vendedor[0].vendedor_id : null;
+
+        // Registrar la venta en la tabla 'ventas'
+        const [ventaResult] = await pool.query(
+            `INSERT INTO ventas (cliente_id, vendedor_id, venta_fecha, venta_total)
+            VALUES (?, ?, NOW(), ?)`,
+            [clienteId || null, vendedorId, total]
+        );
+
+        const ventaId = ventaResult.insertId;
+
+        // Registrar los detalles de la venta en la tabla 'detalle_venta'
+        for (const producto of productos) {
+            const { inventarioId, cantidad, precioUnitario, subtotal } = producto;
+            await pool.query(
+                `INSERT INTO detalle_venta (inventario_id, ventas_id, detalle_venta_cantidad, detalle_venta_precio_unitario, detalle_venta_subtotal)
+                VALUES (?, ?, ?, ?, ?)`,
+                [inventarioId, ventaId, cantidad, precioUnitario, subtotal]
+            );
+
+            // Actualizar la cantidad en el inventario
+            await pool.query(
+                `UPDATE inventario_principal
+                SET inventario_cantidad = inventario_cantidad - ?
+                WHERE inventario_id = ?`,
+                [cantidad, inventarioId]
+            );
+        }
+
+        // Crear el comprobante de pago en efectivo
+        const comprobanteId = await crearComprobante(
+            ventaId,
+            1, // ID del método de pago en efectivo
+            null, // No hay URL de comprobante para pagos en efectivo
+            total
+        );
+
+        res.status(200).json({ message: 'Pago en efectivo registrado exitosamente', comprobanteId });
+    } catch (error) {
+        console.error('Error procesando el pago en efectivo:', error);
+        res.status(500).json({ message: 'Ocurrió un error al procesar el pago en efectivo. Por favor, intenta nuevamente.' });
+    }
+};
+
+/* -------------------------------------------------------------------------- */
 /*                          PROCESAR PAGO CON MERCADO PAGO                    */
 /* -------------------------------------------------------------------------- */
 export const procesarPagoMercadoPago = async (req, res) => {
@@ -345,32 +339,6 @@ export const procesarPagoMercadoPago = async (req, res) => {
     }
 };
 
-/* -------------------------------------------------------------------------- */
-/*                          PROCESAR PAGO EN EFECTIVO                         */
-/* -------------------------------------------------------------------------- */
-export const procesarPagoEfectivo = async (req, res) => {
-    const { ventaId, monto } = req.body;
-
-    // Validación de datos de entrada
-    if (!ventaId || !monto) {
-        return res.status(400).json({ message: 'Datos de pago incompletos.' });
-    }
-
-    try {
-        // Crear el comprobante de pago en efectivo
-        const comprobanteId = await crearComprobante(
-            ventaId,
-            1, // ID del método de pago en efectivo
-            null, // No hay URL de comprobante para pagos en efectivo
-            monto
-        );
-
-        res.status(200).json({ message: 'Pago en efectivo registrado exitosamente', comprobanteId });
-    } catch (error) {
-        console.error('Error procesando el pago en efectivo:', error);
-        res.status(500).json({ message: 'Ocurrió un error al procesar el pago en efectivo. Por favor, intenta nuevamente.' });
-    }
-};
 
 /* -------------------------------------------------------------------------- */
 /*                          PROCESAR PAGO CON TARJETA                         */
@@ -426,7 +394,7 @@ export const procesarPagoTarjeta = async (req, res) => {
 export const crearComprobante = async (ventaId, metodoPagoId, comprobanteUrl, monto) => {
     try {
         const [comprobanteResult] = await pool.query(
-            `INSERT INTO comprobantes (venta_id, metodo_pago_id, comprobante_url, comprobante_fecha, comprobante_monto)
+            `INSERT INTO comprobantes (ventas_id, metodo_pago_id, comprobante_url, comprobante_fecha, comprobante_monto)
             VALUES (?, ?, ?, NOW(), ?)`,
             [ventaId, metodoPagoId, comprobanteUrl, monto]
         );

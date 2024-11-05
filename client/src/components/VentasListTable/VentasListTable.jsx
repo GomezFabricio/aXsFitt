@@ -8,7 +8,7 @@ const VentasListTable = ({ ventas, onVerDetalles, selectedVenta, setSelectedVent
     const [modalShow, setModalShow] = useState(false);
 
     const handleVerDetallesClick = async (venta) => {
-        await onVerDetalles(venta.venta_id);
+        await onVerDetalles(venta.ventas_id); 
         setModalShow(true);
     };
 
@@ -31,7 +31,7 @@ const VentasListTable = ({ ventas, onVerDetalles, selectedVenta, setSelectedVent
                 </thead>
                 <tbody>
                     {ventas.map((venta) => (
-                        <tr key={venta.venta_id}>
+                        <tr key={venta.ventas_id}>
                             <td>{formatDate(venta.venta_fecha)}</td>
                             <td>{`${venta.clienteNombre} ${venta.clienteApellido}`}</td>
                             <td>{venta.vendedorNombre && venta.vendedorApellido ? `${venta.vendedorNombre} ${venta.vendedorApellido}` : ''}</td>

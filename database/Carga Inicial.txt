@@ -11,7 +11,7 @@ INSERT INTO `roles` (`rol_id`, `rol_tipo_rol`) VALUES
 
 -- Inserción de datos en la tabla 'menu_opciones'
 INSERT INTO `menu_opciones` (`menu_opcion_id`, `menu_opcion_nombre`) VALUES
-(1, 'Panel de Control'),
+(1, 'Panel'),
 (2, 'Vendedores'),
 (3, 'Clientes'),
 (4, 'Usuarios'),

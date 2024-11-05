@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { registrarVentaRequest } from '../../../api/ventas.api';
+import { registrarVentaRequest, procesarPagoMercadoPagoRequest, procesarPagoEfectivoRequest, procesarPagoTarjetaRequest } from '../../../api/ventas.api';
 import { getClientesRequest } from '../../../api/clientes.api';
 import { inventarioList } from '../../../api/inventario.api';
 import RegistrarVentaForm from '../../../components/RegistrarVentaForm/RegistrarVentaForm';
@@ -39,10 +39,29 @@ const RegistrarVenta = () => {
 
     const handleRegistrarVenta = async () => {
         try {
-            await registrarVentaRequest(venta);
+            const response = await registrarVentaRequest(venta);
+            setVenta({ ...venta, id: response.data.ventaId }); // Guardar el ID de la venta
             navigate('/ventas/listado');
         } catch (error) {
             console.error('Error registrando la venta:', error);
+        }
+    };
+
+    const handleProcesarPago = async (method, email, phone) => {
+        try {
+            let response;
+            if (method === 'efectivo') {
+                response = await procesarPagoEfectivoRequest({ clienteId: venta.clienteId, productos: venta.productos, total: venta.total });
+            } else if (method === 'mercadopago') {
+                response = await procesarPagoMercadoPagoRequest({ token: 'dummy_token', transactionAmount: venta.total, description: 'Venta', installments: 1, paymentMethodId: 'visa', email });
+            } else if (method === 'tarjeta') {
+                response = await procesarPagoTarjetaRequest({ token: 'dummy_token', transactionAmount: venta.total, description: 'Venta', installments: 1, paymentMethodId: 'visa', email });
+            }
+            console.log('Pago procesado:', response.data);
+            return response.data;
+        } catch (error) {
+            console.error('Error procesando el pago:', error);
+            throw error;
         }
     };
 
@@ -58,6 +77,7 @@ const RegistrarVenta = () => {
                 venta={venta}
                 setVenta={setVenta}
                 onRegistrarVenta={handleRegistrarVenta}
+                onProcesarPago={handleProcesarPago}
             />
         </div>
     );

@@ -3,8 +3,6 @@ import {
     registrarVenta, 
     obtenerVentas, 
     obtenerVentaPorId, 
-    actualizarVenta, 
-    eliminarVenta,
     generarReporteVentas,
     procesarPagoMercadoPago,
     procesarPagoEfectivo,
@@ -24,12 +22,6 @@ router.get('/ventas', obtenerVentas);
 
 /* Obtener una venta por su ID */
 router.get('/ventas/:id', obtenerVentaPorId);
-
-/* Actualizar una venta */
-router.put('/ventas/:id', actualizarVenta);
-
-/* Eliminar una venta */
-router.delete('/ventas/:id', eliminarVenta);
 
 /* Procesar pago con Mercado Pago */
 router.post('/ventas/pago-mercadopago', procesarPagoMercadoPago);

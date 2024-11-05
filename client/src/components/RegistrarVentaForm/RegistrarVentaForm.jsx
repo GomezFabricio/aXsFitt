@@ -1,19 +1,29 @@
 import React, { useState, useEffect } from 'react';
 import Select from 'react-select';
-import { Modal, Button } from 'react-bootstrap';
+import { Modal, Button, Form } from 'react-bootstrap';
 import './RegistrarVentaForm.css';
 
-const RegistrarVentaForm = ({ clientes, productos = [], venta, setVenta, onRegistrarVenta }) => {
+const RegistrarVentaForm = ({ clientes, productos = [], venta, setVenta, onRegistrarVenta, onProcesarPago }) => {
     const [modalIsOpen, setModalIsOpen] = useState(false);
     const [selectedProduct, setSelectedProduct] = useState(null);
     const [cantidad, setCantidad] = useState(1);
+    const [showPaymentOptions, setShowPaymentOptions] = useState(false);
+    const [paymentMethod, setPaymentMethod] = useState(null);
+    const [email, setEmail] = useState('');
+    const [phone, setPhone] = useState('');
+    const [showConfirmationModal, setShowConfirmationModal] = useState(false);
+    const [qrCode, setQrCode] = useState(null);
+    const [paymentStatus, setPaymentStatus] = useState(null); // Estado para el resultado del pago
 
     useEffect(() => {
         console.log('Productos en RegistrarVentaForm:', productos); // Verificar que los productos se pasen correctamente
     }, [productos]);
 
     const handleClienteChange = (selectedOption) => {
+        const cliente = clientes.find(cliente => cliente.cliente_id === selectedOption.value);
         setVenta({ ...venta, clienteId: selectedOption.value });
+        setEmail(cliente.usuario_email || '');
+        setPhone(cliente.persona_telefono || '');
     };
 
     const handleAgregarProducto = () => {
@@ -61,6 +71,37 @@ const RegistrarVentaForm = ({ clientes, productos = [], venta, setVenta, onRegis
             productos: venta.productos.filter((_, i) => i !== index),
             total: venta.total - productoEliminado.subtotal,
         });
+    };
+
+    const handleContinue = () => {
+        setShowPaymentOptions(true);
+    };
+
+    const handlePaymentOptionClick = (method) => {
+        setPaymentMethod(method);
+        setQrCode(null); // Reset QR code when changing payment method
+    };
+
+    const handleConfirmPayment = async (method) => {
+        if (!paymentMethod) {
+            alert('Por favor, selecciona un método de pago.');
+            return;
+        }
+
+        setShowPaymentOptions(false); // Cerrar el modal de opciones de pago
+        if (method === 'qr') {
+            // Simular la generación de un código QR
+            setQrCode('https://via.placeholder.com/150');
+            setShowPaymentOptions(true); // Reabrir el modal de opciones de pago para mostrar el QR
+        } else {
+            try {
+                await onProcesarPago(paymentMethod, email, phone);
+                setPaymentStatus('success');
+            } catch (error) {
+                setPaymentStatus('error');
+            }
+            setShowConfirmationModal(true); // Mostrar el modal de confirmación
+        }
     };
 
     return (
@@ -123,9 +164,90 @@ const RegistrarVentaForm = ({ clientes, productos = [], venta, setVenta, onRegis
                 <h4>Total: ${venta.total.toFixed(2)}</h4>
             </div>
 
-            <Button variant="success" onClick={onRegistrarVenta} className="finalizar-venta-button">
-                Finalizar Venta
-            </Button>
+            <div className="form-group">
+                <Button onClick={handleContinue} className="continuar-button">
+                    Continuar
+                </Button>
+            </div>
+
+            <Modal show={showPaymentOptions} onHide={() => setShowPaymentOptions(false)} centered>
+                <Modal.Header closeButton>
+                    <Modal.Title>Opciones de Pago</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <div className="payment-options">
+                        <Button variant="primary" onClick={() => handlePaymentOptionClick('efectivo')} className="pago-button">
+                            Pago en Efectivo
+                        </Button>
+                        <Button variant="primary" onClick={() => handlePaymentOptionClick('mercadopago')} className="pago-button">
+                            Pago con Mercado Pago
+                        </Button>
+                        <Button variant="primary" onClick={() => handlePaymentOptionClick('tarjeta')} className="pago-button">
+                            Pago con Tarjeta
+                        </Button>
+                    </div>
+
+                    {paymentMethod === 'mercadopago' && (
+                        <div className="mercadopago-options">
+                            <Button variant="primary" onClick={() => handleConfirmPayment('qr')}>
+                                Pagar con QR
+                            </Button>
+                            <Button variant="primary" onClick={() => handleConfirmPayment('link')}>
+                                Enviar Link de Pago
+                            </Button>
+                            {qrCode && (
+                                <div className="qr-code">
+                                    <img src={qrCode} alt="QR Code" />
+                                </div>
+                            )}
+                        </div>
+                    )}
+                    {paymentMethod && paymentMethod !== 'mercadopago' && (
+                        <div className="contact-info">
+                            <Form.Group>
+                                <Form.Label>Email</Form.Label>
+                                <Form.Control
+                                    type="email"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                />
+                            </Form.Group>
+                            <Form.Group>
+                                <Form.Label>Teléfono</Form.Label>
+                                <Form.Control
+                                    type="text"
+                                    value={phone}
+                                    onChange={(e) => setPhone(e.target.value)}
+                                />
+                            </Form.Group>
+                            <Button variant="primary" onClick={handleConfirmPayment}>
+                                Confirmar Pago
+                            </Button>
+                        </div>
+                    )}
+                </Modal.Body>
+            </Modal>
+
+            <Modal show={showConfirmationModal} onHide={() => setShowConfirmationModal(false)} centered>
+                <Modal.Header closeButton>
+                    <Modal.Title>{paymentStatus === 'success' ? 'Pago realizado correctamente' : 'Error en el pago'}</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    {paymentStatus === 'success' ? (
+                        <p>El pago se ha realizado con éxito.</p>
+                    ) : (
+                        <p>Ha ocurrido un error al procesar el pago. Por favor, intenta nuevamente.</p>
+                    )}
+                    <div className="confirmation-buttons">
+                        <Button variant="primary" onClick={() => navigate('/ventas/listado')}>
+                            Regresar al listado de ventas
+                        </Button>
+                        <Button variant="secondary" onClick={() => navigate('/ventas/registrar')}>
+                            Iniciar nueva venta
+                        </Button>
+                    </div>
+                </Modal.Body>
+            </Modal>
         </div>
     );
 };
