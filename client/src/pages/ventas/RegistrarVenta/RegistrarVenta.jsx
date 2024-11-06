@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { registrarVentaRequest, procesarPagoMercadoPagoRequest, procesarPagoEfectivoRequest, procesarPagoTarjetaRequest } from '../../../api/ventas.api';
+import { registrarVentaRequest, procesarPagoMercadoPagoRequest, procesarPagoEfectivoRequest, procesarPagoTarjetaRequest, procesarPagoQRRequest } from '../../../api/ventas.api';
 import { getClientesRequest } from '../../../api/clientes.api';
 import { inventarioList } from '../../../api/inventario.api';
 import RegistrarVentaForm from '../../../components/RegistrarVentaForm/RegistrarVentaForm';
@@ -65,6 +65,16 @@ const RegistrarVenta = () => {
         }
     };
 
+    const handleGenerarQr = async () => {
+        try {
+            const response = await procesarPagoQRRequest({ transactionAmount: venta.total, description: 'Venta', installments: 1, paymentMethodId: 'visa' });
+            return response.data.qrCode;
+        } catch (error) {
+            console.error('Error generando el QR:', error);
+            throw error;
+        }
+    };
+
     return (
         <div className="container-page">
             <div className="header">
@@ -78,6 +88,7 @@ const RegistrarVenta = () => {
                 setVenta={setVenta}
                 onRegistrarVenta={handleRegistrarVenta}
                 onProcesarPago={handleProcesarPago}
+                onGenerarQr={handleGenerarQr}
             />
         </div>
     );

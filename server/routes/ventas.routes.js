@@ -6,6 +6,7 @@ import {
     generarReporteVentas,
     procesarPagoMercadoPago,
     procesarPagoEfectivo,
+    procesarPagoQR,
     procesarPagoTarjeta
 } from '../controllers/ventas.controller.js';
 
@@ -28,6 +29,9 @@ router.post('/ventas/pago-mercadopago', procesarPagoMercadoPago);
 
 /* Procesar pago en efectivo */
 router.post('/ventas/pago-efectivo', procesarPagoEfectivo);
+
+/* Procesar pago con QR */
+router.post('/ventas/pago-qr', procesarPagoQR);
 
 /* Procesar pago con tarjeta */
 router.post('/ventas/pago-tarjeta', procesarPagoTarjeta);

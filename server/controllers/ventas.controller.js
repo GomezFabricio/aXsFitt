@@ -132,6 +132,7 @@ export const obtenerVentaPorId = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
+
 /* -------------------------------------------------------------------------- */
 /*                          GENERAR REPORTE DE VENTAS                         */
 /* -------------------------------------------------------------------------- */
@@ -297,14 +298,8 @@ export const procesarPagoEfectivo = async (req, res) => {
 export const procesarPagoMercadoPago = async (req, res) => {
     const { token, transactionAmount, description, installments, paymentMethodId, email } = req.body;
 
-    // Validación de datos de entrada
-    if (!token || !transactionAmount || !paymentMethodId || !email) {
-        return res.status(400).json({ message: 'Datos de pago incompletos.' });
-    }
-
     try {
-        // Crear el pago en Mercado Pago
-        const paymentData = {
+        const payment_data = {
             transaction_amount: transactionAmount,
             token,
             description,
@@ -313,32 +308,52 @@ export const procesarPagoMercadoPago = async (req, res) => {
             payer: {
                 email,
             },
-            external_reference: 'ventaId', // Asegúrate de establecer esta referencia correctamente
         };
 
-        const response = await mercadopago.payment.save(paymentData);
-        const payment = response.body;
+        const payment = await mercadopago.payment.save(payment_data);
 
-        // Verificar el estado del pago
-        if (payment.status !== 'approved') {
-            return res.status(400).json({ message: 'El pago no fue aprobado.' });
+        if (payment.status === 'approved') {
+            res.status(200).json({ message: 'Pago aprobado', payment });
+        } else {
+            res.status(400).json({ message: 'Pago no aprobado', payment });
         }
-
-        // Crear el comprobante de pago usando la función existente
-        const comprobanteId = await crearComprobante(
-            payment.external_reference,
-            2, // o el método correspondiente
-            payment.receipt_url,
-            payment.transaction_amount
-        );
-
-        res.status(200).json({ message: 'Pago procesado exitosamente', payment, comprobanteId });
     } catch (error) {
         console.error('Error procesando el pago con Mercado Pago:', error);
-        res.status(500).json({ message: 'Ocurrió un error al procesar el pago. Por favor, intenta nuevamente.' });
+        res.status(500).json({ message: 'Ocurrió un error al procesar el pago con Mercado Pago. Por favor, intenta nuevamente.' });
     }
 };
 
+/* -------------------------------------------------------------------------- */
+/*                          PROCESAR PAGO CON QR                              */
+/* -------------------------------------------------------------------------- */
+export const procesarPagoQR = async (req, res) => {
+    const { transactionAmount, description, installments, paymentMethodId } = req.body;
+
+    try {
+        const paymentData = {
+            transaction_amount: transactionAmount,
+            description,
+            installments,
+            payment_method_id: paymentMethodId,
+            payer: {
+                email: 'TESTUSER1680408195@testuser.com' // Correo electrónico del usuario de prueba
+            }
+        };
+
+        const response = await mercadopago.payment.create(paymentData);
+
+        if (response.status !== 201) {
+            throw new Error('Error al crear el pago con QR');
+        }
+
+        const qrCode = response.body.point_of_interaction.transaction_data.qr_code_base64;
+
+        res.status(200).json({ qrCode });
+    } catch (error) {
+        console.error('Error generando el QR con Mercado Pago:', error);
+        res.status(500).json({ message: 'Ocurrió un error al generar el QR. Por favor, intenta nuevamente.' });
+    }
+};
 
 /* -------------------------------------------------------------------------- */
 /*                          PROCESAR PAGO CON TARJETA                         */

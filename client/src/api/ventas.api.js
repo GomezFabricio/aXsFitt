@@ -74,6 +74,12 @@ export const procesarPagoEfectivoRequest = async (data) => {
     return await axios.post('http://localhost:4000/ventas/pago-efectivo', data, config);
 };
 
+// Procesar pago con QR
+export const procesarPagoQRRequest = async (data) => {
+    console.log('API: procesarPagoQRRequest', data);
+    return await axios.post('http://localhost:4000/ventas/pago-qr', data, config);
+};
+
 // Procesar pago con tarjeta
 export const procesarPagoTarjetaRequest = async (data) => {
     console.log('API: procesarPagoTarjetaRequest', data);

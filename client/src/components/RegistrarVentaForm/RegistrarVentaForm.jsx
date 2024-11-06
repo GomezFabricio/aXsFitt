@@ -4,7 +4,7 @@ import { Modal, Button, Form } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom'; // Importar useNavigate
 import './RegistrarVentaForm.css';
 
-const RegistrarVentaForm = ({ clientes, productos = [], venta, setVenta, onRegistrarVenta, onProcesarPago }) => {
+const RegistrarVentaForm = ({ clientes, productos = [], venta, setVenta, onRegistrarVenta, onProcesarPago, onGenerarQr }) => {
     const [modalIsOpen, setModalIsOpen] = useState(false);
     const [selectedProduct, setSelectedProduct] = useState(null);
     const [cantidad, setCantidad] = useState(1);
@@ -93,9 +93,15 @@ const RegistrarVentaForm = ({ clientes, productos = [], venta, setVenta, onRegis
 
         setShowPaymentOptions(false); // Cerrar el modal de opciones de pago
         if (method === 'qr') {
-            // Simular la generación de un código QR
-            setQrCode('https://via.placeholder.com/150');
-            setShowPaymentOptions(true); // Reabrir el modal de opciones de pago para mostrar el QR
+            try {
+                const qrCode = await onGenerarQr();
+                setQrCode(qrCode);
+                setShowPaymentOptions(true); // Reabrir el modal de opciones de pago para mostrar el QR
+            } catch (error) {
+                console.error('Error generando el QR:', error);
+                setPaymentStatus('error');
+                setShowConfirmationModal(true); // Mostrar el modal de confirmación
+            }
         } else {
             try {
                 await onProcesarPago(paymentMethod, email, phone);
@@ -200,7 +206,7 @@ const RegistrarVentaForm = ({ clientes, productos = [], venta, setVenta, onRegis
                             </Button>
                             {qrCode && (
                                 <div className="qr-code">
-                                    <img src={qrCode} alt="QR Code" />
+                                    <img src={`data:image/png;base64,${qrCode}`} alt="QR Code" />
                                 </div>
                             )}
                         </div>
