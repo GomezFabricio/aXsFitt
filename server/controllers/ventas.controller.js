@@ -52,6 +52,108 @@ export const registrarVenta = async (req, res) => {
 };
 
 /* -------------------------------------------------------------------------- */
+/*                          PROCESAR PAGO EN EFECTIVO                         */
+/* -------------------------------------------------------------------------- */
+export const procesarPagoEfectivo = async (req, res) => {
+    const { clienteId, productos, total } = req.body;
+    const { personaId } = req.user; // Obtener personaId del token JWT
+
+    // Validación de datos de entrada
+    if (!productos || !total) {
+        return res.status(400).json({ message: 'Datos de pago incompletos.' });
+    }
+
+    try {
+        // Verificar si la persona es un vendedor
+        const [vendedor] = await pool.query(
+            `SELECT vendedor_id FROM vendedores WHERE persona_id = ?`,
+            [personaId]
+        );
+
+        const vendedorId = vendedor.length > 0 ? vendedor[0].vendedor_id : null;
+
+        // Registrar la venta en la tabla 'ventas'
+        const [ventaResult] = await pool.query(
+            `INSERT INTO ventas (cliente_id, vendedor_id, venta_fecha, venta_total)
+            VALUES (?, ?, NOW(), ?)`,
+            [clienteId || null, vendedorId, total]
+        );
+
+        const ventaId = ventaResult.insertId;
+
+        // Registrar los detalles de la venta en la tabla 'detalle_venta'
+        for (const producto of productos) {
+            const { inventarioId, cantidad, precioUnitario, subtotal } = producto;
+            await pool.query(
+                `INSERT INTO detalle_venta (inventario_id, ventas_id, detalle_venta_cantidad, detalle_venta_precio_unitario, detalle_venta_subtotal)
+                VALUES (?, ?, ?, ?, ?)`,
+                [inventarioId, ventaId, cantidad, precioUnitario, subtotal]
+            );
+
+            // Actualizar la cantidad en el inventario
+            await pool.query(
+                `UPDATE inventario_principal
+                SET inventario_cantidad = inventario_cantidad - ?
+                WHERE inventario_id = ?`,
+                [cantidad, inventarioId]
+            );
+        }
+
+        // Crear el comprobante de pago en efectivo
+        const comprobanteId = await crearComprobante(
+            ventaId,
+            1, // ID del método de pago en efectivo
+            null, // No hay URL de comprobante para pagos en efectivo
+            total
+        );
+
+        res.status(200).json({ message: 'Pago en efectivo registrado exitosamente', comprobanteId });
+    } catch (error) {
+        console.error('Error procesando el pago en efectivo:', error);
+        res.status(500).json({ message: 'Ocurrió un error al procesar el pago en efectivo. Por favor, intenta nuevamente.' });
+    }
+};
+
+/* -------------------------------------------------------------------------- */
+/*                                  CREAR POS                                 */
+/* -------------------------------------------------------------------------- */
+export const createPos = async (req, res) => {
+    try {
+        const pos = await mercadopago.pos.create({
+            name: "Caja Principal",
+            external_id: "POS_123",
+            fixed_amount: true,
+            category: 621102,
+            store_id: "123456"
+        });
+        res.json(pos);
+    } catch (error) {
+        console.error('Error en createPos:', error);
+        res.status(500).json({ error: error.message });
+    }
+};
+
+
+/* -------------------------------------------------------------------------- */
+/*                             CREAR ORDEN DE PAGO                            */
+/* -------------------------------------------------------------------------- */
+export const createOrder = async (req, res) => {
+    const { amount, description, payerEmail } = req.body;
+    try {
+        const order = await mercadopago.payment.create({
+            transaction_amount: amount,
+            description: description,
+            payment_method_id: "qr_code",
+            payer: { email: payerEmail },
+            external_reference: "Pedido_123"
+        });
+        res.json(order);
+    } catch (error) {
+        console.error('Error en createOrder:', error);
+        res.status(500).json({ error: error.message });
+    }
+};
+/* -------------------------------------------------------------------------- */
 /*                          OBTENER TODAS LAS VENTAS                          */
 /* -------------------------------------------------------------------------- */
 export const obtenerVentas = async (req, res) => {
@@ -129,6 +231,24 @@ export const obtenerVentaPorId = async (req, res) => {
     } catch (error) {
         console.error('Error en obtenerVentaPorId:', error);
         res.status(500).json({ message: error.message });
+    }
+};
+
+/* -------------------------------------------------------------------------- */
+/*                          CREAR COMPROBANTE DE PAGO                         */
+/* -------------------------------------------------------------------------- */
+export const crearComprobante = async (ventaId, metodoPagoId, comprobanteUrl, monto) => {
+    try {
+        const [comprobanteResult] = await pool.query(
+            `INSERT INTO comprobantes (ventas_id, metodo_pago_id, comprobante_url, comprobante_fecha, comprobante_monto)
+            VALUES (?, ?, ?, NOW(), ?)`,
+            [ventaId, metodoPagoId, comprobanteUrl, monto]
+        );
+
+        return comprobanteResult.insertId;
+    } catch (error) {
+        console.error('Error creando el comprobante:', error);
+        throw error;
     }
 };
 
@@ -225,86 +345,5 @@ export const generarReporteVentas = async (req, res) => {
     } catch (error) {
         console.error('Error en generarReporteVentas:', error);
         res.status(500).json({ message: error.message });
-    }
-};
-
-/* -------------------------------------------------------------------------- */
-/*                          PROCESAR PAGO EN EFECTIVO                         */
-/* -------------------------------------------------------------------------- */
-export const procesarPagoEfectivo = async (req, res) => {
-    const { clienteId, productos, total } = req.body;
-    const { personaId } = req.user; // Obtener personaId del token JWT
-
-    // Validación de datos de entrada
-    if (!productos || !total) {
-        return res.status(400).json({ message: 'Datos de pago incompletos.' });
-    }
-
-    try {
-        // Verificar si la persona es un vendedor
-        const [vendedor] = await pool.query(
-            `SELECT vendedor_id FROM vendedores WHERE persona_id = ?`,
-            [personaId]
-        );
-
-        const vendedorId = vendedor.length > 0 ? vendedor[0].vendedor_id : null;
-
-        // Registrar la venta en la tabla 'ventas'
-        const [ventaResult] = await pool.query(
-            `INSERT INTO ventas (cliente_id, vendedor_id, venta_fecha, venta_total)
-            VALUES (?, ?, NOW(), ?)`,
-            [clienteId || null, vendedorId, total]
-        );
-
-        const ventaId = ventaResult.insertId;
-
-        // Registrar los detalles de la venta en la tabla 'detalle_venta'
-        for (const producto of productos) {
-            const { inventarioId, cantidad, precioUnitario, subtotal } = producto;
-            await pool.query(
-                `INSERT INTO detalle_venta (inventario_id, ventas_id, detalle_venta_cantidad, detalle_venta_precio_unitario, detalle_venta_subtotal)
-                VALUES (?, ?, ?, ?, ?)`,
-                [inventarioId, ventaId, cantidad, precioUnitario, subtotal]
-            );
-
-            // Actualizar la cantidad en el inventario
-            await pool.query(
-                `UPDATE inventario_principal
-                SET inventario_cantidad = inventario_cantidad - ?
-                WHERE inventario_id = ?`,
-                [cantidad, inventarioId]
-            );
-        }
-
-        // Crear el comprobante de pago en efectivo
-        const comprobanteId = await crearComprobante(
-            ventaId,
-            1, // ID del método de pago en efectivo
-            null, // No hay URL de comprobante para pagos en efectivo
-            total
-        );
-
-        res.status(200).json({ message: 'Pago en efectivo registrado exitosamente', comprobanteId });
-    } catch (error) {
-        console.error('Error procesando el pago en efectivo:', error);
-        res.status(500).json({ message: 'Ocurrió un error al procesar el pago en efectivo. Por favor, intenta nuevamente.' });
-    }
-};
-
-/* -------------------------------------------------------------------------- */
-/*                          CREAR COMPROBANTE DE PAGO                         */
-/* -------------------------------------------------------------------------- */
-export const crearComprobante = async (ventaId, metodoPagoId, comprobanteUrl, monto) => {
-    try {
-        const [comprobanteResult] = await pool.query(
-            `INSERT INTO comprobantes (ventas_id, metodo_pago_id, comprobante_url, comprobante_fecha, comprobante_monto)
-            VALUES (?, ?, ?, NOW(), ?)`,
-            [ventaId, metodoPagoId, comprobanteUrl, monto]
-        );
-
-        return comprobanteResult.insertId;
-    } catch (error) {
-        console.error('Error creando el comprobante:', error);
-        throw error;
     }
 };

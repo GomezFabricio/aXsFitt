@@ -60,10 +60,10 @@ export const procesarPagoEfectivoRequest = async (data) => {
 
 export const crearPosRequest = async (data) => {
     console.log('API: crearPosRequest', data);
-    return await axios.post('http://localhost:4000/create_pos', data, config);
+    return await axios.post('http://localhost:4000/ventas/create_pos', data, config);
 };
 
 export const crearOrdenQRRequest = async (data) => {
     console.log('API: crearOrdenQRRequest', data);
-    return await axios.post('http://localhost:4000/create_order', data, config);
+    return await axios.post('http://localhost:4000/ventas/create_order', data, config);
 };
