@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { registrarVentaRequest, procesarPagoMercadoPagoRequest, procesarPagoEfectivoRequest, procesarPagoTarjetaRequest, procesarPagoQRRequest } from '../../../api/ventas.api';
+import { registrarVentaRequest, procesarPagoEfectivoRequest } from '../../../api/ventas.api';
 import { getClientesRequest } from '../../../api/clientes.api';
 import { inventarioList } from '../../../api/inventario.api';
 import RegistrarVentaForm from '../../../components/RegistrarVentaForm/RegistrarVentaForm';
@@ -47,30 +47,13 @@ const RegistrarVenta = () => {
         }
     };
 
-    const handleProcesarPago = async (method, email, phone) => {
+    const handleProcesarPago = async () => {
         try {
-            let response;
-            if (method === 'efectivo') {
-                response = await procesarPagoEfectivoRequest({ clienteId: venta.clienteId, productos: venta.productos, total: venta.total });
-            } else if (method === 'mercadopago') {
-                response = await procesarPagoMercadoPagoRequest({ token: 'dummy_token', transactionAmount: venta.total, description: 'Venta', installments: 1, paymentMethodId: 'visa', email });
-            } else if (method === 'tarjeta') {
-                response = await procesarPagoTarjetaRequest({ token: 'dummy_token', transactionAmount: venta.total, description: 'Venta', installments: 1, paymentMethodId: 'visa', email });
-            }
+            const response = await procesarPagoEfectivoRequest({ clienteId: venta.clienteId, productos: venta.productos, total: venta.total });
             console.log('Pago procesado:', response.data);
             return response.data;
         } catch (error) {
             console.error('Error procesando el pago:', error);
-            throw error;
-        }
-    };
-
-    const handleGenerarQr = async () => {
-        try {
-            const response = await procesarPagoQRRequest({ transactionAmount: venta.total, description: 'Venta', installments: 1, paymentMethodId: 'visa' });
-            return response.data.qrCode;
-        } catch (error) {
-            console.error('Error generando el QR:', error);
             throw error;
         }
     };
@@ -88,7 +71,6 @@ const RegistrarVenta = () => {
                 setVenta={setVenta}
                 onRegistrarVenta={handleRegistrarVenta}
                 onProcesarPago={handleProcesarPago}
-                onGenerarQr={handleGenerarQr}
             />
         </div>
     );

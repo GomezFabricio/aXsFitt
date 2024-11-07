@@ -1,32 +1,26 @@
 import React, { useState, useEffect } from 'react';
 import Select from 'react-select';
 import { Modal, Button, Form } from 'react-bootstrap';
-import { useNavigate } from 'react-router-dom'; // Importar useNavigate
+import { useNavigate } from 'react-router-dom';
 import './RegistrarVentaForm.css';
 
-const RegistrarVentaForm = ({ clientes, productos = [], venta, setVenta, onRegistrarVenta, onProcesarPago, onGenerarQr }) => {
+const RegistrarVentaForm = ({ clientes, productos = [], venta, setVenta, onRegistrarVenta, onProcesarPago }) => {
     const [modalIsOpen, setModalIsOpen] = useState(false);
     const [selectedProduct, setSelectedProduct] = useState(null);
     const [cantidad, setCantidad] = useState(1);
     const [showPaymentOptions, setShowPaymentOptions] = useState(false);
-    const [paymentMethod, setPaymentMethod] = useState(null);
-    const [email, setEmail] = useState('');
-    const [phone, setPhone] = useState('');
-    const [showConfirmationModal, setShowConfirmationModal] = useState(false);
-    const [qrCode, setQrCode] = useState(null);
-    const [paymentStatus, setPaymentStatus] = useState(null); // Estado para el resultado del pago
+    const [paymentStatus, setPaymentStatus] = useState(null);
+    const [showConfirmationModal, setShowConfirmationModal] = useState(false); // Definir el estado para showConfirmationModal
 
-    const navigate = useNavigate(); // Definir navigate
+    const navigate = useNavigate();
 
     useEffect(() => {
-        console.log('Productos en RegistrarVentaForm:', productos); // Verificar que los productos se pasen correctamente
+        console.log('Productos en RegistrarVentaForm:', productos);
     }, [productos]);
 
     const handleClienteChange = (selectedOption) => {
         const cliente = clientes.find(cliente => cliente.cliente_id === selectedOption.value);
         setVenta({ ...venta, clienteId: selectedOption.value });
-        setEmail(cliente.usuario_email || '');
-        setPhone(cliente.persona_telefono || '');
     };
 
     const handleAgregarProducto = () => {
@@ -35,7 +29,6 @@ const RegistrarVentaForm = ({ clientes, productos = [], venta, setVenta, onRegis
             const precioUnitario = venta.clienteId ? parseFloat(producto.PrecioAfiliados) : parseFloat(producto.PrecioVenta);
             const cantidadNumerica = parseInt(cantidad, 10);
 
-            // Verificar que la cantidad seleccionada no supere la cantidad en stock
             if (cantidadNumerica > producto.Cantidad) {
                 alert('La cantidad seleccionada supera la cantidad en stock.');
                 return;
@@ -80,37 +73,15 @@ const RegistrarVentaForm = ({ clientes, productos = [], venta, setVenta, onRegis
         setShowPaymentOptions(true);
     };
 
-    const handlePaymentOptionClick = (method) => {
-        setPaymentMethod(method);
-        setQrCode(null); // Reset QR code when changing payment method
-    };
-
-    const handleConfirmPayment = async (method) => {
-        if (!paymentMethod) {
-            alert('Por favor, selecciona un método de pago.');
-            return;
+    const handleConfirmPayment = async () => {
+        setShowPaymentOptions(false);
+        try {
+            await onProcesarPago();
+            setPaymentStatus('success');
+        } catch (error) {
+            setPaymentStatus('error');
         }
-
-        setShowPaymentOptions(false); // Cerrar el modal de opciones de pago
-        if (method === 'qr') {
-            try {
-                const qrCode = await onGenerarQr();
-                setQrCode(qrCode);
-                setShowPaymentOptions(true); // Reabrir el modal de opciones de pago para mostrar el QR
-            } catch (error) {
-                console.error('Error generando el QR:', error);
-                setPaymentStatus('error');
-                setShowConfirmationModal(true); // Mostrar el modal de confirmación
-            }
-        } else {
-            try {
-                await onProcesarPago(paymentMethod, email, phone);
-                setPaymentStatus('success');
-            } catch (error) {
-                setPaymentStatus('error');
-            }
-            setShowConfirmationModal(true); // Mostrar el modal de confirmación
-        }
+        setShowConfirmationModal(true);
     };
 
     return (
@@ -185,55 +156,10 @@ const RegistrarVentaForm = ({ clientes, productos = [], venta, setVenta, onRegis
                 </Modal.Header>
                 <Modal.Body>
                     <div className="payment-options">
-                        <Button variant="primary" onClick={() => handlePaymentOptionClick('efectivo')} className="pago-button">
+                        <Button variant="primary" onClick={handleConfirmPayment} className="pago-button">
                             Pago en Efectivo
                         </Button>
-                        <Button variant="primary" onClick={() => handlePaymentOptionClick('mercadopago')} className="pago-button">
-                            Pago con Mercado Pago
-                        </Button>
-                        <Button variant="primary" onClick={() => handlePaymentOptionClick('tarjeta')} className="pago-button">
-                            Pago con Tarjeta
-                        </Button>
                     </div>
-
-                    {paymentMethod === 'mercadopago' && (
-                        <div className="mercadopago-options">
-                            <Button variant="primary" onClick={() => handleConfirmPayment('qr')}>
-                                Pagar con QR
-                            </Button>
-                            <Button variant="primary" onClick={() => handleConfirmPayment('link')}>
-                                Enviar Link de Pago
-                            </Button>
-                            {qrCode && (
-                                <div className="qr-code">
-                                    <img src={`data:image/png;base64,${qrCode}`} alt="QR Code" />
-                                </div>
-                            )}
-                        </div>
-                    )}
-                    {paymentMethod && paymentMethod !== 'mercadopago' && (
-                        <div className="contact-info">
-                            <Form.Group>
-                                <Form.Label>Email</Form.Label>
-                                <Form.Control
-                                    type="email"
-                                    value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
-                                />
-                            </Form.Group>
-                            <Form.Group>
-                                <Form.Label>Teléfono</Form.Label>
-                                <Form.Control
-                                    type="text"
-                                    value={phone}
-                                    onChange={(e) => setPhone(e.target.value)}
-                                />
-                            </Form.Group>
-                            <Button variant="primary" onClick={handleConfirmPayment}>
-                                Confirmar Pago
-                            </Button>
-                        </div>
-                    )}
                 </Modal.Body>
             </Modal>
 

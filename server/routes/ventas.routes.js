@@ -4,10 +4,7 @@ import {
     obtenerVentas, 
     obtenerVentaPorId, 
     generarReporteVentas,
-    procesarPagoMercadoPago,
-    procesarPagoEfectivo,
-    procesarPagoQR,
-    procesarPagoTarjeta
+    procesarPagoEfectivo
 } from '../controllers/ventas.controller.js';
 
 const router = Router();
@@ -24,16 +21,7 @@ router.get('/ventas', obtenerVentas);
 /* Obtener una venta por su ID */
 router.get('/ventas/:id', obtenerVentaPorId);
 
-/* Procesar pago con Mercado Pago */
-router.post('/ventas/pago-mercadopago', procesarPagoMercadoPago);
-
 /* Procesar pago en efectivo */
 router.post('/ventas/pago-efectivo', procesarPagoEfectivo);
-
-/* Procesar pago con QR */
-router.post('/ventas/pago-qr', procesarPagoQR);
-
-/* Procesar pago con tarjeta */
-router.post('/ventas/pago-tarjeta', procesarPagoTarjeta);
 
 export default router;
