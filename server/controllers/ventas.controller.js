@@ -1,5 +1,7 @@
 import ExcelJS from 'exceljs';
 import { pool } from '../db.js';
+import mercadopagoClient from '../config_mercado_pago.js';
+
 
 /* -------------------------------------------------------------------------- */
 /*                          REGISTRAR UNA NUEVA VENTA                         */
@@ -111,46 +113,6 @@ export const procesarPagoEfectivo = async (req, res) => {
     } catch (error) {
         console.error('Error procesando el pago en efectivo:', error);
         res.status(500).json({ message: 'Ocurrió un error al procesar el pago en efectivo. Por favor, intenta nuevamente.' });
-    }
-};
-
-/* -------------------------------------------------------------------------- */
-/*                                  CREAR POS                                 */
-/* -------------------------------------------------------------------------- */
-export const createPos = async (req, res) => {
-    try {
-        const pos = await mercadopago.pos.create({
-            name: "Caja Principal",
-            external_id: "POS_123",
-            fixed_amount: true,
-            category: 621102,
-            store_id: "123456"
-        });
-        res.json(pos);
-    } catch (error) {
-        console.error('Error en createPos:', error);
-        res.status(500).json({ error: error.message });
-    }
-};
-
-
-/* -------------------------------------------------------------------------- */
-/*                             CREAR ORDEN DE PAGO                            */
-/* -------------------------------------------------------------------------- */
-export const createOrder = async (req, res) => {
-    const { amount, description, payerEmail } = req.body;
-    try {
-        const order = await mercadopago.payment.create({
-            transaction_amount: amount,
-            description: description,
-            payment_method_id: "qr_code",
-            payer: { email: payerEmail },
-            external_reference: "Pedido_123"
-        });
-        res.json(order);
-    } catch (error) {
-        console.error('Error en createOrder:', error);
-        res.status(500).json({ error: error.message });
     }
 };
 /* -------------------------------------------------------------------------- */

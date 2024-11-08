@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { registrarVentaRequest, procesarPagoEfectivoRequest } from '../../../api/ventas.api';
+import { registrarVentaRequest, procesarPagoEfectivoRequest, crearOrdenQRRequest } from '../../../api/ventas.api';
 import { getClientesRequest } from '../../../api/clientes.api';
 import { inventarioList } from '../../../api/inventario.api';
 import RegistrarVentaForm from '../../../components/RegistrarVentaForm/RegistrarVentaForm';
@@ -15,6 +15,7 @@ const RegistrarVenta = () => {
         productos: [],
         total: 0,
     });
+    const [paymentStatus, setPaymentStatus] = useState(null);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -37,40 +38,40 @@ const RegistrarVenta = () => {
         loadProductos();
     }, []);
 
-    const handleRegistrarVenta = async () => {
+    const onProcesarPago = async () => {
         try {
-            const response = await registrarVentaRequest(venta);
-            setVenta({ ...venta, id: response.data.ventaId }); // Guardar el ID de la venta
-            navigate('/ventas/listado');
+            await procesarPagoEfectivoRequest(venta);
+            setPaymentStatus('success');
         } catch (error) {
-            console.error('Error registrando la venta:', error);
+            setPaymentStatus('error');
         }
     };
 
-    const handleProcesarPago = async () => {
-        try {
-            const response = await procesarPagoEfectivoRequest({ clienteId: venta.clienteId, productos: venta.productos, total: venta.total });
-            console.log('Pago procesado:', response.data);
-            return response.data;
-        } catch (error) {
-            console.error('Error procesando el pago:', error);
-            throw error;
-        }
+    const onProcesarPagoMercadoPago = async () => {
+    };
+
+    const handleNewSale = () => {
+        setVenta({
+            clienteId: '',
+            vendedorId: '',
+            productos: [],
+            total: 0,
+        });
+        setPaymentStatus(null);
     };
 
     return (
         <div className="container-page">
-            <div className="header">
-                <h1>Registrar Venta</h1>
-            </div>
-
             <RegistrarVentaForm
                 clientes={clientes}
                 productos={productos}
                 venta={venta}
                 setVenta={setVenta}
-                onRegistrarVenta={handleRegistrarVenta}
-                onProcesarPago={handleProcesarPago}
+                onRegistrarVenta={registrarVentaRequest}
+                onProcesarPago={onProcesarPago}
+                onProcesarPagoMercadoPago={onProcesarPagoMercadoPago}
+                paymentStatus={paymentStatus}
+                handleNewSale={handleNewSale}
             />
         </div>
     );

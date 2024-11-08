@@ -4,13 +4,13 @@ import { Modal, Button, Form } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import './RegistrarVentaForm.css';
 
-const RegistrarVentaForm = ({ clientes, productos = [], venta, setVenta, onRegistrarVenta, onProcesarPago }) => {
+const RegistrarVentaForm = ({ clientes, productos = [], venta, setVenta, onRegistrarVenta, onProcesarPago, onProcesarPagoMercadoPago, paymentStatus, handleNewSale }) => {
     const [modalIsOpen, setModalIsOpen] = useState(false);
     const [selectedProduct, setSelectedProduct] = useState(null);
     const [cantidad, setCantidad] = useState(1);
     const [showPaymentOptions, setShowPaymentOptions] = useState(false);
-    const [paymentStatus, setPaymentStatus] = useState(null);
-    const [showConfirmationModal, setShowConfirmationModal] = useState(false); // Definir el estado para showConfirmationModal
+    const [showConfirmationModal, setShowConfirmationModal] = useState(false);
+    const [selectedCliente, setSelectedCliente] = useState(null);
 
     const navigate = useNavigate();
 
@@ -18,7 +18,14 @@ const RegistrarVentaForm = ({ clientes, productos = [], venta, setVenta, onRegis
         console.log('Productos en RegistrarVentaForm:', productos);
     }, [productos]);
 
+    useEffect(() => {
+        if (paymentStatus === 'success' || paymentStatus === 'error') {
+            setShowConfirmationModal(true);
+        }
+    }, [paymentStatus]);
+
     const handleClienteChange = (selectedOption) => {
+        setSelectedCliente(selectedOption);
         const cliente = clientes.find(cliente => cliente.cliente_id === selectedOption.value);
         setVenta({ ...venta, clienteId: selectedOption.value });
     };
@@ -73,15 +80,23 @@ const RegistrarVentaForm = ({ clientes, productos = [], venta, setVenta, onRegis
         setShowPaymentOptions(true);
     };
 
-    const handleConfirmPayment = async () => {
+    const handleConfirmPayment = async (paymentMethod) => {
         setShowPaymentOptions(false);
         try {
-            await onProcesarPago();
-            setPaymentStatus('success');
+            if (paymentMethod === 'efectivo') {
+                await onProcesarPago();
+            } else if (paymentMethod === 'mercadoPago') {
+                await onProcesarPagoMercadoPago();
+            }
         } catch (error) {
-            setPaymentStatus('error');
+            console.error('Error al procesar el pago:', error);
         }
-        setShowConfirmationModal(true);
+    };
+
+    const handleNewSaleClick = () => {
+        handleNewSale();
+        setSelectedCliente(null);
+        setShowConfirmationModal(false);
     };
 
     return (
@@ -89,6 +104,7 @@ const RegistrarVentaForm = ({ clientes, productos = [], venta, setVenta, onRegis
             <div className="form-group">
                 <label>Cliente</label>
                 <Select
+                    value={selectedCliente}
                     options={clientes.map(cliente => ({ value: cliente.cliente_id, label: `${cliente.persona_nombre} ${cliente.persona_apellido}` }))}
                     onChange={handleClienteChange}
                 />
@@ -156,8 +172,11 @@ const RegistrarVentaForm = ({ clientes, productos = [], venta, setVenta, onRegis
                 </Modal.Header>
                 <Modal.Body>
                     <div className="payment-options">
-                        <Button variant="primary" onClick={handleConfirmPayment} className="pago-button">
+                        <Button variant="primary" onClick={() => handleConfirmPayment('efectivo')} className="pago-button">
                             Pago en Efectivo
+                        </Button>
+                        <Button variant="primary" onClick={() => handleConfirmPayment('mercadoPago')} className="pago-button">
+                            Pago con Mercado Pago
                         </Button>
                     </div>
                 </Modal.Body>
@@ -177,7 +196,7 @@ const RegistrarVentaForm = ({ clientes, productos = [], venta, setVenta, onRegis
                         <Button variant="primary" onClick={() => navigate('/ventas/listado')}>
                             Regresar al listado de ventas
                         </Button>
-                        <Button variant="secondary" onClick={() => navigate('/ventas/registrar')}>
+                        <Button variant="secondary" onClick={handleNewSaleClick}>
                             Iniciar nueva venta
                         </Button>
                     </div>
