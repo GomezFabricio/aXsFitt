@@ -10,12 +10,6 @@ const config = {
     },
 };
 
-// Registrar una nueva venta
-export const registrarVentaRequest = async (data) => {
-    console.log('API: registrarVentaRequest', data);
-    return await axios.post('http://localhost:4000/ventas', data, config);
-};
-
 // Obtener todas las ventas
 export const obtenerVentasRequest = async () => {
     console.log('API: obtenerVentasRequest');

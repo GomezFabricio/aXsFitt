@@ -25,7 +25,7 @@ app.use(express.json());
 app.use(loginRoutes); // La ruta de login no requiere autenticación
 
 // Aplica el middleware de autenticación antes de las rutas que requieren autenticación
-app.use(authMiddleware); // Aplica el middleware de autenticación
+/* app.use(authMiddleware); // Aplica el middleware de autenticación */
 
 // Rutas que requieren autenticación
 app.use(menuRoutes); // La ruta del menú

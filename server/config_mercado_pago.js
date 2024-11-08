@@ -1,8 +1,5 @@
-import pkg from 'mercadopago';
-const { MercadoPagoConfig } = pkg;
+import loadMercadoPago from '@mercadopago/sdk-js';
+await loadMercadoPago();
+const mp = new window.MercadoPago('TEST-1e14982d-795f-4225-bcec-d39d758e60e1');
 
-const mercadopagoClient = new MercadoPagoConfig({
-    accessToken: 'TEST-1273741858627121-110320-a07c982b52b13f4ba280d44e47b5fbe9-250056888'
-});
-
-export default mercadopagoClient;
+export default mp;

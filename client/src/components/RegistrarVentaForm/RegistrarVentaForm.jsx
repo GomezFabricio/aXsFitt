@@ -1,28 +1,24 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Select from 'react-select';
-import { Modal, Button, Form } from 'react-bootstrap';
-import { useNavigate } from 'react-router-dom';
+import { Modal, Button } from 'react-bootstrap';
 import './RegistrarVentaForm.css';
 
-const RegistrarVentaForm = ({ clientes, productos = [], venta, setVenta, onRegistrarVenta, onProcesarPago, onProcesarPagoMercadoPago, paymentStatus, handleNewSale }) => {
+const RegistrarVentaForm = ({ 
+    clientes, 
+    productos, 
+    venta, 
+    setVenta, 
+    onProcesarPago, 
+    onProcesarPagoMercadoPago, 
+    paymentStatus, 
+    handleNewSale 
+}) => {
     const [modalIsOpen, setModalIsOpen] = useState(false);
     const [selectedProduct, setSelectedProduct] = useState(null);
     const [cantidad, setCantidad] = useState(1);
     const [showPaymentOptions, setShowPaymentOptions] = useState(false);
-    const [showConfirmationModal, setShowConfirmationModal] = useState(false);
     const [selectedCliente, setSelectedCliente] = useState(null);
-
-    const navigate = useNavigate();
-
-    useEffect(() => {
-        console.log('Productos en RegistrarVentaForm:', productos);
-    }, [productos]);
-
-    useEffect(() => {
-        if (paymentStatus === 'success' || paymentStatus === 'error') {
-            setShowConfirmationModal(true);
-        }
-    }, [paymentStatus]);
+    const [showConfirmationModal, setShowConfirmationModal] = useState(false);
 
     const handleClienteChange = (selectedOption) => {
         setSelectedCliente(selectedOption);
@@ -193,10 +189,7 @@ const RegistrarVentaForm = ({ clientes, productos = [], venta, setVenta, onRegis
                         <p>Ha ocurrido un error al procesar el pago. Por favor, intenta nuevamente.</p>
                     )}
                     <div className="confirmation-buttons">
-                        <Button variant="primary" onClick={() => navigate('/ventas/listado')}>
-                            Regresar al listado de ventas
-                        </Button>
-                        <Button variant="secondary" onClick={handleNewSaleClick}>
+                        <Button variant="primary" onClick={handleNewSaleClick}>
                             Iniciar nueva venta
                         </Button>
                     </div>

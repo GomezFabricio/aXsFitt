@@ -1,57 +1,5 @@
 import ExcelJS from 'exceljs';
 import { pool } from '../db.js';
-import mercadopagoClient from '../config_mercado_pago.js';
-
-
-/* -------------------------------------------------------------------------- */
-/*                          REGISTRAR UNA NUEVA VENTA                         */
-/* -------------------------------------------------------------------------- */
-export const registrarVenta = async (req, res) => {
-    const { clienteId, productos, total } = req.body;
-    const { personaId } = req.user; // Obtener personaId del token JWT
-
-    try {
-        // Verificar si la persona es un vendedor
-        const [vendedor] = await pool.query(
-            `SELECT vendedor_id FROM vendedores WHERE persona_id = ?`,
-            [personaId]
-        );
-
-        const vendedorId = vendedor.length > 0 ? vendedor[0].vendedor_id : null;
-
-        // Registrar la venta en la tabla 'ventas'
-        const [ventaResult] = await pool.query(
-            `INSERT INTO ventas (cliente_id, vendedor_id, venta_fecha, venta_total)
-            VALUES (?, ?, NOW(), ?)`,
-            [clienteId, vendedorId, total]
-        );
-
-        const ventaId = ventaResult.insertId;
-
-        // Registrar los detalles de la venta en la tabla 'detalle_venta'
-        for (const producto of productos) {
-            const { inventarioId, cantidad, precioUnitario, subtotal } = producto;
-            await pool.query(
-                `INSERT INTO detalle_venta (inventario_id, ventas_id, detalle_venta_cantidad, detalle_venta_precio_unitario, detalle_venta_subtotal)
-                VALUES (?, ?, ?, ?, ?)`,
-                [inventarioId, ventaId, cantidad, precioUnitario, subtotal]
-            );
-
-            // Actualizar la cantidad en el inventario
-            await pool.query(
-                `UPDATE inventario_principal
-                SET inventario_cantidad = inventario_cantidad - ?
-                WHERE inventario_id = ?`,
-                [cantidad, inventarioId]
-            );
-        }
-
-        res.json({ message: 'Venta registrada exitosamente', ventaId });
-    } catch (error) {
-        console.error('Error en registrarVenta:', error);
-        res.status(500).json({ message: error.message });
-    }
-};
 
 /* -------------------------------------------------------------------------- */
 /*                          PROCESAR PAGO EN EFECTIVO                         */
