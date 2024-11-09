@@ -13,20 +13,20 @@ const config = {
 // Obtener todas las ventas
 export const obtenerVentasRequest = async () => {
     console.log('API: obtenerVentasRequest');
-    return await axios.get('http://localhost:4000/ventas', config);
+    return await axios.get('https://localhost:4000/ventas', config);
 };
 
 // Obtener una venta por su ID
 export const obtenerVentaPorIdRequest = async (id) => {
     console.log('API: obtenerVentaPorIdRequest', id);
-    return await axios.get(`http://localhost:4000/ventas/${id}`, config);
+    return await axios.get(`https://localhost:4000/ventas/${id}`, config);
 };
 
 // Descargar el reporte de ventas en formato Excel
 export const descargarReporteVentasRequest = async () => {
     console.log('API: descargarReporteVentasRequest');
     try {
-        const response = await axios.get('http://localhost:4000/ventas/reporte', {
+        const response = await axios.get('https://localhost:4000/ventas/reporte', {
             responseType: 'blob',
             ...config,
         });
@@ -47,17 +47,17 @@ export const descargarReporteVentasRequest = async () => {
 // Procesar pago en efectivo
 export const procesarPagoEfectivoRequest = async (data) => {
     console.log('API: procesarPagoEfectivoRequest', data);
-    return await axios.post('http://localhost:4000/ventas/pago-efectivo', data, config);
+    return await axios.post('https://localhost:4000/ventas/pago-efectivo', data, config);
 };
 
 // Integracion Mercado Pago
 
 export const crearPosRequest = async (data) => {
     console.log('API: crearPosRequest', data);
-    return await axios.post('http://localhost:4000/ventas/create_pos', data, config);
+    return await axios.post('https://localhost:4000/ventas/create_pos', data, config);
 };
 
 export const crearOrdenQRRequest = async (data) => {
     console.log('API: crearOrdenQRRequest', data);
-    return await axios.post('http://localhost:4000/ventas/create_order', data, config);
+    return await axios.post('https://localhost:4000/ventas/create_order', data, config);
 };

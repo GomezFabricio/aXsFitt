@@ -15,7 +15,7 @@ const ProtectedRoute = ({ children }) => {
 
             try {
                 // Verifica el token con una solicitud al servidor
-                const response = await axios.get('http://localhost:4000/verify-token', {
+                const response = await axios.get('https://localhost:4000/verify-token', {
                     headers: { Authorization: `Bearer ${token}` }
                 });
 

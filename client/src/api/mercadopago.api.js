@@ -1,28 +1,29 @@
 import axios from 'axios';
 
-// Obtener el access token de Mercado Pago
-const accessToken = 'TEST-1273741858627121-110320-a07c982b52b13f4ba280d44e47b5fbe9-250056888'; 
+// Obtener el token desde el almacenamiento local
+const token = localStorage.getItem('token');
 
-// Configuración del encabezado con el token de Mercado Pago
+// Configuración del encabezado con el token
 const config = {
     headers: {
-        Authorization: `Bearer ${accessToken}`,
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json'
     },
 };
 
-// API para crear una orden y generar el QR dinámico
-export const crearOrdenQRRequest = async (data, userId, storeId, externalPosId) => {
+export const crearOrdenQRRequest = async (data, userId, externalPosId) => {
     console.log('API: crearOrdenQRRequest', data);
 
-    // Aquí reemplazamos las variables en la URL
-    const url = `https://api.mercadopago.com/pos/${userId}/store/${storeId}/qr/${externalPosId}`;
-
     try {
-        const response = await axios.post(url, data, config);
+        const response = await axios.post('https://localhost:4000/mercadopago/crear-orden-qr', {
+            data,
+            userId,
+            externalPosId
+        }, config);
         console.log('Respuesta de Mercado Pago:', response.data);
         return response.data;
     } catch (error) {
-        console.error('Error al crear el QR dinámico:', error);
+        console.error('Error al crear el QR dinámico:', error.response ? error.response.data : error.message);
         throw error;
     }
 };

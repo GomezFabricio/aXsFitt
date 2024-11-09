@@ -2,7 +2,7 @@
 import axios from 'axios';
 
 export const loginRequest = async (data) => {
-    return await axios.post('http://localhost:4000/login', data);
+    return await axios.post('https://localhost:4000/login', data);
 };
 
 // Función para obtener el menú basado en el rol del usuario
@@ -13,7 +13,7 @@ export const getMenuByRole = async ({ rolId }) => {
         throw new Error('No hay token disponible');
     }
 
-    return await axios.post('http://localhost:4000/menu', { rolId }, {
+    return await axios.post('https://localhost:4000/menu', { rolId }, {
         headers: {
             Authorization: `Bearer ${token}` // Pasar el token en los headers
         }

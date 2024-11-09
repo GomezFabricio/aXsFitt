@@ -30,10 +30,9 @@ const RegistrarVenta = () => {
         async function loadProductos() {
             try {
                 const responseProductos = await inventarioList();
-                console.log('Productos recibidos:', responseProductos);
                 setProductos(responseProductos);
             } catch (error) {
-                console.error('Error cargando productos:', error);
+                console.error('Error al cargar los productos:', error);
             }
         }
 
@@ -54,37 +53,41 @@ const RegistrarVenta = () => {
         try {
             // Datos necesarios para la API de Mercado Pago
             const userId = '250056888'; 
-            const storeId = '59552643'; 
             const externalPosId = '96494571'; 
-
+    
             // Preparar la data que se envía a la API
             const data = {
-                cantidad: venta.total,
-                productos: venta.productos.map(producto => ({
-                    descripcion: producto.nombre,
-                    cantidad: producto.cantidad,
-                    precio: producto.subtotal,
+                external_reference: 'reference_12345',
+                title: 'Product order',
+                description: 'Purchase description.',
+                notification_url: 'https://www.yourserver.com/notifications',
+                total_amount: venta.total,
+                items: venta.productos.map(producto => ({
+                    sku_number: producto.inventarioId.toString(), // Convierte el ID del inventario a cadena
+                    category: 'marketplace',
+                    title: productos.find(p => p.idProducto === producto.inventarioId).Producto,
+                    description: productos.find(p => p.idProducto === producto.inventarioId).Producto || 'Descripción del producto',
+                    unit_price: producto.precioUnitario,
+                    quantity: producto.cantidad,
+                    unit_measure: 'unit',
+                    total_amount: producto.subtotal
                 })),
-                clienteId: venta.clienteId,
+                sponsor: {
+                    id: 662208785
+                },
+                cash_out: {
+                    amount: 0
+                }
             };
-
+    
             // Crear la orden en Mercado Pago y generar el QR
-            const response = await crearOrdenQRRequest(data, userId, storeId, externalPosId);
+            const response = await crearOrdenQRRequest(data, userId, externalPosId);
             
             // Obtener la URL del QR
-            const qrUrl = response.qr_url;  // Suponiendo que Mercado Pago devuelve la URL del QR
-            setQrData(qrUrl);
-
-            // Mostrar el QR usando la librería qrcode
-            QRCode.toCanvas(document.getElementById('canvas'), qrUrl, (error) => {
-                if (error) console.error('Error generando el QR:', error);
-                console.log('QR generado con éxito');
-            });
-
-            setPaymentStatus('success');
+            console.log('URL del QR:', response.qr_code);
+            setQrData(response.qr_code);  // Guarda la URL del QR
         } catch (error) {
-            setPaymentStatus('error');
-            console.error('Error al procesar el pago con Mercado Pago:', error);
+            console.error('Error al procesar el pago con Mercado Pago:', error.response ? error.response.data : error.message);
         }
     };
 
