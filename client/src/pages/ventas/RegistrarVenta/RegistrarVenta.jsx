@@ -5,8 +5,10 @@ import { crearOrdenQRRequest } from '../../../api/mercadopago.api';
 import { getClientesRequest } from '../../../api/clientes.api';
 import { inventarioList } from '../../../api/inventario.api';
 import RegistrarVentaForm from '../../../components/RegistrarVentaForm/RegistrarVentaForm';
-import QRCode from 'qrcode';  // Importa la librería QRCode
+import { QRCode } from 'react-qrcode-logo';  // Importa la librería QRCode correctamente
+import { Modal, Button, Spinner } from 'react-bootstrap';
 import './RegistrarVenta.css';
+import logo from '../../../assets/img/logo_escalado.png';  // Importa la imagen del logo y asígnala a una variable
 
 const RegistrarVenta = () => {
     const [clientes, setClientes] = useState([]);
@@ -19,6 +21,8 @@ const RegistrarVenta = () => {
     });
     const [paymentStatus, setPaymentStatus] = useState(null);
     const [qrData, setQrData] = useState('');  // Aquí se guarda la URL del QR
+    const [showQrModal, setShowQrModal] = useState(false);  // Estado para mostrar el modal del QR
+    const [loadingQr, setLoadingQr] = useState(false);  // Estado para manejar la carga del QR
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -50,6 +54,9 @@ const RegistrarVenta = () => {
     };
 
     const onProcesarPagoMercadoPago = async () => {
+        setShowQrModal(true);  // Mostrar el modal del QR inmediatamente
+        setLoadingQr(true);  // Mostrar el spinner de carga
+
         try {
             // Datos necesarios para la API de Mercado Pago
             const userId = '250056888'; 
@@ -72,9 +79,6 @@ const RegistrarVenta = () => {
                     unit_measure: 'unit',
                     total_amount: producto.subtotal
                 })),
-                sponsor: {
-                    id: 662208785
-                },
                 cash_out: {
                     amount: 0
                 }
@@ -84,10 +88,12 @@ const RegistrarVenta = () => {
             const response = await crearOrdenQRRequest(data, userId, externalPosId);
             
             // Obtener la URL del QR
-            console.log('URL del QR:', response.qr_code);
-            setQrData(response.qr_code);  // Guarda la URL del QR
+            console.log('Respuesta de Mercado Pago:', response);
+            setQrData(response.qr_data);  // Guarda la URL del QR
+            setLoadingQr(false);  // Ocultar el spinner de carga
         } catch (error) {
             console.error('Error al procesar el pago con Mercado Pago:', error.response ? error.response.data : error.message);
+            setLoadingQr(false);  // Ocultar el spinner de carga en caso de error
         }
     };
 
@@ -99,6 +105,8 @@ const RegistrarVenta = () => {
             total: 0,
         });
         setPaymentStatus(null);
+        setQrData('');
+        setShowQrModal(false);  // Ocultar el modal del QR
     };
 
     return (
@@ -113,12 +121,34 @@ const RegistrarVenta = () => {
                 paymentStatus={paymentStatus}
                 handleNewSale={handleNewSale}
             />
-            {paymentStatus === 'success' && qrData && (
-                <div>
-                    <h3>Escanee el QR para completar el pago</h3>
-                    <canvas id="canvas" />
-                </div>
-            )}
+            <Modal show={showQrModal} onHide={() => setShowQrModal(false)} centered className="qr-modal">
+                <Modal.Header closeButton>
+                    <Modal.Title>Escanee el QR para completar el pago</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    {loadingQr ? (
+                        <div className="d-flex justify-content-center">
+                            <Spinner animation="border" role="status">
+                                <span className="visually-hidden">Cargando...</span>
+                            </Spinner>
+                        </div>
+                    ) : (
+                        qrData && (
+                            <div className="qr-code">
+                                <QRCode 
+                                    value={qrData} 
+                                    size={256} 
+                                />
+                            </div>
+                        )
+                    )}
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={() => setShowQrModal(false)}>
+                        Cerrar
+                    </Button>
+                </Modal.Footer>
+            </Modal>
         </div>
     );
 };
