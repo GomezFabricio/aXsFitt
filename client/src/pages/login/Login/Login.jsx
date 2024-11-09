@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { Formik, Form } from 'formik';
 import { useNavigate } from 'react-router-dom';
-import LoginForm from '../../../components/LoginForm/LoginForm';
+import { Formik, Form } from 'formik';
 import { loginRequest } from '../../../api/login.api';
+import LoginForm from '../../../components/LoginForm/LoginForm';
 import './Login.css';
 
 const Login = () => {
@@ -10,8 +10,7 @@ const Login = () => {
     const [error, setError] = useState(null);
 
     return (
-        <div className="container-page">
-            <h1>Iniciar Sesión</h1>
+        <div className="login-container">
             {error && <div className="error">{error}</div>}
             <Formik
                 initialValues={{ email: '', password: '' }}
@@ -21,8 +20,11 @@ const Login = () => {
                         const { token } = response.data;
                         localStorage.setItem('token', token);
 
-                        // Redirigir a la página de selección de roles
-                        navigate('/seleccion-rol');
+                        // Esperar un pequeño retraso para asegurarse de que el token se haya establecido correctamente
+                        setTimeout(() => {
+                            // Redirigir a la página de selección de roles
+                            navigate('/seleccion-rol');
+                        }, 500); // Ajusta este valor según sea necesario
                     } catch (err) {
                         setError('Error en el inicio de sesión. Intenta nuevamente.');
                     }

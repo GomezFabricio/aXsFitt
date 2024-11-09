@@ -53,7 +53,7 @@ const RegistrarVenta = () => {
         try {
             // Datos necesarios para la API de Mercado Pago
             const userId = '250056888'; 
-            const externalPosId = '96494571'; 
+            const externalPosId = 'SUC001POS001'; 
     
             // Preparar la data que se envía a la API
             const data = {
