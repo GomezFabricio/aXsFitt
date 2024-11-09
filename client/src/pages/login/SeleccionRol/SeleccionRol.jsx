@@ -22,16 +22,22 @@ const SeleccionRol = () => {
 
                     // Simular un pequeño retraso de carga
                     setTimeout(async () => {
-                        const response = await getRolesByUserIdRequest(userId);
-                        setRoles(response.data);
+                        try {
+                            const response = await getRolesByUserIdRequest(userId);
+                            setRoles(response.data);
 
-                        if (response.data.length === 1) {
-                            handleRolClick(response.data[0].rol_id);
+                            if (response.data.length === 1) {
+                                handleRolClick(response.data[0].rol_id);
+                            }
+                            setLoading(false);
+                        } catch (err) {
+                            console.error('Error al obtener los roles:', err);
+                            setError('Error al obtener los roles. Intenta nuevamente.');
+                            setLoading(false);
                         }
-                        setLoading(false);
-                    }, 500); // Ajusta este valor según sea necesario
+                    }, 1000); // Ajusta este valor según sea necesario
                 } catch (err) {
-                    console.error('Error al obtener los roles:', err);
+                    console.error('Error al decodificar el token:', err);
                     setError('Error al obtener los roles. Intenta nuevamente.');
                     setLoading(false);
                 }
