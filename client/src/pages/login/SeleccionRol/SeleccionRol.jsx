@@ -35,7 +35,7 @@ const SeleccionRol = () => {
                             setError('Error al obtener los roles. Intenta nuevamente.');
                             setLoading(false);
                         }
-                    }, 1500); // Ajusta este valor según sea necesario
+                    }, 5000); // Ajusta este valor según sea necesario
                 } catch (err) {
                     console.error('Error al decodificar el token:', err);
                     setError('Error al obtener los roles. Intenta nuevamente.');

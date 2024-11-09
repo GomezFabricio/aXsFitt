@@ -64,6 +64,60 @@ export const procesarPagoEfectivo = async (req, res) => {
     }
 };
 /* -------------------------------------------------------------------------- */
+/*                          PROCESAR PAGO CON MERCADO PAGO                    */
+/* -------------------------------------------------------------------------- */
+export const procesarPagoMercadoPago = async (paymentData) => {
+    const { clienteId, productos, total, vendedorId } = paymentData;
+
+    // Validación de datos de entrada
+    if (!productos || !total) {
+        throw new Error('Datos de pago incompletos.');
+    }
+
+    try {
+        // Registrar la venta en la tabla 'ventas'
+        const [ventaResult] = await pool.query(
+            `INSERT INTO ventas (cliente_id, vendedor_id, venta_fecha, venta_total)
+            VALUES (?, ?, NOW(), ?)`,
+            [clienteId || null, vendedorId, total]
+        );
+
+        const ventaId = ventaResult.insertId;
+
+        // Registrar los detalles de la venta en la tabla 'detalle_venta'
+        for (const producto of productos) {
+            const { inventarioId, cantidad, precioUnitario, subtotal } = producto;
+            await pool.query(
+                `INSERT INTO detalle_venta (inventario_id, ventas_id, detalle_venta_cantidad, detalle_venta_precio_unitario, detalle_venta_subtotal)
+                VALUES (?, ?, ?, ?, ?)`,
+                [inventarioId, ventaId, cantidad, precioUnitario, subtotal]
+            );
+
+            // Actualizar la cantidad en el inventario
+            await pool.query(
+                `UPDATE inventario_principal
+                SET inventario_cantidad = inventario_cantidad - ?
+                WHERE inventario_id = ?`,
+                [cantidad, inventarioId]
+            );
+        }
+
+        // Crear el comprobante de pago con Mercado Pago
+        const comprobanteId = await crearComprobante(
+            ventaId,
+            2, // ID del método de pago con Mercado Pago
+            paymentData.comprobanteUrl, // URL del comprobante de Mercado Pago
+            total
+        );
+
+        return { message: 'Pago con Mercado Pago registrado exitosamente', comprobanteId };
+    } catch (error) {
+        console.error('Error procesando el pago con Mercado Pago:', error);
+        throw new Error('Ocurrió un error al procesar el pago con Mercado Pago. Por favor, intenta nuevamente.');
+    }
+};
+
+/* -------------------------------------------------------------------------- */
 /*                          OBTENER TODAS LAS VENTAS                          */
 /* -------------------------------------------------------------------------- */
 export const obtenerVentas = async (req, res) => {

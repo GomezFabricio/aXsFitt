@@ -11,22 +11,27 @@ import usuariosRoutes from './routes/usuarios.routes.js';
 import clientesRoutes from './routes/clientes.routes.js';
 import inventarioRoutes from './routes/inventario.routes.js';
 import ventasRoutes from './routes/ventas.routes.js';
-import mercadopagoRoutes from './routes/mercadopago.routes.js'; // Importa la nueva ruta
+import mercadopagoRoutes from './routes/mercadopago.routes.js'; 
 import authMiddleware from './middlewares/auth.middleware.js';
+import webhookRoutes from './routes/webhook.routes.js';
 
 const app = express();
 
 // Configuración de CORS
 app.use(cors({
-    origin: 'https://localhost:5173',
+    origin: '*',  // Permitir todas las solicitudes de origen
     methods: 'GET,POST,PUT,DELETE',
+    allowedHeaders: 'Content-Type,Authorization',
     credentials: true
 }));
 
 // Middleware para parsear JSON
 app.use(express.json());
 
-// Rutas
+// Ruta del webhook (antes del middleware de autenticación)
+app.use(webhookRoutes);
+
+// Rutas del sistema
 app.use(loginRoutes);
 app.use(authMiddleware);
 app.use(menuRoutes);
@@ -37,6 +42,7 @@ app.use(clientesRoutes);
 app.use(ventasRoutes);
 app.use(inventarioRoutes);
 app.use(mercadopagoRoutes); 
+
 
 // Cargar archivos SSL
 const options = {

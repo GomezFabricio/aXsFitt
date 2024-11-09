@@ -344,19 +344,40 @@ export const editarInventario = async (req, res) => {
     const { cantidad, precioCosto, precioVenta, incremento } = req.body;
 
     try {
-        const [result] = await pool.query(`
-            UPDATE inventario_principal
-            SET inventario_cantidad = ?, inventario_precio_costo = ?, inventario_precio_venta = ?, inventario_incremento = ?
-            WHERE producto_id = ?
-        `, [cantidad, precioCosto, precioVenta, incremento, id]);
+        // Convertir valores a números
+        const precioCostoNum = parseFloat(precioCosto);
+        const precioVentaNum = precioVenta ? parseFloat(precioVenta) : null;
+        const incrementoNum = incremento ? parseFloat(incremento) : null;
 
-        if (result.affectedRows === 0) {
-            return res.status(404).json({ message: 'Inventario no encontrado' });
+        let calculatedPrecioVenta = precioVentaNum;
+        let calculatedIncremento = incrementoNum;
+
+        // Si el precio de venta no se proporciona, calcularlo usando el incremento porcentual
+        if (!precioVentaNum && incrementoNum) {
+            calculatedPrecioVenta = precioCostoNum + (precioCostoNum * (incrementoNum / 100));
         }
 
-        res.json({ message: 'Inventario actualizado exitosamente' });
+        // Si el precio de venta se proporciona pero no el incremento, calcular el incremento porcentual
+        if (precioVentaNum && !incrementoNum) {
+            calculatedIncremento = ((precioVentaNum - precioCostoNum) / precioCostoNum) * 100;
+        }
+
+        // Calcular el precio de afiliado restando un 10% al precio de venta
+        const precioAfiliado = calculatedPrecioVenta * 0.9;
+
+        // Obtener la fecha actual
+        const fechaActualizacion = new Date();
+
+        // Actualizar el inventario existente
+        const [updateResult] = await pool.query(`
+            UPDATE inventario_principal
+            SET inventario_cantidad = ?, inventario_precio_costo = ?, inventario_precio_venta = ?, inventario_precio_afiliado = ?, inventario_incremento = ?, inventario_fecha_actualizacion = ?
+            WHERE producto_id = ?
+        `, [cantidad, precioCostoNum, calculatedPrecioVenta, precioAfiliado, calculatedIncremento, fechaActualizacion, id]);
+
+        res.json({ message: 'Inventario actualizado exitosamente', id });
     } catch (error) {
-        console.error('Error editando inventario:', error);
+        console.error('Error en editarInventario:', error);
         res.status(500).json({ message: error.message });
     }
 };

@@ -8,7 +8,7 @@ import RegistrarVentaForm from '../../../components/RegistrarVentaForm/Registrar
 import { QRCode } from 'react-qrcode-logo';  // Importa la librería QRCode correctamente
 import { Modal, Button, Spinner } from 'react-bootstrap';
 import './RegistrarVenta.css';
-import logo from '../../../assets/img/logo_escalado.png';  // Importa la imagen del logo y asígnala a una variable
+//import logo from '../../../assets/img/logo_escalado.png';  // Importa la imagen del logo y asígnala a una variable
 
 const RegistrarVenta = () => {
     const [clientes, setClientes] = useState([]);
