@@ -50,14 +50,8 @@ export const procesarPagoEfectivoRequest = async (data) => {
     return await axios.post('https://localhost:4000/ventas/pago-efectivo', data, config);
 };
 
-// Integracion Mercado Pago
-
-export const crearPosRequest = async (data) => {
-    console.log('API: crearPosRequest', data);
-    return await axios.post('https://localhost:4000/ventas/create_pos', data, config);
-};
-
-export const crearOrdenQRRequest = async (data) => {
-    console.log('API: crearOrdenQRRequest', data);
-    return await axios.post('https://localhost:4000/ventas/create_order', data, config);
+// Procesar pago con Mercado Pago
+export const procesarPagoMercadoPagoRequest = async (data) => {
+    console.log('API: procesarPagoMercadoPagoRequest', data);
+    return await axios.post('https://localhost:4000/ventas/pago-mercadopago', data, config);
 };

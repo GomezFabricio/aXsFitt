@@ -6,6 +6,7 @@ export const inventarioList = async (req, res) => {
     try {
         const [result] = await pool.query(`
             SELECT 
+                ip.inventario_id AS idInventario,
                 p.producto_id AS idProducto,
                 p.producto_codigo_barras AS CodigoBarras,
                 p.producto_descripcion AS Producto,
@@ -221,6 +222,7 @@ export const obtenerInventarioPorId = async (req, res) => {
     try {
         const [result] = await pool.query(`
             SELECT 
+                ip.inventario_id AS idInventario,
                 p.producto_id AS idProducto,
                 p.producto_codigo_barras AS CodigoBarras,
                 p.producto_descripcion AS Producto,

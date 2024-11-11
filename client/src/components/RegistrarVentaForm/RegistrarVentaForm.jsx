@@ -45,7 +45,7 @@ const RegistrarVentaForm = ({
             }
 
             const nuevoProducto = {
-                inventarioId: producto.idProducto,
+                inventarioId: producto.idInventario, // Asegurarse de usar el inventario_id correcto
                 cantidad: cantidadNumerica,
                 precioUnitario,
                 subtotal,
@@ -144,14 +144,17 @@ const RegistrarVentaForm = ({
             <div className="carrito-ventas">
                 <h3>Carrito de Ventas</h3>
                 <ul>
-                    {venta.productos.map((producto, index) => (
-                        <li key={index}>
-                            {producto.cantidad} x {productos.find(p => p.idProducto === producto.inventarioId).Producto} - ${producto.subtotal.toFixed(2)}
-                            <Button variant="danger" onClick={() => handleEliminarProducto(index)} className="eliminar-producto-button">
-                                Eliminar
-                            </Button>
-                        </li>
-                    ))}
+                    {venta.productos.map((producto, index) => {
+                        const productoInfo = productos.find(p => p.idInventario === producto.inventarioId);
+                        return (
+                            <li key={index}>
+                                {producto.cantidad} x {productoInfo ? productoInfo.Producto : 'Producto no encontrado'} - ${producto.subtotal.toFixed(2)}
+                                <Button variant="danger" onClick={() => handleEliminarProducto(index)} className="eliminar-producto-button">
+                                    Eliminar
+                                </Button>
+                            </li>
+                        );
+                    })}
                 </ul>
                 <h4>Total: ${venta.total.toFixed(2)}</h4>
             </div>

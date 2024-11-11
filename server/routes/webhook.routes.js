@@ -1,6 +1,6 @@
 import express from 'express';
 import axios from 'axios';
-import { procesarPagoMercadoPago } from '../controllers/ventas.controller.js';
+import { io } from '../index.js';
 
 const router = express.Router();
 
@@ -20,7 +20,8 @@ router.post('/webhook', express.json(), async (req, res) => {
             // Verificar si el pedido está cerrado antes de procesarlo
             if (orderDetails.status === 'closed') {
                 console.log('Detalles del pedido:', orderDetails);
-                await procesarPagoMercadoPago(orderDetails);
+                // Enviar una señal al frontend para indicar que el pago se ha realizado correctamente
+                io.emit('paymentConfirmed', orderDetails);
                 res.sendStatus(200);
             } else {
                 console.log(`El pedido aún no está cerrado, estado actual: ${orderDetails.status}`);

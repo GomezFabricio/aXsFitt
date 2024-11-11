@@ -66,34 +66,57 @@ export const procesarPagoEfectivo = async (req, res) => {
 /* -------------------------------------------------------------------------- */
 /*                          PROCESAR PAGO CON MERCADO PAGO                    */
 /* -------------------------------------------------------------------------- */
-export const procesarPagoMercadoPago = async (paymentData) => {
-    const { clienteId, productos, total, vendedorId } = paymentData;
+export const procesarPagoMercadoPago = async (req, res) => {
+    const { clienteId, productos, total } = req.body;
+    const { personaId } = req.user; // Obtener personaId del token JWT
 
     // Validación de datos de entrada
     if (!productos || !total) {
-        throw new Error('Datos de pago incompletos.');
+        return res.status(400).json({ message: 'Datos de pago incompletos.' });
     }
 
     try {
+        console.log('Datos recibidos para procesar pago con Mercado Pago:', { clienteId, productos, total, personaId });
+
+        // Verificar si la persona es un vendedor
+        const [vendedor] = await pool.query(
+            `SELECT vendedor_id FROM vendedores WHERE persona_id = ?`,
+            [personaId]
+        );
+
+        const vendedorId = vendedor.length > 0 ? vendedor[0].vendedor_id : null;
+
+        if (!vendedorId) {
+            throw new Error('Vendedor no encontrado.');
+        }
+
+        console.log('Vendedor encontrado:', vendedorId);
+
         // Registrar la venta en la tabla 'ventas'
         const [ventaResult] = await pool.query(
             `INSERT INTO ventas (cliente_id, vendedor_id, venta_fecha, venta_total)
             VALUES (?, ?, NOW(), ?)`,
+
             [clienteId || null, vendedorId, total]
         );
 
         const ventaId = ventaResult.insertId;
+        console.log('Venta registrada con ID:', ventaId);
 
         // Registrar los detalles de la venta en la tabla 'detalle_venta'
         for (const producto of productos) {
             const { inventarioId, cantidad, precioUnitario, subtotal } = producto;
+            console.log('Registrando detalle de venta:', { inventarioId, ventaId, cantidad, precioUnitario, subtotal });
+
             await pool.query(
                 `INSERT INTO detalle_venta (inventario_id, ventas_id, detalle_venta_cantidad, detalle_venta_precio_unitario, detalle_venta_subtotal)
                 VALUES (?, ?, ?, ?, ?)`,
+
                 [inventarioId, ventaId, cantidad, precioUnitario, subtotal]
             );
 
             // Actualizar la cantidad en el inventario
+            console.log('Actualizando inventario para inventarioId:', inventarioId);
             await pool.query(
                 `UPDATE inventario_principal
                 SET inventario_cantidad = inventario_cantidad - ?
@@ -106,14 +129,35 @@ export const procesarPagoMercadoPago = async (paymentData) => {
         const comprobanteId = await crearComprobante(
             ventaId,
             2, // ID del método de pago con Mercado Pago
-            paymentData.comprobanteUrl, // URL del comprobante de Mercado Pago
+            null, // No hay URL de comprobante para pagos en efectivo
             total
         );
 
-        return { message: 'Pago con Mercado Pago registrado exitosamente', comprobanteId };
+        console.log('Comprobante creado con ID:', comprobanteId);
+
+        res.status(200).json({ message: 'Pago con Mercado Pago registrado exitosamente', comprobanteId });
     } catch (error) {
         console.error('Error procesando el pago con Mercado Pago:', error);
-        throw new Error('Ocurrió un error al procesar el pago con Mercado Pago. Por favor, intenta nuevamente.');
+        res.status(500).json({ message: 'Ocurrió un error al procesar el pago con Mercado Pago. Por favor, intenta nuevamente.' });
+    }
+};
+
+/* -------------------------------------------------------------------------- */
+/*                          CREAR COMPROBANTE DE PAGO                         */
+/* -------------------------------------------------------------------------- */
+export const crearComprobante = async (ventaId, metodoPagoId, comprobanteUrl, monto) => {
+    try {
+        console.log('Creando comprobante:', { ventaId, metodoPagoId, comprobanteUrl, monto });
+        const [comprobanteResult] = await pool.query(
+            `INSERT INTO comprobantes (ventas_id, metodo_pago_id, comprobante_url, comprobante_fecha, comprobante_monto)
+            VALUES (?, ?, ?, NOW(), ?)`,
+            [ventaId, metodoPagoId, comprobanteUrl, monto]
+        );
+
+        return comprobanteResult.insertId;
+    } catch (error) {
+        console.error('Error creando el comprobante:', error);
+        throw error;
     }
 };
 
@@ -197,25 +241,6 @@ export const obtenerVentaPorId = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
-
-/* -------------------------------------------------------------------------- */
-/*                          CREAR COMPROBANTE DE PAGO                         */
-/* -------------------------------------------------------------------------- */
-export const crearComprobante = async (ventaId, metodoPagoId, comprobanteUrl, monto) => {
-    try {
-        const [comprobanteResult] = await pool.query(
-            `INSERT INTO comprobantes (ventas_id, metodo_pago_id, comprobante_url, comprobante_fecha, comprobante_monto)
-            VALUES (?, ?, ?, NOW(), ?)`,
-            [ventaId, metodoPagoId, comprobanteUrl, monto]
-        );
-
-        return comprobanteResult.insertId;
-    } catch (error) {
-        console.error('Error creando el comprobante:', error);
-        throw error;
-    }
-};
-
 /* -------------------------------------------------------------------------- */
 /*                          GENERAR REPORTE DE VENTAS                         */
 /* -------------------------------------------------------------------------- */

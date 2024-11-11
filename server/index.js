@@ -3,6 +3,7 @@ import cors from 'cors';
 import { PORT } from './config.js';
 import fs from 'fs';
 import https from 'https';
+import { Server } from 'socket.io';
 import vendedoresRoutes from './routes/vendedores.routes.js';
 import loginRoutes from './routes/login.routes.js';
 import menuRoutes from './routes/menu.routes.js';
@@ -43,7 +44,6 @@ app.use(ventasRoutes);
 app.use(inventarioRoutes);
 app.use(mercadopagoRoutes); 
 
-
 // Cargar archivos SSL
 const options = {
     key: fs.readFileSync('./certificates/server.key'),
@@ -52,6 +52,25 @@ const options = {
 };
 
 // Iniciar el servidor HTTPS
-https.createServer(options, app).listen(PORT, () => {
+const server = https.createServer(options, app);
+
+// Configurar el servidor de WebSocket
+const io = new Server(server, {
+    cors: {
+        origin: '*',
+        methods: ['GET', 'POST']
+    }
+});
+
+io.on('connection', (socket) => {
+    console.log('Nuevo cliente conectado');
+    socket.on('disconnect', () => {
+        console.log('Cliente desconectado');
+    });
+});
+
+server.listen(PORT, () => {
     console.log(`Server is listening on https://localhost:${PORT}`);
 });
+
+export { io };

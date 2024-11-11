@@ -1,14 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { procesarPagoEfectivoRequest } from '../../../api/ventas.api';
+import { procesarPagoEfectivoRequest, procesarPagoMercadoPagoRequest } from '../../../api/ventas.api';
 import { crearOrdenQRRequest } from '../../../api/mercadopago.api';
 import { getClientesRequest } from '../../../api/clientes.api';
 import { inventarioList } from '../../../api/inventario.api';
 import RegistrarVentaForm from '../../../components/RegistrarVentaForm/RegistrarVentaForm';
 import { QRCode } from 'react-qrcode-logo';  // Importa la librería QRCode correctamente
 import { Modal, Button, Spinner } from 'react-bootstrap';
+import io from 'socket.io-client';
 import './RegistrarVenta.css';
-//import logo from '../../../assets/img/logo_escalado.png';  // Importa la imagen del logo y asígnala a una variable
+
+const socket = io('https://localhost:4000', { secure: true });
 
 const RegistrarVenta = () => {
     const [clientes, setClientes] = useState([]);
@@ -23,6 +25,7 @@ const RegistrarVenta = () => {
     const [qrData, setQrData] = useState('');  // Aquí se guarda la URL del QR
     const [showQrModal, setShowQrModal] = useState(false);  // Estado para mostrar el modal del QR
     const [loadingQr, setLoadingQr] = useState(false);  // Estado para manejar la carga del QR
+    const [showConfirmationModal, setShowConfirmationModal] = useState(false);  // Estado para mostrar el modal de confirmación
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -42,14 +45,26 @@ const RegistrarVenta = () => {
 
         loadClientes();
         loadProductos();
+
+        // Escuchar la señal del WebSocket
+        socket.on('paymentConfirmed', async (orderDetails) => {
+            console.log('Pago confirmado:', orderDetails);
+            await handlePaymentConfirmation(orderDetails);
+        });
+
+        return () => {
+            socket.off('paymentConfirmed');
+        };
     }, []);
 
     const onProcesarPago = async () => {
         try {
             await procesarPagoEfectivoRequest(venta);
             setPaymentStatus('success');
+            setShowConfirmationModal(true);  // Mostrar el modal de confirmación
         } catch (error) {
             setPaymentStatus('error');
+            setShowConfirmationModal(true);  // Mostrar el modal de confirmación
         }
     };
 
@@ -64,21 +79,24 @@ const RegistrarVenta = () => {
     
             // Preparar la data que se envía a la API
             const data = {
-                external_reference: 'reference_12345',
+                external_reference: `reference_${venta.clienteId}`,
                 title: 'Product order',
                 description: 'Purchase description.',
-                notification_url: 'https://webhook.site/8738876d-8f52-458a-ba1d-be3e40adbf59',
+                notification_url: 'https://webhook.site/axsfitt',
                 total_amount: venta.total,
-                items: venta.productos.map(producto => ({
-                    sku_number: producto.inventarioId.toString(), // Convierte el ID del inventario a cadena
-                    category: 'marketplace',
-                    title: productos.find(p => p.idProducto === producto.inventarioId).Producto,
-                    description: productos.find(p => p.idProducto === producto.inventarioId).Producto || 'Descripción del producto',
-                    unit_price: producto.precioUnitario,
-                    quantity: producto.cantidad,
-                    unit_measure: 'unit',
-                    total_amount: producto.subtotal
-                })),
+                items: venta.productos.map(producto => {
+                    const productoInfo = productos.find(p => p.idInventario === producto.inventarioId);
+                    return {
+                        sku_number: producto.inventarioId.toString(), // Convierte el ID del inventario a cadena
+                        category: 'marketplace',
+                        title: productoInfo ? productoInfo.Producto : 'Producto no encontrado',
+                        description: productoInfo ? productoInfo.Producto : 'Descripción no disponible',
+                        unit_price: producto.precioUnitario,
+                        quantity: producto.cantidad,
+                        unit_measure: 'unit',
+                        total_amount: producto.subtotal
+                    };
+                }),
                 cash_out: {
                     amount: 0
                 }
@@ -107,6 +125,43 @@ const RegistrarVenta = () => {
         setPaymentStatus(null);
         setQrData('');
         setShowQrModal(false);  // Ocultar el modal del QR
+        setShowConfirmationModal(false);  // Ocultar el modal de confirmación
+    };
+
+    const handlePaymentConfirmation = async (orderDetails) => {
+        try {
+            const { external_reference, items, total_amount } = orderDetails;
+            const clienteId = external_reference.split('_')[1]; // Asumiendo que la referencia externa tiene el formato "reference_clienteId"
+
+            // Mapear los items del pedido a los productos en el carrito
+            const productosMapeados = items.map(item => {
+                const productoInfo = productos.find(p => p.Producto === item.title);
+                const productoVenta = venta.productos.find(p => p.inventarioId === productoInfo.idInventario);
+                return {
+                    inventarioId: productoVenta ? productoVenta.inventarioId : undefined,
+                    cantidad: item.quantity,
+                    precioUnitario: item.unit_price,
+                    subtotal: item.unit_price * item.quantity
+                };
+            });
+
+            const ventaData = {
+                clienteId,
+                vendedorId: venta.vendedorId,
+                productos: productosMapeados,
+                total: total_amount
+            };
+
+            console.log('Datos enviados para procesar pago con Mercado Pago:', ventaData);
+
+            await procesarPagoMercadoPagoRequest(ventaData);
+            setPaymentStatus('success');
+            setShowConfirmationModal(true);  // Mostrar el modal de confirmación
+        } catch (error) {
+            console.error('Error al procesar el pago con Mercado Pago:', error);
+            setPaymentStatus('error');
+            setShowConfirmationModal(true);  // Mostrar el modal de confirmación
+        }
     };
 
     return (
@@ -129,7 +184,7 @@ const RegistrarVenta = () => {
                     {loadingQr ? (
                         <div className="d-flex justify-content-center">
                             <Spinner animation="border" role="status">
-                                <span className="visually-hidden">Cargando...</span>
+                                <span className="visualmente-oculto">Cargando...</span>
                             </Spinner>
                         </div>
                     ) : (
@@ -148,6 +203,26 @@ const RegistrarVenta = () => {
                         Cerrar
                     </Button>
                 </Modal.Footer>
+            </Modal>
+            <Modal show={showConfirmationModal} onHide={() => setShowConfirmationModal(false)} centered>
+                <Modal.Header closeButton>
+                    <Modal.Title>{paymentStatus === 'success' ? 'Pago realizado correctamente' : 'Error en el pago'}</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    {paymentStatus === 'success' ? (
+                        <p>El pago se ha realizado con éxito.</p>
+                    ) : (
+                        <p>Ha ocurrido un error al procesar el pago. Por favor, intenta nuevamente.</p>
+                    )}
+                    <div className="confirmation-buttons">
+                        <Button variant="primary" onClick={() => navigate('/ventas')}>
+                            Ver listado de ventas
+                        </Button>
+                        <Button variant="secondary" onClick={handleNewSale}>
+                            Realizar nueva venta
+                        </Button>
+                    </div>
+                </Modal.Body>
             </Modal>
         </div>
     );
