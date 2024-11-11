@@ -67,7 +67,7 @@ const RegistrarVenta = () => {
                 external_reference: 'reference_12345',
                 title: 'Product order',
                 description: 'Purchase description.',
-                notification_url: 'https://www.yourserver.com/notifications',
+                notification_url: 'https://webhook.site/8738876d-8f52-458a-ba1d-be3e40adbf59',
                 total_amount: venta.total,
                 items: venta.productos.map(producto => ({
                     sku_number: producto.inventarioId.toString(), // Convierte el ID del inventario a cadena
