@@ -54,13 +54,14 @@ const SeleccionRol = () => {
             const menuOptions = response.data.menu;
 
             localStorage.setItem('menuOptions', JSON.stringify(menuOptions));
+            localStorage.setItem('selectedRoleId', rolId); // Almacenar el ID del rol seleccionado
 
             switch (rolId) {
                 case 1:
                     navigate('/vendedores');
                     break;
                 case 2:
-                    navigate('*');
+                    navigate('/registrar-venta');
                     break;
                 default:
                     navigate('/');

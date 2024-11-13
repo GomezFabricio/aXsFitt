@@ -281,6 +281,28 @@ function App() {
         />
 
         <Route
+          path="/registrar-venta"
+          element={
+            <ProtectedRoute>
+              <Navbar />
+              <RegistrarVenta />
+              <Footer />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/mis-ventas"
+          element={
+            <ProtectedRoute>
+              <Navbar />
+              <VentasList />
+              <Footer />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
           path="*"
           element={
             <ProtectedRoute>

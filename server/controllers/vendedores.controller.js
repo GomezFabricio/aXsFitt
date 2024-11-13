@@ -2,23 +2,12 @@
 import { pool } from '../db.js';
 import { createPersona, updatePersona } from './personas.controller.js';
 import { createUser } from './usuarios.controller.js';
-import { asignarRolUsuario } from './usuarios_roles.controller.js';
-import jwt from 'jsonwebtoken';
-import { SECRET_KEY } from '../config.js';
-
-// Función para obtener el ID del usuario logueado desde el token
-const getUserIdFromToken = (req) => {
-    const token = req.headers.authorization.split(' ')[1];
-    const decodedToken = jwt.verify(token, SECRET_KEY);
-    return decodedToken.userId;
-};
 
 /* -------------------------------------------------------------------------- */
 /*                    OBTENER TODOS LOS VENDEDORES                            */
 /* -------------------------------------------------------------------------- */
 export const getVendedores = async (req, res) => {
     try {
-        const loggedInUserId = getUserIdFromToken(req);
 
         const [rows] = await pool.query(
             `SELECT 
@@ -38,9 +27,7 @@ export const getVendedores = async (req, res) => {
             ON 
                 v.persona_id = p.persona_id
             WHERE 
-                v.estado_vendedor_id = 1
-                AND v.vendedor_id != ?`,
-            [loggedInUserId]
+                v.estado_vendedor_id = 1`  // Solo activos
         );
 
         res.json(rows);

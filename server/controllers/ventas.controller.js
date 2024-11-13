@@ -1,5 +1,8 @@
 import ExcelJS from 'exceljs';
 import { pool } from '../db.js';
+import jwt from 'jsonwebtoken';
+import { SECRET_KEY } from '../config.js';
+
 
 /* -------------------------------------------------------------------------- */
 /*                          PROCESAR PAGO EN EFECTIVO                         */
@@ -166,22 +169,54 @@ export const crearComprobante = async (ventaId, metodoPagoId, comprobanteUrl, mo
 /* -------------------------------------------------------------------------- */
 export const obtenerVentas = async (req, res) => {
     try {
-        const [ventas] = await pool.query(
-            `SELECT 
-                v.ventas_id, 
-                v.venta_fecha, 
-                v.venta_total, 
-                c.persona_nombre AS clienteNombre, 
-                c.persona_apellido AS clienteApellido, 
-                ven.persona_nombre AS vendedorNombre, 
-                ven.persona_apellido AS vendedorApellido 
-            FROM 
-                ventas v
-            LEFT JOIN clientes cl ON v.cliente_id = cl.cliente_id
-            LEFT JOIN personas c ON cl.persona_id = c.persona_id
-            LEFT JOIN vendedores vnd ON v.vendedor_id = vnd.vendedor_id
-            LEFT JOIN personas ven ON vnd.persona_id = ven.persona_id`
-        );
+        // Obtener el token desde los encabezados de la solicitud
+        const token = req.headers.authorization.split(' ')[1];
+        const decodedToken = jwt.verify(token, SECRET_KEY);
+        const { personaId } = decodedToken;
+
+        // Obtener el ID del rol desde los encabezados de la solicitud
+        const selectedRoleId = req.headers['x-selected-role-id'];
+
+        let ventas;
+        if (selectedRoleId === '1') { // Administrador
+            [ventas] = await pool.query(
+                `SELECT 
+                    v.ventas_id, 
+                    v.venta_fecha, 
+                    v.venta_total, 
+                    c.persona_nombre AS clienteNombre, 
+                    c.persona_apellido AS clienteApellido, 
+                    ven.persona_nombre AS vendedorNombre, 
+                    ven.persona_apellido AS vendedorApellido 
+                FROM 
+                    ventas v
+                LEFT JOIN clientes cl ON v.cliente_id = cl.cliente_id
+                LEFT JOIN personas c ON cl.persona_id = c.persona_id
+                LEFT JOIN vendedores vnd ON v.vendedor_id = vnd.vendedor_id
+                LEFT JOIN personas ven ON vnd.persona_id = ven.persona_id`
+            );
+        } else if (selectedRoleId === '2') { // Vendedor
+            [ventas] = await pool.query(
+                `SELECT 
+                    v.ventas_id, 
+                    v.venta_fecha, 
+                    v.venta_total, 
+                    c.persona_nombre AS clienteNombre, 
+                    c.persona_apellido AS clienteApellido, 
+                    ven.persona_nombre AS vendedorNombre, 
+                    ven.persona_apellido AS vendedorApellido 
+                FROM 
+                    ventas v
+                LEFT JOIN clientes cl ON v.cliente_id = cl.cliente_id
+                LEFT JOIN personas c ON cl.persona_id = c.persona_id
+                LEFT JOIN vendedores vnd ON v.vendedor_id = vnd.vendedor_id
+                LEFT JOIN personas ven ON vnd.persona_id = ven.persona_id
+                WHERE v.vendedor_id = ?`,
+                [personaId]
+            );
+        } else {
+            return res.status(403).json({ message: 'No tienes permiso para ver estas ventas.' });
+        }
 
         res.json(ventas);
     } catch (error) {
