@@ -78,6 +78,7 @@ const Inventario = () => {
             if (isEditing) {
                 await editarInventario(formValues.productoId, values);
                 handleInventarioAgregado();
+                window.location.reload(); // Recargar la página inmediatamente después de editar
             } else {
                 const response = await agregarInventario(values);
                 if (response.reingreso) {
