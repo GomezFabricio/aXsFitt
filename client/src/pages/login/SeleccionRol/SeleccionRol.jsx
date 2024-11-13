@@ -20,22 +20,20 @@ const SeleccionRol = () => {
                     const decodedToken = jwtDecode(token);
                     const userId = decodedToken.userId;
 
-                    // Simular un pequeño retraso de carga
-                    setTimeout(async () => {
-                        try {
-                            const response = await getRolesByUserIdRequest(userId);
-                            setRoles(response.data);
+                    try {
+                        const response = await getRolesByUserIdRequest(userId);
+                        setRoles(response.data);
 
-                            if (response.data.length === 1) {
-                                handleRolClick(response.data[0].rol_id);
-                            }
-                            setLoading(false);
-                        } catch (err) {
-                            console.error('Error al obtener los roles:', err);
-                            setError('Error al obtener los roles. Intenta nuevamente.');
-                            setLoading(false);
+                        if (response.data.length === 1) {
+                            handleRolClick(response.data[0].rol_id);
                         }
-                    }, 1000); // Ajusta este valor según sea necesario
+                        setLoading(false);
+                    } catch (err) {
+                        console.error('Error al obtener los roles:', err);
+                        setError('Error al obtener los roles. Intenta nuevamente.');
+                        setLoading(false);
+                    }
+                    
                 } catch (err) {
                     console.error('Error al decodificar el token:', err);
                     setError('Error al obtener los roles. Intenta nuevamente.');
@@ -72,6 +70,10 @@ const SeleccionRol = () => {
             console.error('Error al obtener el menú:', error);
         }
     };
+
+    if (loading) {
+        return <div>Cargando...</div>;
+    }
 
     if (error) {
         return <div className="error">{error}</div>;

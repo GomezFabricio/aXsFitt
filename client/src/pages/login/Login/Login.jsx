@@ -21,8 +21,9 @@ const Login = () => {
                         const { token } = response.data;
                         localStorage.setItem('token', token);
 
-                        // Redirigir a la página de selección de roles
+                        // Redirigir a la página de selección de roles y recargar la página
                         navigate('/seleccion-rol');
+                        window.location.reload();
                     } catch (err) {
                         setError('Error en el inicio de sesión. Intenta nuevamente.');
                     }
