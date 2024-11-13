@@ -126,17 +126,7 @@ export const createVendedor = async (req, res) => {
             return res.status(500).json({ message: 'Error al crear la persona' });
         }
 
-        // Crear el usuario
-        const usuarioRequestData = {
-            persona: { persona_id: personaResponse.id },
-            usuario: usuarioData,
-            roles: [2] // Asignar el rol de vendedor
-        };
-
-        const usuarioResponse = await createUser({ body: usuarioRequestData });
-        if (!usuarioResponse || !usuarioResponse.id) {
-            return res.status(500).json({ message: 'Error al crear el usuario' });
-        }
+        const personaId = personaResponse.id;
 
         // Crear el vendedor
         const estado_vendedor_id = 1;
@@ -144,18 +134,28 @@ export const createVendedor = async (req, res) => {
 
         const [vendedorResult] = await pool.query(
             "INSERT INTO `vendedores` (`persona_id`, `estado_vendedor_id`, `vendedor_fecha_ingreso`) VALUES (?, ?, ?)",
-            [personaResponse.id, estado_vendedor_id, fecha_ingreso]
+            [personaId, estado_vendedor_id, fecha_ingreso]
         );
 
-        res.json({
+        const response = {
             id: vendedorResult.insertId,
-            persona_id: personaResponse.id,
+            persona_id: personaId,
             estado_vendedor_id,
             fecha_ingreso
-        });
+        };
+
+        if (res) {
+            res.json(response);
+        } else {
+            return response;
+        }
     } catch (error) {
         console.error('Error en createVendedor:', error);
-        res.status(500).json({ message: error.message });
+        if (res) {
+            res.status(500).json({ message: error.message });
+        } else {
+            throw error;
+        }
     }
 };
 

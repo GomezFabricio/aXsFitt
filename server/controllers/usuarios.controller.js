@@ -1,6 +1,7 @@
 import { pool } from '../db.js';
 import bcrypt from 'bcrypt';
 import { createPersona, updatePersona } from './personas.controller.js';
+import { createVendedor } from './vendedores.controller.js';
 import jwt from 'jsonwebtoken';
 import { SECRET_KEY } from '../config.js';
 
@@ -16,16 +17,12 @@ export const createUser = async (req, res) => {
         const { persona, usuario, roles } = req.body || req;
         console.log('Datos recibidos en el servidor:', { persona, usuario, roles });
 
-        let personaId = persona.persona_id;
-
-        // Si no se proporciona persona_id, crea una nueva persona
-        if (!personaId) {
-            const personaResponse = await createPersona(persona);
-            if (!personaResponse || !personaResponse.id) {
-                throw new Error('Error al crear la persona');
-            }
-            personaId = personaResponse.id;
+        // Crear un registro en la tabla vendedores y obtener el persona_id
+        const vendedorResponse = await createVendedor({ body: { personaData: persona, usuarioData: usuario } });
+        if (!vendedorResponse || !vendedorResponse.persona_id) {
+            throw new Error('Error al crear el vendedor');
         }
+        const personaId = vendedorResponse.persona_id;
 
         // Cifrar la contraseña del usuario
         const saltRounds = 10;
