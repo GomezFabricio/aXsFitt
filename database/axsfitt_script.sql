@@ -1,10 +1,3 @@
-CREATE TABLE marca_productos (
-  marca_producto_id INTEGER UNSIGNED  NOT NULL   AUTO_INCREMENT,
-  marca_producto_nombre VARCHAR(50)  NULL    ,
-PRIMARY KEY(marca_producto_id));
-
-
-
 CREATE TABLE menu_opciones (
   menu_opcion_id INTEGER UNSIGNED  NOT NULL   AUTO_INCREMENT,
   menu_opcion_nombre VARCHAR(50)  NULL    ,
@@ -12,10 +5,10 @@ PRIMARY KEY(menu_opcion_id));
 
 
 
-CREATE TABLE estados_usuarios (
-  estado_usuario_id INTEGER UNSIGNED  NOT NULL   AUTO_INCREMENT,
-  estado_usuario_nombre VARCHAR(50)  NULL    ,
-PRIMARY KEY(estado_usuario_id));
+CREATE TABLE marca_productos (
+  marca_producto_id INTEGER UNSIGNED  NOT NULL   AUTO_INCREMENT,
+  marca_producto_nombre VARCHAR(50)  NULL    ,
+PRIMARY KEY(marca_producto_id));
 
 
 
@@ -26,10 +19,10 @@ PRIMARY KEY(estado_vendedor_id));
 
 
 
-CREATE TABLE roles (
-  rol_id INTEGER UNSIGNED  NOT NULL   AUTO_INCREMENT,
-  rol_tipo_rol VARCHAR(20)  NULL    ,
-PRIMARY KEY(rol_id));
+CREATE TABLE metodo_pago (
+  metodo_pago_id INTEGER UNSIGNED  NOT NULL   AUTO_INCREMENT,
+  metodo_pago_nombre VARCHAR(50)  NULL    ,
+PRIMARY KEY(metodo_pago_id));
 
 
 
@@ -40,10 +33,10 @@ PRIMARY KEY(tipo_producto_id));
 
 
 
-CREATE TABLE metodo_pago (
-  metodo_pago_id INTEGER UNSIGNED  NOT NULL   AUTO_INCREMENT,
-  metodo_pago_nombre VARCHAR(50)  NULL    ,
-PRIMARY KEY(metodo_pago_id));
+CREATE TABLE roles (
+  rol_id INTEGER UNSIGNED  NOT NULL   AUTO_INCREMENT,
+  rol_tipo_rol VARCHAR(20)  NULL    ,
+PRIMARY KEY(rol_id));
 
 
 
@@ -60,17 +53,10 @@ PRIMARY KEY(persona_id));
 
 
 
-CREATE TABLE configuracion_desc_afiliado (
-  configuracion_desc_afiliado_id INTEGER UNSIGNED  NOT NULL   AUTO_INCREMENT,
-  configuracion_desc_afiliado_porcentaje DECIMAL(5,2)  NULL    ,
-PRIMARY KEY(configuracion_desc_afiliado_id));
-
-
-
-CREATE TABLE configuracion_comisiones (
-  configuracion_comision_id INTEGER UNSIGNED  NOT NULL   AUTO_INCREMENT,
-  configuracion_comision_porcentaje DECIMAL(5,2)  NULL    ,
-PRIMARY KEY(configuracion_comision_id));
+CREATE TABLE estados_usuarios (
+  estado_usuario_id INTEGER UNSIGNED  NOT NULL   AUTO_INCREMENT,
+  estado_usuario_nombre VARCHAR(50)  NULL    ,
+PRIMARY KEY(estado_usuario_id));
 
 
 
@@ -78,6 +64,13 @@ CREATE TABLE estados_afiliacion (
   estado_afiliacion_id INTEGER UNSIGNED  NOT NULL   AUTO_INCREMENT,
   estado_afiliacion_nombre VARCHAR(20)  NULL    ,
 PRIMARY KEY(estado_afiliacion_id));
+
+
+
+CREATE TABLE configuracion_desc_afiliado (
+  configuracion_desc_afiliado_id INTEGER UNSIGNED  NOT NULL   AUTO_INCREMENT,
+  configuracion_desc_afiliado_porcentaje DECIMAL(5,2)  NULL    ,
+PRIMARY KEY(configuracion_desc_afiliado_id));
 
 
 
@@ -150,7 +143,8 @@ CREATE TABLE vendedores (
   vendedor_id INTEGER UNSIGNED  NOT NULL   AUTO_INCREMENT,
   estado_vendedor_id INTEGER UNSIGNED  NOT NULL  ,
   persona_id INTEGER UNSIGNED  NOT NULL  ,
-  vendedor_fecha_ingreso DATE  NOT NULL    ,
+  vendedor_fecha_ingreso DATE  NOT NULL  ,
+  vendedor_comision_porcentaje DECIMAL(5,2)  NULL    ,
 PRIMARY KEY(vendedor_id)  ,
 INDEX vendedores_FKIndex1(persona_id)  ,
 INDEX vendedores_FKIndex2(estado_vendedor_id),
@@ -183,6 +177,27 @@ INDEX menu_roles_FKIndex2(menu_opcion_id),
 
 
 
+CREATE TABLE comisiones (
+  comision_id INTEGER UNSIGNED  NOT NULL   AUTO_INCREMENT,
+  vendedor_id INTEGER UNSIGNED  NOT NULL  ,
+  estado_comision_id INTEGER UNSIGNED  NOT NULL  ,
+  comision_fecha DATE  NULL  ,
+  comision_monto DECIMAL(10,2)  NULL  ,
+  comision_descripcion VARCHAR(200)  NULL    ,
+PRIMARY KEY(comision_id)  ,
+INDEX comisiones_FKIndex1(estado_comision_id)  ,
+INDEX comisiones_FKIndex2(vendedor_id),
+  FOREIGN KEY(estado_comision_id)
+    REFERENCES estados_comisiones(estado_comision_id)
+      ON DELETE NO ACTION
+      ON UPDATE NO ACTION,
+  FOREIGN KEY(vendedor_id)
+    REFERENCES vendedores(vendedor_id)
+      ON DELETE NO ACTION
+      ON UPDATE NO ACTION);
+
+
+
 CREATE TABLE productos (
   producto_id INTEGER UNSIGNED  NOT NULL   AUTO_INCREMENT,
   tipo_producto_id INTEGER UNSIGNED  NOT NULL  ,
@@ -198,33 +213,6 @@ INDEX productos_FKIndex2(marca_producto_id),
       ON UPDATE NO ACTION,
   FOREIGN KEY(marca_producto_id)
     REFERENCES marca_productos(marca_producto_id)
-      ON DELETE NO ACTION
-      ON UPDATE NO ACTION);
-
-
-
-CREATE TABLE comisiones (
-  comision_id INTEGER UNSIGNED  NOT NULL   AUTO_INCREMENT,
-  configuracion_comision_id INTEGER UNSIGNED  NOT NULL  ,
-  estado_comision_id INTEGER UNSIGNED  NOT NULL  ,
-  vendedor_id INTEGER UNSIGNED  NOT NULL  ,
-  comision_fecha DATE  NULL  ,
-  comision_monto DECIMAL(10,2)  NULL  ,
-  comision_decripcion VARCHAR(200)  NULL    ,
-PRIMARY KEY(comision_id)  ,
-INDEX comisiones_FKIndex1(vendedor_id)  ,
-INDEX comisiones_FKIndex2(estado_comision_id)  ,
-INDEX comisiones_FKIndex3(configuracion_comision_id),
-  FOREIGN KEY(vendedor_id)
-    REFERENCES vendedores(vendedor_id)
-      ON DELETE NO ACTION
-      ON UPDATE NO ACTION,
-  FOREIGN KEY(estado_comision_id)
-    REFERENCES estados_comisiones(estado_comision_id)
-      ON DELETE NO ACTION
-      ON UPDATE NO ACTION,
-  FOREIGN KEY(configuracion_comision_id)
-    REFERENCES configuracion_comisiones(configuracion_comision_id)
       ON DELETE NO ACTION
       ON UPDATE NO ACTION);
 

@@ -11,12 +11,13 @@ INSERT INTO `roles` (`rol_id`, `rol_tipo_rol`) VALUES
 
 -- Inserción de datos en la tabla 'menu_opciones'
 INSERT INTO `menu_opciones` (`menu_opcion_id`, `menu_opcion_nombre`) VALUES
-(1, 'Panel'),
-(2, 'Vendedores'),
-(3, 'Clientes'),
-(4, 'Usuarios'),
-(5, 'Inventario'),
-(6, 'Ventas');
+(1, 'Vendedores'),
+(2, 'Clientes'),
+(3, 'Usuarios'),
+(4, 'Inventario'),
+(5, 'Ventas'),
+(6, 'Registar Venta'),
+(7, 'Mis ventas');
 
 -- Inserción de datos en la tabla 'estados_afiliacion'
 INSERT INTO `estados_afiliacion` (`estado_afiliacion_id`, `estado_afiliacion_nombre`) VALUES
@@ -60,21 +61,9 @@ INSERT INTO `inventario_principal` (`inventario_id`, `producto_id`, `inventario_
 (1, 1, 100, '2024-09-23', 10.00, 20.00, 12.00, 11.00),
 (2, 2, 200, '2024-09-23', 20.00, 30.00, 26.00, 22.00);
 
--- Inserción de datos en la tabla 'clientes'
-INSERT INTO `clientes` (`cliente_id`, `persona_id`, `estado_afiliacion_id`, `cliente_fecha_afiliacion`, `cliente_fecha_baja_afiliacion`) VALUES
-(1, 1, 1, '2024-09-23', NULL);
-
 -- Inserción de datos en la tabla 'vendedores'
 INSERT INTO `vendedores` (`vendedor_id`, `estado_vendedor_id`, `persona_id`, `vendedor_fecha_ingreso`) VALUES
 (1, 1, 1, '2024-09-23');
-
--- Inserción de datos en la tabla 'ventas'
-INSERT INTO `ventas` (`ventas_id`, `cliente_id`, `vendedor_id`, `venta_fecha`, `venta_total`) VALUES
-(1, 1, 1, '2024-09-23', 100.00);
-
--- Inserción de datos en la tabla 'detalle_venta'
-INSERT INTO `detalle_venta` (`detalle_venta_id`, `inventario_id`, `ventas_id`, `detalle_venta_cantidad`, `detalle_venta_precio_unitario`, `detalle_venta_subtotal`) VALUES
-(1, 1, 1, 2, 50.00, 100.00);
 
 -- Inserción de datos en la tabla 'menu_roles'
 INSERT INTO `menu_roles` (`menu_roles_id`, `menu_opcion_id`, `rol_id`) VALUES
@@ -83,5 +72,5 @@ INSERT INTO `menu_roles` (`menu_roles_id`, `menu_opcion_id`, `rol_id`) VALUES
 (3, 3, 1), -- Clientes para Administrador
 (4, 4, 1), -- Usuarios para Administrador
 (5, 5, 1), -- Inventario para Administrador
-(6, 6, 1), -- Ventas para Administrador
+(6, 6, 2), -- Ventas para Administrador
 (7, 6, 2); -- Ventas para Vendedor
