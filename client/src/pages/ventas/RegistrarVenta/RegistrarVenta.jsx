@@ -185,6 +185,9 @@ const RegistrarVenta = () => {
 
             console.log('Datos enviados para procesar pago con Mercado Pago:', ventaData);
 
+            // Cerrar el modal del QR
+            setShowQrModal(false);
+
             await procesarPagoMercadoPagoRequest(ventaData);
             setPaymentStatus('success');
             setShowConfirmationModal(true);  // Mostrar el modal de confirmación
@@ -197,6 +200,11 @@ const RegistrarVenta = () => {
 
     const handleCloseEstadoModal = () => {
         navigate(-1); // Navegar a la página anterior
+    };
+
+    const handleConfirmationModalClose = () => {
+        setShowConfirmationModal(false);
+        handleNewSale(); // Vaciar el formulario
     };
 
     return (
@@ -239,7 +247,7 @@ const RegistrarVenta = () => {
                     </Button>
                 </Modal.Footer>
             </Modal>
-            <Modal show={showConfirmationModal} onHide={() => setShowConfirmationModal(false)} centered>
+            <Modal show={showConfirmationModal} onHide={handleConfirmationModalClose} centered>
                 <Modal.Header closeButton>
                     <Modal.Title>{paymentStatus === 'success' ? 'Pago realizado correctamente' : 'Error en el pago'}</Modal.Title>
                 </Modal.Header>
@@ -250,11 +258,8 @@ const RegistrarVenta = () => {
                         <p>Ha ocurrido un error al procesar el pago. Por favor, intenta nuevamente.</p>
                     )}
                     <div className="confirmation-buttons">
-                        <Button variant="primary" onClick={() => navigate('/ventas')}>
-                            Ver listado de ventas
-                        </Button>
-                        <Button variant="secondary" onClick={handleNewSale}>
-                            Realizar nueva venta
+                        <Button variant="primary" onClick={handleConfirmationModalClose}>
+                            Entendido
                         </Button>
                     </div>
                 </Modal.Body>
