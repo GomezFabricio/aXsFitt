@@ -1,7 +1,8 @@
 // controllers/vendedores.controller.js
 import { pool } from '../db.js';
 import { createPersona, updatePersona } from './personas.controller.js';
-import { createUser } from './usuarios.controller.js';
+import jwt from 'jsonwebtoken';
+import { SECRET_KEY } from '../config.js';
 
 /* -------------------------------------------------------------------------- */
 /*                    OBTENER TODOS LOS VENDEDORES                            */
@@ -216,6 +217,39 @@ export const activateVendedor = async (req, res) => {
         await pool.query("UPDATE vendedores SET estado_vendedor_id = 1 WHERE vendedor_id = ?", [id]);
 
         res.json({ message: 'Vendedor reactivado exitosamente' });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+/* -------------------------------------------------------------------------- */
+/*                    OBTENER EL ESTADO DE UN VENDEDOR                        */
+/* -------------------------------------------------------------------------- */
+export const getEstadoVendedor = async (req, res) => {
+    try {
+        const token = req.headers.authorization.split(' ')[1];
+        const decodedToken = jwt.verify(token, SECRET_KEY);
+        const personaId = decodedToken.personaId;
+
+        const [vendedorRows] = await pool.query(
+            `SELECT vendedor_id FROM vendedores WHERE persona_id = ?`, [personaId]
+        );
+
+        if (vendedorRows.length === 0) {
+            return res.status(404).json({ message: 'Vendedor no encontrado' });
+        }
+
+        const vendedorId = vendedorRows[0].vendedor_id;
+
+        const [estadoRows] = await pool.query(
+            `SELECT estado_vendedor_id FROM vendedores WHERE vendedor_id = ?`, [vendedorId]
+        );
+
+        if (estadoRows.length === 0) {
+            return res.status(404).json({ message: 'Estado del vendedor no encontrado' });
+        }
+
+        res.json({ estado_vendedor_id: estadoRows[0].estado_vendedor_id });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }

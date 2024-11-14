@@ -3,7 +3,7 @@ import { Table } from 'react-bootstrap';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import '../../assets/styles/IconStyles.css';
 
-const UsuariosListTable = ({ usuarios, onEdit, onBaja }) => {
+const UsuariosListTable = ({ usuarios, onEdit, onBaja, loggedInUserId }) => {
     return (
         <Table striped bordered hover>
             <thead>
@@ -19,7 +19,7 @@ const UsuariosListTable = ({ usuarios, onEdit, onBaja }) => {
             <tbody>
                 {usuarios.map((usuario) => (
                     <tr key={usuario.usuario_id}>
-                        <td>{usuario.persona_nombre}</td>
+                        <td>{usuario.persona_nombre} {usuario.usuario_id === loggedInUserId && '(Tú)'}</td>
                         <td>{usuario.persona_apellido}</td>
                         <td>{usuario.persona_dni}</td>
                         <td>{usuario.usuario_email}</td>

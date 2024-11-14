@@ -18,6 +18,10 @@ export const getVendedorRequest = async (id) => {
     return await axios.get(`https://localhost:4000/vendedores/${id}`, config);
 };
 
+export const getEstadoVendedorRequest = async () => {
+    return await axios.get('https://localhost:4000/vendedores/estado', config); 
+};
+
 export const createVendedorRequest = async (data) => {
     console.log('Datos enviados a la API para crear vendedor:', data); 
     await axios.post('https://localhost:4000/vendedores', data, config);

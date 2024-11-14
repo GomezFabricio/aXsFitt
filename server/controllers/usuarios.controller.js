@@ -1,16 +1,7 @@
 import { pool } from '../db.js';
 import bcrypt from 'bcrypt';
-import { createPersona, updatePersona } from './personas.controller.js';
+import { updatePersona } from './personas.controller.js';
 import { createVendedor } from './vendedores.controller.js';
-import jwt from 'jsonwebtoken';
-import { SECRET_KEY } from '../config.js';
-
-// Función para obtener el ID del usuario logueado desde el token
-const getUserIdFromToken = (req) => {
-    const token = req.headers.authorization.split(' ')[1];
-    const decodedToken = jwt.verify(token, SECRET_KEY);
-    return decodedToken.userId;
-};
 
 export const createUser = async (req, res) => {
     try {
@@ -62,7 +53,6 @@ export const createUser = async (req, res) => {
 // Función para obtener todos los usuarios, excluyendo al usuario logueado
 export const getAllUsers = async (req, res) => {
     try {
-        const loggedInUserId = getUserIdFromToken(req);
 
         const [rows] = await pool.query(
             `SELECT u.usuario_id, u.persona_id, p.persona_nombre, p.persona_apellido, p.persona_dni, u.usuario_email, u.estado_usuario_id, r.rol_tipo_rol
@@ -70,10 +60,9 @@ export const getAllUsers = async (req, res) => {
             JOIN personas p ON u.persona_id = p.persona_id
             JOIN usuarios_roles ur ON u.usuario_id = ur.usuario_id
             JOIN roles r ON ur.rol_id = r.rol_id
-            WHERE u.estado_usuario_id = 1 AND u.usuario_id != ?`,
-            [loggedInUserId]
+            WHERE u.estado_usuario_id = 1`
         );
-
+        
         res.json(rows);
     } catch (error) {
         res.status(500).json({ message: error.message });

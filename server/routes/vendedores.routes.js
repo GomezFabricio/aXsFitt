@@ -1,27 +1,30 @@
-import { Router } from 'express'
-import { getVendedores, getVendedor, createVendedor, updateVendedor, deactivateVendedor, activateVendedor, getVendedoresInactivos } from '../controllers/vendedores.controller.js'
+import { Router } from 'express';
+import { getVendedores, getVendedor, createVendedor, updateVendedor, deactivateVendedor, activateVendedor, getVendedoresInactivos, getEstadoVendedor } from '../controllers/vendedores.controller.js';
 
-const router = Router()
+const router = Router();
+
+/* Obtener el estado de un vendedor por su ID */
+router.get('/vendedores/estado', getEstadoVendedor);
 
 /* Solicitar todos los vendedores */
-router.get('/vendedores', getVendedores)
+router.get('/vendedores', getVendedores);
 
 /* Obtener vendedores inactivos */
-router.get('/vendedores/inactivos', getVendedoresInactivos)
+router.get('/vendedores/inactivos', getVendedoresInactivos);
 
 /* Obtener un vendedor por su ID */
-router.get('/vendedores/:id', getVendedor)
+router.get('/vendedores/:id', getVendedor);
 
 /* Crear un vendedor */
-router.post('/vendedores', createVendedor)
+router.post('/vendedores', createVendedor);
 
 /* Modificar un vendedor (actualizar información) */
-router.put('/vendedores/:id', updateVendedor)
+router.put('/vendedores/:id', updateVendedor);
 
 /* Dar de baja un vendedor (cambiar a inactivo) */
-router.put('/vendedores/:id/baja', deactivateVendedor)
+router.put('/vendedores/:id/baja', deactivateVendedor);
 
 /* Reactivar un vendedor (cambiar a activo) */
-router.put('/vendedores/:id/activar', activateVendedor)
+router.put('/vendedores/:id/activar', activateVendedor);
 
-export default router
+export default router;

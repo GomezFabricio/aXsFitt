@@ -4,8 +4,9 @@ import { procesarPagoEfectivoRequest, procesarPagoMercadoPagoRequest } from '../
 import { crearOrdenQRRequest } from '../../../api/mercadopago.api';
 import { getClientesRequest } from '../../../api/clientes.api';
 import { inventarioList } from '../../../api/inventario.api';
+import { getEstadoVendedorRequest } from '../../../api/vendedores.api';
 import RegistrarVentaForm from '../../../components/RegistrarVentaForm/RegistrarVentaForm';
-import { QRCode } from 'react-qrcode-logo';  // Importa la librería QRCode correctamente
+import { QRCode } from 'react-qrcode-logo';
 import { Modal, Button, Spinner } from 'react-bootstrap';
 import io from 'socket.io-client';
 import './RegistrarVenta.css';
@@ -26,7 +27,18 @@ const RegistrarVenta = () => {
     const [showQrModal, setShowQrModal] = useState(false);  // Estado para mostrar el modal del QR
     const [loadingQr, setLoadingQr] = useState(false);  // Estado para manejar la carga del QR
     const [showConfirmationModal, setShowConfirmationModal] = useState(false);  // Estado para mostrar el modal de confirmación
+    const [showEstadoModal, setShowEstadoModal] = useState(false);  // Estado para mostrar el modal de estado del vendedor
     const navigate = useNavigate();
+
+    useEffect(() => {
+        async function verificarEstadoVendedor() {
+            const response = await getEstadoVendedorRequest();
+            if (response.data.estado_vendedor_id === 2) {
+                setShowEstadoModal(true);
+            }
+        }
+        verificarEstadoVendedor();
+    }, []);
 
     useEffect(() => {
         async function loadClientes() {
@@ -164,6 +176,10 @@ const RegistrarVenta = () => {
         }
     };
 
+    const handleCloseEstadoModal = () => {
+        navigate(-1); // Navegar a la página anterior
+    };
+
     return (
         <div className="container-page">
             <RegistrarVentaForm
@@ -223,6 +239,19 @@ const RegistrarVenta = () => {
                         </Button>
                     </div>
                 </Modal.Body>
+            </Modal>
+            <Modal show={showEstadoModal} onHide={handleCloseEstadoModal} backdrop="static" keyboard={false} centered>
+                <Modal.Header>
+                    <Modal.Title>Estado del Vendedor</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <p>No puedes realizar operaciones en estos momentos debido a que tu estado no lo permite.</p>
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="primary" onClick={handleCloseEstadoModal}>
+                        Volver
+                    </Button>
+                </Modal.Footer>
             </Modal>
         </div>
     );
