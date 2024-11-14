@@ -2,7 +2,7 @@ import React from 'react';
 import '../../assets/styles/forms.css';
 import './FormularioUsuario.css';
 
-export const FormularioUsuario = ({ handleChange, values = {}, errors, touched, disablePassword = false }) => {
+const FormularioUsuario = ({ handleChange, values = {}, errors, touched, disablePassword = false }) => {
     return (
         <div className="formulario-usuario">
             <div className="form-group">

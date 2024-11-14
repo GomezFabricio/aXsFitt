@@ -15,6 +15,7 @@ import ventasRoutes from './routes/ventas.routes.js';
 import mercadopagoRoutes from './routes/mercadopago.routes.js'; 
 import authMiddleware from './middlewares/auth.middleware.js';
 import webhookRoutes from './routes/webhook.routes.js';
+import resetPasswordRoutes from './routes/auth.routes.js'
 
 const app = express();
 
@@ -34,6 +35,7 @@ app.use(webhookRoutes);
 
 // Rutas del sistema
 app.use(loginRoutes);
+app.use(resetPasswordRoutes);
 app.use(authMiddleware);
 app.use(menuRoutes);
 app.use(vendedoresRoutes);

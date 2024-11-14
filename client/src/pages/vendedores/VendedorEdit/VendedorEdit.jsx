@@ -3,16 +3,35 @@ import { Formik, Form } from 'formik';
 import { useNavigate, useParams } from 'react-router-dom';
 import { getVendedorRequest, updateVendedorRequest } from '../../../api/vendedores.api';
 import FormularioPersona from '../../../components/FormularioPersona/FormularioPersona';
-import {
-  validateNombre,
-  validateApellido,
-  validateDNI,
-  validateTelefono,
-  validateFechaNacimiento,
-  validateDomicilio
-} from '../../../utils/validation';
+import * as Yup from 'yup'; // Importar Yup
 import './VendedorEdit.css';
 import '../../../assets/styles/buttons.css';
+
+// Definir el esquema de validación con Yup
+const validationSchema = Yup.object().shape({
+  persona_nombre: Yup.string()
+    .required('El nombre es obligatorio')
+    .min(2, 'El nombre debe tener al menos 2 caracteres'),
+  persona_apellido: Yup.string()
+    .required('El apellido es obligatorio')
+    .min(2, 'El apellido debe tener al menos 2 caracteres'),
+  persona_dni: Yup.string()
+    .required('El DNI es obligatorio')
+    .matches(/^\d+$/, 'El DNI debe contener solo números')
+    .min(7, 'El DNI debe tener al menos 7 caracteres')
+    .max(8, 'El DNI no puede tener más de 8 caracteres'),
+  persona_telefono: Yup.string()
+    .required('El teléfono es obligatorio')
+    .matches(/^\d+$/, 'El teléfono debe contener solo números')
+    .min(10, 'El teléfono debe tener al menos 10 caracteres')
+    .max(15, 'El teléfono no puede tener más de 15 caracteres'),
+  persona_fecha_nacimiento: Yup.date()
+    .required('La fecha de nacimiento es obligatoria')
+    .max(new Date(), 'La fecha de nacimiento no puede ser en el futuro'),
+  persona_domicilio: Yup.string()
+    .required('El domicilio es obligatorio')
+    .min(5, 'El domicilio debe tener al menos 5 caracteres'),
+});
 
 const VendedorEdit = () => {
   const navigate = useNavigate();
@@ -38,60 +57,60 @@ const VendedorEdit = () => {
         console.log(error);
       }
     };
+
     fetchVendedor();
   }, [id]);
 
-  const validate = (values) => {
-    const errors = {};
-    errors.persona_nombre = validateNombre(values.persona_nombre);
-    errors.persona_apellido = validateApellido(values.persona_apellido);
-    errors.persona_dni = validateDNI(values.persona_dni);
-    errors.persona_telefono = validateTelefono(values.persona_telefono);
-    errors.persona_fecha_nacimiento = validateFechaNacimiento(values.persona_fecha_nacimiento);
-    errors.persona_domicilio = validateDomicilio(values.persona_domicilio);
-    return errors;
-  };
+  if (!vendedor) {
+    return <div>Cargando...</div>;
+  }
 
   return (
     <div className="container-page">
-      <h1 className="title">Modificar Vendedor</h1>
+      <h1 className="title">Editar Vendedor</h1>
+      <h2>Modifique los campos necesarios para actualizar la información del vendedor.</h2>
       <Formik
-        enableReinitialize
-        initialValues={{
-          persona_nombre: vendedor?.persona_nombre || '',
-          persona_apellido: vendedor?.persona_apellido || '',
-          persona_dni: vendedor?.persona_dni || '',
-          persona_telefono: vendedor?.persona_telefono || '',
-          persona_fecha_nacimiento: vendedor?.persona_fecha_nacimiento || '',
-          persona_domicilio: vendedor?.persona_domicilio || '',
-        }}
-        validate={validate}
-        onSubmit={async (values) => {
+        initialValues={vendedor}
+        validationSchema={validationSchema} // Añadir el esquema de validación
+        onSubmit={async (values, { setSubmitting }) => {
           try {
-            // Enviar la solicitud con los nuevos datos
-            await updateVendedorRequest(id, values);
-            navigate('/vendedores'); // Redirigir a la URL "/vendedores" después de finalizar el registro
+            // Filtrar solo los datos de la persona
+            const personaData = {
+              persona_nombre: values.persona_nombre,
+              persona_apellido: values.persona_apellido,
+              persona_dni: values.persona_dni,
+              persona_telefono: values.persona_telefono,
+              persona_fecha_nacimiento: values.persona_fecha_nacimiento,
+              persona_domicilio: values.persona_domicilio,
+            };
+
+            console.log('Datos enviados para actualizar la persona:', personaData);
+
+            await updateVendedorRequest(id, personaData);
+            navigate('/vendedores'); // Redirigir a la URL "/vendedores" después de finalizar la actualización
           } catch (error) {
-            console.log(error);
+            console.log('Error actualizando vendedor:', error);
+            setSubmitting(false);
           }
         }}
       >
-        {({ handleChange, values, errors, touched, isSubmitting }) => (
+        {({ values, handleChange, setFieldValue, errors, touched, isSubmitting }) => (
           <Form className="form">
             <FormularioPersona 
               handleChange={handleChange} 
+              setFieldValue={setFieldValue} 
               values={values} 
-              errors={errors}
-              touched={touched}
+              errors={errors} 
+              touched={touched} 
             />
-            <button type='submit' className="actualizar-button" disabled={isSubmitting}>
-              Actualizar
+            <button type="submit" className="alta-button" disabled={isSubmitting}>
+              Actualizar Vendedor
             </button>
           </Form>
         )}
       </Formik>
     </div>
   );
-};
+}
 
 export default VendedorEdit;

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Formik, Form } from 'formik';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom'; // Importar Link
 import LoginForm from '../../../components/LoginForm/LoginForm';
 import { loginRequest } from '../../../api/login.api';
 import './Login.css';
@@ -38,6 +38,11 @@ const Login = () => {
                     </Form>
                 )}
             </Formik>
+            <div className="forgot-password-container">
+                <Link to="/request-password-reset" className="forgot-password-link">
+                    ¿Olvidaste tu contraseña?
+                </Link>
+            </div>
         </div>
     );
 };

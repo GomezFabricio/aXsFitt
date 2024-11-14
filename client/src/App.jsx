@@ -31,6 +31,8 @@ import VentasList from './pages/ventas/VentasList/VentasList';
 import RegistrarVenta from './pages/ventas/RegistrarVenta/RegistrarVenta';
 
 import MiPerfil from './pages/MiPerfil/MiPerfil'; // Importar la página Mi Perfil
+import RequestPasswordReset from './pages/RequestPasswordReset/RequestPasswordReset'; // Importar la página de solicitud de recuperación de contraseña
+import ResetPassword from './pages/ResetPassword/ResetPassword'; // Importar la página de restablecimiento de contraseña
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './assets/styles/variables.css';
@@ -46,6 +48,12 @@ function App() {
 
         {/* Página de login */}
         <Route path="/login" element={<Login />} />
+
+        {/* Página de solicitud de recuperación de contraseña */}
+        <Route path="/request-password-reset" element={<RequestPasswordReset />} />
+
+        {/* Página de restablecimiento de contraseña */}
+        <Route path="/reset-password" element={<ResetPassword />} />
 
         {/* Página de selección de roles, protegida */}
         <Route
