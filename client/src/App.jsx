@@ -30,6 +30,8 @@ import VentasHome from './pages/ventas/VentasHome/VentasHome';
 import VentasList from './pages/ventas/VentasList/VentasList';
 import RegistrarVenta from './pages/ventas/RegistrarVenta/RegistrarVenta';
 
+import MiPerfil from './pages/MiPerfil/MiPerfil'; // Importar la página Mi Perfil
+
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './assets/styles/variables.css';
 import './assets/styles/pages.css';
@@ -297,6 +299,18 @@ function App() {
             <ProtectedRoute>
               <Navbar />
               <VentasList />
+              <Footer />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Ruta para "Mi Perfil" */}
+        <Route
+          path="/mi-perfil"
+          element={
+            <ProtectedRoute>
+              <Navbar />
+              <MiPerfil />
               <Footer />
             </ProtectedRoute>
           }

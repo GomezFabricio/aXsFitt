@@ -2,6 +2,8 @@ import { pool } from '../db.js';
 import bcrypt from 'bcrypt';
 import { updatePersona } from './personas.controller.js';
 import { createVendedor } from './vendedores.controller.js';
+import jwt from 'jsonwebtoken';
+import { SECRET_KEY } from '../config.js';
 
 export const createUser = async (req, res) => {
     try {
@@ -227,6 +229,149 @@ export const activateUser = async (req, res) => {
         await pool.query("UPDATE usuarios SET estado_usuario_id = 1 WHERE usuario_id = ?", [id]);
 
         res.json({ message: 'Usuario dado de alta exitosamente' });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+/* -------------------------------------------------------------------------- */
+/*                    OBTENER EL PERFIL DEL USUARIO                           */
+/* -------------------------------------------------------------------------- */
+export const getUserProfile = async (req, res) => {
+    try {
+        const token = req.headers.authorization.split(' ')[1];
+        const decodedToken = jwt.verify(token, SECRET_KEY);
+        const personaId = decodedToken.personaId;
+
+        const [rows] = await pool.query(
+            `SELECT 
+                p.persona_nombre, 
+                p.persona_apellido, 
+                p.persona_dni, 
+                p.persona_fecha_nacimiento, 
+                p.persona_domicilio, 
+                p.persona_telefono, 
+                u.usuario_email 
+            FROM 
+                personas p 
+            INNER JOIN 
+                usuarios u 
+            ON 
+                p.persona_id = u.persona_id 
+            WHERE 
+                p.persona_id = ?`, [personaId]
+        );
+
+        if (rows.length === 0) {
+            return res.status(404).json({ message: 'Usuario no encontrado' });
+        }
+
+        res.json(rows[0]);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+/* -------------------------------------------------------------------------- */
+/*                    ACTUALIZAR EL PERFIL DEL USUARIO                        */
+/* -------------------------------------------------------------------------- */
+export const updateUserProfile = async (req, res) => {
+    try {
+        const token = req.headers.authorization.split(' ')[1];
+        const decodedToken = jwt.verify(token, SECRET_KEY);
+        const personaId = decodedToken.personaId;
+        const { persona_nombre, persona_apellido, persona_dni, persona_fecha_nacimiento, persona_domicilio, persona_telefono, usuario_email } = req.body;
+
+        // Obtener los datos actuales del usuario
+        const [currentData] = await pool.query(
+            `SELECT 
+                p.persona_nombre, 
+                p.persona_apellido, 
+                p.persona_dni, 
+                p.persona_fecha_nacimiento, 
+                p.persona_domicilio, 
+                p.persona_telefono, 
+                u.usuario_email 
+            FROM 
+                personas p 
+            INNER JOIN 
+                usuarios u 
+            ON 
+                p.persona_id = u.persona_id 
+            WHERE 
+                p.persona_id = ?`, [personaId]
+        );
+
+        if (currentData.length === 0) {
+            return res.status(404).json({ message: 'Usuario no encontrado' });
+        }
+
+        const updatedData = {
+            persona_nombre: persona_nombre || currentData[0].persona_nombre,
+            persona_apellido: persona_apellido || currentData[0].persona_apellido,
+            persona_dni: persona_dni || currentData[0].persona_dni,
+            persona_fecha_nacimiento: persona_fecha_nacimiento || currentData[0].persona_fecha_nacimiento,
+            persona_domicilio: persona_domicilio || currentData[0].persona_domicilio,
+            persona_telefono: persona_telefono || currentData[0].persona_telefono,
+            usuario_email: usuario_email || currentData[0].usuario_email,
+        };
+
+        await pool.query(
+            `UPDATE personas 
+            SET persona_nombre = ?, persona_apellido = ?, persona_dni = ?, persona_fecha_nacimiento = ?, persona_domicilio = ?, persona_telefono = ? 
+            WHERE persona_id = ?`,
+            [updatedData.persona_nombre, updatedData.persona_apellido, updatedData.persona_dni, updatedData.persona_fecha_nacimiento, updatedData.persona_domicilio, updatedData.persona_telefono, personaId]
+        );
+
+        await pool.query(
+            `UPDATE usuarios 
+            SET usuario_email = ? 
+            WHERE persona_id = ?`,
+            [updatedData.usuario_email, personaId]
+        );
+
+        res.json({ message: 'Perfil actualizado exitosamente' });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+/* -------------------------------------------------------------------------- */
+/*                    ACTUALIZAR LA CONTRASEÑA DEL USUARIO                    */
+/* -------------------------------------------------------------------------- */
+export const updateUserPassword = async (req, res) => {
+    try {
+        const token = req.headers.authorization.split(' ')[1];
+        const decodedToken = jwt.verify(token, SECRET_KEY);
+        const personaId = decodedToken.personaId;
+        const { currentPassword, newPassword } = req.body;
+
+        const [rows] = await pool.query(
+            `SELECT usuario_pass 
+            FROM usuarios 
+            WHERE persona_id = ?`, [personaId]
+        );
+
+        if (rows.length === 0) {
+            return res.status(404).json({ message: 'Usuario no encontrado' });
+        }
+
+        const validPassword = await bcrypt.compare(currentPassword, rows[0].usuario_pass);
+        if (!validPassword) {
+            return res.status(400).json({ message: 'Contraseña actual incorrecta' });
+        }
+
+        const saltRounds = 10;
+        const hashedPassword = await bcrypt.hash(newPassword, saltRounds);
+
+        await pool.query(
+            `UPDATE usuarios 
+            SET usuario_pass = ? 
+            WHERE persona_id = ?`,
+            [hashedPassword, personaId]
+        );
+
+        res.json({ message: 'Contraseña actualizada exitosamente' });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }

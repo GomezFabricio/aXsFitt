@@ -1,7 +1,16 @@
 import { Router } from "express";
-import { createUser, getAllUsers, getInactiveUsers, getUserById, deactivateUser, updateUser, activateUser } from "../controllers/usuarios.controller.js";
+import { createUser, getAllUsers, getInactiveUsers, getUserById, deactivateUser, updateUser, activateUser, getUserProfile, updateUserProfile, updateUserPassword } from "../controllers/usuarios.controller.js";
 
 const router = Router();
+
+// Obtener el perfil del usuario
+router.get("/usuarios/perfil", getUserProfile);
+
+// Actualizar el perfil del usuario
+router.put("/usuarios/perfil", updateUserProfile);
+
+// Actualizar la contraseña del usuario
+router.put("/usuarios/perfil/password", updateUserPassword);
 
 // Obtener todos los usuarios
 router.get("/usuarios", getAllUsers);
@@ -24,4 +33,4 @@ router.put("/usuarios/:id/baja", deactivateUser);
 // Reactivar un usuario (cambiar a activo)
 router.put("/usuarios/:id/activar", activateUser);
 
-export default router; 
+export default router;

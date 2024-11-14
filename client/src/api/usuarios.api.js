@@ -73,3 +73,15 @@ export const getRolesByUserIdRequest = async (userId) => {
     console.log('Respuesta recibida:', response.data);
     return response;
 };
+
+export const getUserProfile = async () => {
+    return await axios.get('https://localhost:4000/usuarios/perfil', config);
+};
+
+export const updateUserProfile = async (data) => {
+    return await axios.put('https://localhost:4000/usuarios/perfil', data, config);
+};
+
+export const updateUserPassword = async (currentPassword, newPassword) => {
+    return await axios.put('https://localhost:4000/usuarios/perfil/password', { currentPassword, newPassword }, config);
+};

@@ -83,7 +83,6 @@ const NavBar = () => {
                         {dropdownVisible && (
                             <div className="dropdown-content">
                                 <Link to="/mi-perfil">Mi perfil</Link>
-                                <Link to="/seguridad-privacidad">Seguridad y Privacidad</Link>
                                 {roles.length > 1 && (
                                     <Link to="/seleccion-rol">Roles</Link>
                                 )}
