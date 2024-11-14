@@ -132,17 +132,19 @@ export const createVendedor = async (req, res) => {
         // Crear el vendedor
         const estado_vendedor_id = 1;
         const fecha_ingreso = new Date();
+        const comision_porcentaje = 5.00; // Porcentaje de comisión por defecto
 
         const [vendedorResult] = await pool.query(
-            "INSERT INTO `vendedores` (`persona_id`, `estado_vendedor_id`, `vendedor_fecha_ingreso`) VALUES (?, ?, ?)",
-            [personaId, estado_vendedor_id, fecha_ingreso]
+            "INSERT INTO `vendedores` (`persona_id`, `estado_vendedor_id`, `vendedor_fecha_ingreso`, `vendedor_comision_porcentaje`) VALUES (?, ?, ?, ?)",
+            [personaId, estado_vendedor_id, fecha_ingreso, comision_porcentaje]
         );
 
         const response = {
             id: vendedorResult.insertId,
             persona_id: personaId,
             estado_vendedor_id,
-            fecha_ingreso
+            fecha_ingreso,
+            comision_porcentaje
         };
 
         if (res) {
