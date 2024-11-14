@@ -29,7 +29,8 @@ export const getVendedores = async (req, res) => {
             INNER JOIN 
                 personas p 
             ON 
-                v.persona_id = p.persona_id`
+                v.persona_id = p.persona_id
+            WHERE v.estado_vendedor_id = 1`  // Solo activos
         );
         res.json(rows);
     } catch (error) {

@@ -4,9 +4,8 @@ import { procesarPagoEfectivoRequest, procesarPagoMercadoPagoRequest } from '../
 import { crearOrdenQRRequest } from '../../../api/mercadopago.api';
 import { getClientesRequest } from '../../../api/clientes.api';
 import { inventarioList } from '../../../api/inventario.api';
-import { getEstadoVendedorRequest } from '../../../api/vendedores.api';
 import RegistrarVentaForm from '../../../components/RegistrarVentaForm/RegistrarVentaForm';
-import { QRCode } from 'react-qrcode-logo';
+import { QRCode } from 'react-qrcode-logo';  // Importa la librería QRCode correctamente
 import { Modal, Button, Spinner } from 'react-bootstrap';
 import io from 'socket.io-client';
 import './RegistrarVenta.css';
@@ -27,18 +26,7 @@ const RegistrarVenta = () => {
     const [showQrModal, setShowQrModal] = useState(false);  // Estado para mostrar el modal del QR
     const [loadingQr, setLoadingQr] = useState(false);  // Estado para manejar la carga del QR
     const [showConfirmationModal, setShowConfirmationModal] = useState(false);  // Estado para mostrar el modal de confirmación
-    const [showEstadoModal, setShowEstadoModal] = useState(false);  // Estado para mostrar el modal de estado del vendedor
     const navigate = useNavigate();
-
-    useEffect(() => {
-        async function verificarEstadoVendedor() {
-            const response = await getEstadoVendedorRequest();
-            if (response.data.estado_vendedor_id === 2) {
-                setShowEstadoModal(true);
-            }
-        }
-        verificarEstadoVendedor();
-    }, []);
 
     useEffect(() => {
         async function loadClientes() {
@@ -98,8 +86,11 @@ const RegistrarVenta = () => {
                 total_amount: venta.total,
                 items: venta.productos.map(producto => {
                     const productoInfo = productos.find(p => p.idInventario === producto.inventarioId);
+                    console.log('Producto Info:', productoInfo);
+                    const skuNumber = producto.inventarioId.toString(); // Asignar el valor de inventarioId a skuNumber
+                    localStorage.setItem('skuNumber', skuNumber); // Guardar skuNumber en localStorage
                     return {
-                        sku_number: producto.inventarioId.toString(), // Convierte el ID del inventario a cadena
+                        sku_number: skuNumber,
                         category: 'marketplace',
                         title: productoInfo ? productoInfo.Producto : 'Producto no encontrado',
                         description: productoInfo ? productoInfo.Producto : 'Descripción no disponible',
@@ -145,12 +136,16 @@ const RegistrarVenta = () => {
             const { external_reference, items, total_amount } = orderDetails;
             const clienteId = external_reference.split('_')[1]; // Asumiendo que la referencia externa tiene el formato "reference_clienteId"
 
+            // Recuperar skuNumber de localStorage
+            const skuNumber = localStorage.getItem('skuNumber');
+
             // Mapear los items del pedido a los productos en el carrito
             const productosMapeados = items.map(item => {
                 const productoInfo = productos.find(p => p.Producto === item.title);
                 const productoVenta = venta.productos.find(p => p.inventarioId === productoInfo.idInventario);
+                console.log('Producto Venta:', productoVenta);
                 return {
-                    inventarioId: productoVenta ? productoVenta.inventarioId : undefined,
+                    inventarioId: skuNumber, // Usar la variable global skuNumber
                     cantidad: item.quantity,
                     precioUnitario: item.unit_price,
                     subtotal: item.unit_price * item.quantity
@@ -174,10 +169,6 @@ const RegistrarVenta = () => {
             setPaymentStatus('error');
             setShowConfirmationModal(true);  // Mostrar el modal de confirmación
         }
-    };
-
-    const handleCloseEstadoModal = () => {
-        navigate(-1); // Navegar a la página anterior
     };
 
     return (
@@ -239,19 +230,6 @@ const RegistrarVenta = () => {
                         </Button>
                     </div>
                 </Modal.Body>
-            </Modal>
-            <Modal show={showEstadoModal} onHide={handleCloseEstadoModal} backdrop="static" keyboard={false} centered>
-                <Modal.Header>
-                    <Modal.Title>Estado del Vendedor</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <p>No puedes realizar operaciones en estos momentos debido a que tu estado no lo permite.</p>
-                </Modal.Body>
-                <Modal.Footer>
-                    <Button variant="primary" onClick={handleCloseEstadoModal}>
-                        Volver
-                    </Button>
-                </Modal.Footer>
             </Modal>
         </div>
     );
