@@ -76,8 +76,8 @@ const VendedoresList = () => {
             nombre={vendedor.persona_nombre}
             apellido={vendedor.persona_apellido}
             dni={vendedor.persona_dni}
-            ventasRealizadas={0} // Aun no trabajado, así que lo dejamos fijo en 0
-            comisionesPendientes={0} // Aun no trabajado, así que lo dejamos fijo en 0
+            ventasRealizadas={vendedor.ventas_realizadas}
+            comisionesPendientes={vendedor.comisiones_pendientes}
             onDetalleClick={() => handleDetalleClick(vendedor.vendedor_id)}
           />
         ))}

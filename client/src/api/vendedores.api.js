@@ -42,3 +42,7 @@ export const activateVendedorRequest = async (id) => {
 export const updateVendedorRequest = async (id, data) => {
     return await axios.put(`https://localhost:4000/vendedores/${id}`, data, config);
 };
+
+export const liquidarComisiones = async (id) => {
+    return await axios.put(`https://localhost:4000/vendedores/${id}/liquidar`, null, config);
+};

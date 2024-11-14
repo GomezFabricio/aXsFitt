@@ -1,16 +1,18 @@
 import React from 'react';
 import './VendedorDetailContent.css';
-import { FaTrash, FaEdit } from 'react-icons/fa';
+import { FaTrash, FaEdit, FaDollarSign } from 'react-icons/fa';
 
 const VendedorDetailContent = ({
     nombre,
     apellido,
     dni,
-    ventasAcumuladas,
-    ventasUltimoPeriodo,
-    totalComisiones,
+    comisionPorcentaje,
+    ventasRealizadas,
+    comisionesAcumuladas,
+    comisionesPendientes,
     onDelete,
-    onUpdate 
+    onUpdate,
+    onLiquidar
 }) => {
 
     return (
@@ -21,9 +23,10 @@ const VendedorDetailContent = ({
             </div>
 
             <div className="vendedor-detail-info">
-                <p>Ventas acumuladas: {ventasAcumuladas}</p>
-                <p>Ventas en el último periodo: {ventasUltimoPeriodo}</p>
-                <p>Total acumulado en comisiones: {totalComisiones}</p>
+                <p>Comisión (Porcentaje): {comisionPorcentaje}%</p>
+                <p>Ventas Realizadas: {ventasRealizadas}</p>
+                <p>Comisiones Acumuladas: ${comisionesAcumuladas}</p>
+                <p>Comisiones Pendientes: ${comisionesPendientes}</p>
             </div>
 
             <div className="vendedor-detail-buttons">
@@ -32,6 +35,9 @@ const VendedorDetailContent = ({
                 </button>
                 <button className="btn-client btn-delete" onClick={onDelete}>
                     <FaTrash /> Eliminar
+                </button>
+                <button className="btn-client btn-liquidar" onClick={onLiquidar}>
+                    <FaDollarSign /> Liquidar
                 </button>
             </div>
         </div>

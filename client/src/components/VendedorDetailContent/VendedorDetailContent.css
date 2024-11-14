@@ -56,3 +56,11 @@
 .btn-delete:hover {
     background-color: darkred; 
 }
+
+.btn-liquidar {
+    background-color: #1eb300;
+}
+
+.btn-liquidar:hover {
+    background-color: #168101;
+}

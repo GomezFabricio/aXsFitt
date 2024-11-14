@@ -9,7 +9,6 @@ import { SECRET_KEY } from '../config.js';
 /* -------------------------------------------------------------------------- */
 export const getVendedores = async (req, res) => {
     try {
-
         const [rows] = await pool.query(
             `SELECT 
                 v.vendedor_id, 
@@ -18,19 +17,20 @@ export const getVendedores = async (req, res) => {
                 p.persona_nombre, 
                 p.persona_apellido, 
                 p.persona_dni, 
-                p.persona_fecha_nacimiento, 
-                p.persona_domicilio, 
-                p.persona_telefono 
+                p.persona_fecha_nacimiento,
+                p.persona_domicilio,
+                p.persona_telefono, 
+                v.vendedor_comision_porcentaje,
+                (SELECT COUNT(*) FROM ventas WHERE vendedor_id = v.vendedor_id) AS ventas_realizadas,
+                (SELECT SUM(comision_monto) FROM comisiones WHERE vendedor_id = v.vendedor_id AND estado_comision_id = 2) AS comisiones_acumuladas,
+                (SELECT SUM(comision_monto) FROM comisiones WHERE vendedor_id = v.vendedor_id AND estado_comision_id = 1) AS comisiones_pendientes
             FROM 
                 vendedores v 
             INNER JOIN 
                 personas p 
             ON 
-                v.persona_id = p.persona_id
-            WHERE 
-                v.estado_vendedor_id = 1`  // Solo activos
+                v.persona_id = p.persona_id`
         );
-
         res.json(rows);
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -84,9 +84,13 @@ export const getVendedor = async (req, res) => {
                 p.persona_nombre, 
                 p.persona_apellido, 
                 p.persona_dni, 
-                p.persona_fecha_nacimiento, 
-                p.persona_domicilio, 
-                p.persona_telefono 
+                p.persona_fecha_nacimiento,
+                p.persona_domicilio,
+                p.persona_telefono, 
+                v.vendedor_comision_porcentaje,
+                (SELECT COUNT(*) FROM ventas WHERE vendedor_id = v.vendedor_id) AS ventas_realizadas,
+                (SELECT SUM(comision_monto) FROM comisiones WHERE vendedor_id = v.vendedor_id AND estado_comision_id = 2) AS comisiones_acumuladas,
+                (SELECT SUM(comision_monto) FROM comisiones WHERE vendedor_id = v.vendedor_id AND estado_comision_id = 1) AS comisiones_pendientes
             FROM 
                 vendedores v 
             INNER JOIN 
@@ -252,6 +256,30 @@ export const getEstadoVendedor = async (req, res) => {
         }
 
         res.json({ estado_vendedor_id: estadoRows[0].estado_vendedor_id });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+/* -------------------------------------------------------------------------- */
+/*                           LIQUIDAR COMISIONES                              */
+/* -------------------------------------------------------------------------- */
+export const liquidarComisiones = async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const [result] = await pool.query(
+            `UPDATE comisiones 
+            SET estado_comision_id = 2 
+            WHERE vendedor_id = ? AND estado_comision_id = 1`,
+            [id]
+        );
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ message: 'No se encontraron comisiones pendientes para liquidar' });
+        }
+
+        res.json({ message: 'Comisiones liquidadas exitosamente' });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }

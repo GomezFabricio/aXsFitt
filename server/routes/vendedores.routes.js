@@ -1,6 +1,5 @@
 import { Router } from 'express';
-import { getVendedores, getVendedor, createVendedor, updateVendedor, deactivateVendedor, activateVendedor, getVendedoresInactivos, getEstadoVendedor } from '../controllers/vendedores.controller.js';
-
+import { getVendedores, getVendedor, createVendedor, updateVendedor, deactivateVendedor, activateVendedor, getVendedoresInactivos, getEstadoVendedor, liquidarComisiones } from '../controllers/vendedores.controller.js';
 const router = Router();
 
 /* Obtener el estado de un vendedor por su ID */
@@ -26,5 +25,8 @@ router.put('/vendedores/:id/baja', deactivateVendedor);
 
 /* Reactivar un vendedor (cambiar a activo) */
 router.put('/vendedores/:id/activar', activateVendedor);
+
+/* Liquidar comisiones de un vendedor */
+router.put('/vendedores/:id/liquidar', liquidarComisiones);
 
 export default router;
