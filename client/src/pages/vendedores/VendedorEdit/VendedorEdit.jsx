@@ -3,8 +3,16 @@ import { Formik, Form } from 'formik';
 import { useNavigate, useParams } from 'react-router-dom';
 import { getVendedorRequest, updateVendedorRequest } from '../../../api/vendedores.api';
 import FormularioPersona from '../../../components/FormularioPersona/FormularioPersona';
+import {
+  validateNombre,
+  validateApellido,
+  validateDNI,
+  validateTelefono,
+  validateFechaNacimiento,
+  validateDomicilio
+} from '../../../utils/validation';
 import './VendedorEdit.css';
-import '../../../assets/styles/buttons.css'; // Asegúrate de importar el archivo de estilos
+import '../../../assets/styles/buttons.css';
 
 const VendedorEdit = () => {
   const navigate = useNavigate();
@@ -33,6 +41,17 @@ const VendedorEdit = () => {
     fetchVendedor();
   }, [id]);
 
+  const validate = (values) => {
+    const errors = {};
+    errors.persona_nombre = validateNombre(values.persona_nombre);
+    errors.persona_apellido = validateApellido(values.persona_apellido);
+    errors.persona_dni = validateDNI(values.persona_dni);
+    errors.persona_telefono = validateTelefono(values.persona_telefono);
+    errors.persona_fecha_nacimiento = validateFechaNacimiento(values.persona_fecha_nacimiento);
+    errors.persona_domicilio = validateDomicilio(values.persona_domicilio);
+    return errors;
+  };
+
   return (
     <div className="container-page">
       <h1 className="title">Modificar Vendedor</h1>
@@ -46,6 +65,7 @@ const VendedorEdit = () => {
           persona_fecha_nacimiento: vendedor?.persona_fecha_nacimiento || '',
           persona_domicilio: vendedor?.persona_domicilio || '',
         }}
+        validate={validate}
         onSubmit={async (values) => {
           try {
             // Enviar la solicitud con los nuevos datos
@@ -56,11 +76,15 @@ const VendedorEdit = () => {
           }
         }}
       >
-        {({ handleChange, values }) => (
+        {({ handleChange, values, errors, touched, isSubmitting }) => (
           <Form className="form">
-            <FormularioPersona handleChange={handleChange} values={values} />
-
-            <button type='submit' className="actualizar-button">
+            <FormularioPersona 
+              handleChange={handleChange} 
+              values={values} 
+              errors={errors}
+              touched={touched}
+            />
+            <button type='submit' className="actualizar-button" disabled={isSubmitting}>
               Actualizar
             </button>
           </Form>

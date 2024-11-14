@@ -46,3 +46,9 @@
 .modal-footer button {
     width: 100px;
 }
+
+.error-message {
+    color: red;
+    font-size: 0.875em;
+    margin-top: 0.25em;
+  }

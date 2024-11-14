@@ -1,10 +1,20 @@
-// UsuarioEdit.jsx
 import React, { useState, useEffect } from 'react';
+import { Formik, Form } from 'formik';
 import { useNavigate, useParams } from 'react-router-dom';
 import { getUsuarioRequest, updateUsuarioRequest, getRolesRequest } from '../../../api/usuarios.api';
 import FormularioPersona from '../../../components/FormularioPersona/FormularioPersona';
 import FormularioUsuario from '../../../components/FormularioUsuario/FormularioUsuario';
 import FormularioRol from '../../../components/FormularioRol/FormularioRol';
+import {
+  validateNombre,
+  validateApellido,
+  validateDNI,
+  validateTelefono,
+  validateFechaNacimiento,
+  validateDomicilio,
+  validateEmail,
+  validatePassword
+} from '../../../utils/validation';
 import './UsuariosEdit.css';
 import '../../../assets/styles/buttons.css';
 
@@ -54,59 +64,106 @@ const UsuarioEdit = () => {
     loadRoles();
   }, []);
 
-  const handlePersonaChange = (e) => {
-    setPersona({ ...persona, [e.target.name]: e.target.value });
+  const validateStep1 = (values) => {
+    const errors = {};
+    errors.persona_nombre = validateNombre(values.persona_nombre);
+    errors.persona_apellido = validateApellido(values.persona_apellido);
+    errors.persona_dni = validateDNI(values.persona_dni);
+    errors.persona_telefono = validateTelefono(values.persona_telefono);
+    errors.persona_fecha_nacimiento = validateFechaNacimiento(values.persona_fecha_nacimiento);
+    errors.persona_domicilio = validateDomicilio(values.persona_domicilio);
+    return errors;
   };
 
-  const handleUsuarioChange = (e) => {
-    setUsuario({ ...usuario, [e.target.name]: e.target.value });
+  const validateStep2 = (values) => {
+    const errors = {};
+    errors.usuario_email = validateEmail(values.usuario_email);
+    errors.usuario_pass = validatePassword(values.usuario_pass);
+    return errors;
   };
-
-  const handleNextStep = () => {
-    setStep(step + 1);
-  };
-
-  const handlePreviousStep = () => {
-    setStep(step - 1);
-  };
-
-  const handleUpdateClick = async () => {
-    try {
-      console.log('Datos a enviar:', { persona, usuario, roles: selectedRoles });
-      await updateUsuarioRequest(id, { persona, usuario, roles: selectedRoles });
-      navigate('/usuarios');
-    } catch (error) {
-      console.error("Error al actualizar el usuario:", error);
-    }
-  };
-
-  if (!persona || !usuario) {
-    return <div>Cargando...</div>; // Mostrar un mensaje de carga mientras se obtienen los datos
-  }
 
   return (
     <div className="container-page">
       <h1>Modificar Usuario</h1>
-      {step === 1 && (
-        <div>
-          <FormularioPersona values={persona} handleChange={handlePersonaChange} />
-          <button className="siguiente-button" onClick={handleNextStep}>
-            Siguiente
-          </button>
-        </div>
-      )}
-      {step === 2 && (
-        <div>
-          <FormularioUsuario values={usuario} handleChange={handleUsuarioChange} disablePassword={true} />
-          <FormularioRol roles={roles} selectedRoles={selectedRoles} setSelectedRoles={setSelectedRoles} />
-          <button className="page-anterior-button" onClick={handlePreviousStep}>
-            Anterior
-          </button>
-          <button className="actualizar-button" onClick={handleUpdateClick} disabled={selectedRoles.length === 0}>
-            Actualizar Usuario
-          </button>
-        </div>
-      )}
+      <Formik
+        initialValues={{
+          persona_nombre: persona?.persona_nombre || '',
+          persona_apellido: persona?.persona_apellido || '',
+          persona_dni: persona?.persona_dni || '',
+          persona_telefono: persona?.persona_telefono || '',
+          persona_fecha_nacimiento: persona?.persona_fecha_nacimiento || '',
+          persona_domicilio: persona?.persona_domicilio || '',
+          usuario_email: usuario?.usuario_email || '',
+          usuario_pass: '',
+        }}
+        enableReinitialize
+        validate={step === 1 ? validateStep1 : validateStep2}
+        onSubmit={async (values) => {
+          try {
+            if (step === 1) {
+              setStep(step + 1);
+            } else {
+              const personaData = {
+                persona_nombre: values.persona_nombre,
+                persona_apellido: values.persona_apellido,
+                persona_dni: values.persona_dni,
+                persona_telefono: values.persona_telefono,
+                persona_fecha_nacimiento: values.persona_fecha_nacimiento,
+                persona_domicilio: values.persona_domicilio,
+              };
+              const usuarioData = {
+                usuario_email: values.usuario_email,
+                usuario_pass: values.usuario_pass,
+              };
+              await updateUsuarioRequest(id, { persona: personaData, usuario: usuarioData, roles: selectedRoles });
+              navigate('/usuarios');
+            }
+          } catch (error) {
+            console.log(error);
+          }
+        }}
+      >
+        {({ values, handleChange, setFieldValue, errors, touched, isSubmitting }) => (
+          <Form className="form">
+            {step === 1 ? (
+              <div>
+                <FormularioPersona 
+                  handleChange={handleChange} 
+                  setFieldValue={setFieldValue} 
+                  values={values} 
+                  errors={errors}
+                  touched={touched}
+                />
+                <button 
+                  type="submit" 
+                  className="siguiente-button" 
+                  disabled={isSubmitting}
+                >
+                  Siguiente
+                </button>
+              </div>
+            ) : (
+              <div>
+                <FormularioUsuario 
+                  handleChange={handleChange} 
+                  setFieldValue={setFieldValue} 
+                  values={values} 
+                  errors={errors}
+                  touched={touched}
+                  disablePassword={true}
+                />
+                <FormularioRol roles={roles} selectedRoles={selectedRoles} setSelectedRoles={setSelectedRoles} />
+                <button type="button" className="page-anterior-button" onClick={() => setStep(step - 1)}>
+                  Anterior
+                </button>
+                <button type="submit" className="actualizar-button" disabled={isSubmitting || selectedRoles.length === 0}>
+                  Actualizar Usuario
+                </button>
+              </div>
+            )}
+          </Form>
+        )}
+      </Formik>
     </div>
   );
 };

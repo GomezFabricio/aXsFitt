@@ -1,7 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import { getUserProfile, updateUserProfile, updateUserPassword } from '../../api/usuarios.api';
 import { Modal, Button, Form } from 'react-bootstrap';
-import { FaEdit } from 'react-icons/fa'; // Importar FaEdit
+import { FaEdit } from 'react-icons/fa';
+import {
+  validateNombre,
+  validateApellido,
+  validateDNI,
+  validateTelefono,
+  validateFechaNacimiento,
+  validateDomicilio,
+  validateEmail,
+  validatePassword
+} from '../../utils/validation';
 import './MiPerfil.css';
 
 const MiPerfil = () => {
@@ -12,6 +22,7 @@ const MiPerfil = () => {
     const [modalValue, setModalValue] = useState('');
     const [currentPassword, setCurrentPassword] = useState('');
     const [newPassword, setNewPassword] = useState('');
+    const [errors, setErrors] = useState({});
 
     useEffect(() => {
         const fetchUserProfile = async () => {
@@ -30,10 +41,46 @@ const MiPerfil = () => {
         setModalField(field);
         setModalTitle(title);
         setModalValue(user[field]);
+        setErrors({});
         setShowModal(true);
     };
 
     const handleSave = async () => {
+        let error = '';
+        switch (modalField) {
+            case 'persona_nombre':
+                error = validateNombre(modalValue);
+                break;
+            case 'persona_apellido':
+                error = validateApellido(modalValue);
+                break;
+            case 'persona_dni':
+                error = validateDNI(modalValue);
+                break;
+            case 'persona_telefono':
+                error = validateTelefono(modalValue);
+                break;
+            case 'persona_fecha_nacimiento':
+                error = validateFechaNacimiento(modalValue);
+                break;
+            case 'persona_domicilio':
+                error = validateDomicilio(modalValue);
+                break;
+            case 'usuario_email':
+                error = validateEmail(modalValue);
+                break;
+            case 'password':
+                error = validatePassword(newPassword);
+                break;
+            default:
+                break;
+        }
+
+        if (error) {
+            setErrors({ [modalField]: error });
+            return;
+        }
+
         if (modalField === 'password') {
             try {
                 await updateUserPassword(currentPassword, newPassword);
@@ -102,6 +149,7 @@ const MiPerfil = () => {
                                     value={newPassword}
                                     onChange={(e) => setNewPassword(e.target.value)}
                                 />
+                                {errors.password && <div className="error-message">{errors.password}</div>}
                             </Form.Group>
                         </>
                     ) : (
@@ -112,6 +160,7 @@ const MiPerfil = () => {
                                 value={modalValue}
                                 onChange={(e) => setModalValue(e.target.value)}
                             />
+                            {errors[modalField] && <div className="error-message">{errors[modalField]}</div>}
                         </Form.Group>
                     )}
                 </Modal.Body>

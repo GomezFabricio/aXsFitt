@@ -4,6 +4,16 @@ import { useNavigate } from 'react-router-dom';
 import { createClienteRequest } from '../../../api/clientes.api';
 import FormularioPersona from '../../../components/FormularioPersona/FormularioPersona';
 import FormularioUsuario from '../../../components/FormularioUsuario/FormularioUsuario';
+import {
+  validateNombre,
+  validateApellido,
+  validateDNI,
+  validateTelefono,
+  validateFechaNacimiento,
+  validateDomicilio,
+  validateEmail,
+  validatePassword
+} from '../../../utils/validation';
 import './ClientesCreate.css';
 import '../../../assets/styles/buttons.css';
 
@@ -18,6 +28,24 @@ const ClientesCreate = () => {
 
   const handlePreviousStep = () => {
     setStep(step - 1);
+  };
+
+  const validateStep1 = (values) => {
+    const errors = {};
+    errors.persona_nombre = validateNombre(values.persona_nombre);
+    errors.persona_apellido = validateApellido(values.persona_apellido);
+    errors.persona_dni = validateDNI(values.persona_dni);
+    errors.persona_telefono = validateTelefono(values.persona_telefono);
+    errors.persona_fecha_nacimiento = validateFechaNacimiento(values.persona_fecha_nacimiento);
+    errors.persona_domicilio = validateDomicilio(values.persona_domicilio);
+    return errors;
+  };
+
+  const validateStep2 = (values) => {
+    const errors = {};
+    errors.usuario_email = validateEmail(values.usuario_email);
+    errors.usuario_pass = validatePassword(values.usuario_pass);
+    return errors;
   };
 
   return (
@@ -35,11 +63,10 @@ const ClientesCreate = () => {
           usuario_email: "",
           usuario_pass: "",
         }}
-
-        onSubmit={async (values) => {
+        validate={step === 1 ? validateStep1 : validateStep2}
+        onSubmit={async (values, { setSubmitting }) => {
           try {
             if (step === 1) {
-              // Guardar datos en localStorage y pasar al siguiente paso
               handleNextStep(values);
             } else {
               const personaData = JSON.parse(localStorage.getItem('personaData'));
@@ -48,25 +75,32 @@ const ClientesCreate = () => {
                 usuario_pass: values.usuario_pass
               };
 
-              // Enviar la solicitud con ambos pasos completados
               await createClienteRequest({ personaData, usuarioData });
-              navigate('/clientes'); // Redirigir a la URL "/clientes" después de finalizar el registro
+              navigate('/clientes');
             }
           } catch (error) {
             console.log(error);
+          } finally {
+            setSubmitting(false);
           }
         }}
       >
-        {({ values, handleChange, setFieldValue }) => (
+        {({ values, handleChange, setFieldValue, errors, touched, isSubmitting }) => (
           <Form className="form">
             {step === 1 ? (
               <div>
                 <FormularioPersona 
                   handleChange={handleChange} 
-                  setFieldValue={setFieldValue} // Pasa setFieldValue
-                  values={values} // Pasa los valores actuales
+                  setFieldValue={setFieldValue} 
+                  values={values} 
+                  errors={errors}
+                  touched={touched}
                 />
-                <button type="button" className="siguiente-button" onClick={() => handleNextStep(values)}>
+                <button 
+                  type="submit" 
+                  className="siguiente-button" 
+                  disabled={isSubmitting}
+                >
                   Siguiente
                 </button>
               </div>
@@ -76,11 +110,13 @@ const ClientesCreate = () => {
                   handleChange={handleChange} 
                   setFieldValue={setFieldValue} 
                   values={values} 
+                  errors={errors}
+                  touched={touched}
                 />
                 <button type="button" className="page-anterior-button" onClick={handlePreviousStep}>
                   Anterior
                 </button>
-                <button type="submit" className="alta-button">
+                <button type="submit" className="alta-button" disabled={isSubmitting}>
                   Finalizar Registro
                 </button>
               </div>
