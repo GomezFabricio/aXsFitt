@@ -38,11 +38,6 @@ const Login = () => {
                     </Form>
                 )}
             </Formik>
-            <div className="forgot-password-container">
-                <Link to="/request-password-reset" className="forgot-password-link">
-                    ¿Olvidaste tu contraseña?
-                </Link>
-            </div>
         </div>
     );
 };
