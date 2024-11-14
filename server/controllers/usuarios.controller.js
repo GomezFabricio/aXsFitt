@@ -8,12 +8,26 @@ export const createUser = async (req, res) => {
         const { persona, usuario, roles } = req.body || req;
         console.log('Datos recibidos en el servidor:', { persona, usuario, roles });
 
-        // Crear un registro en la tabla vendedores y obtener el persona_id
-        const vendedorResponse = await createVendedor({ body: { personaData: persona, usuarioData: usuario } });
-        if (!vendedorResponse || !vendedorResponse.persona_id) {
-            throw new Error('Error al crear el vendedor');
+        let personaId = persona.persona_id;
+
+        // Verificar si el usuario tiene rol y si es administrador o vendedor
+        if (roles && (roles.includes(1) || roles.includes(2))) {
+            // Crear un registro en la tabla vendedores y obtener el persona_id
+            const vendedorResponse = await createVendedor({ body: { personaData: persona, usuarioData: usuario } });
+            if (!vendedorResponse || !vendedorResponse.persona_id) {
+                throw new Error('Error al crear el vendedor');
+            }
+            personaId = vendedorResponse.persona_id;
+        } else {
+            // Si no tiene persona_id, crear la persona directamente
+            if (!personaId) {
+                const personaResponse = await createPersona(persona);
+                if (!personaResponse || !personaResponse.id) {
+                    throw new Error('Error al crear la persona');
+                }
+                personaId = personaResponse.id;
+            }
         }
-        const personaId = vendedorResponse.persona_id;
 
         // Cifrar la contraseña del usuario
         const saltRounds = 10;
@@ -27,12 +41,14 @@ export const createUser = async (req, res) => {
 
         const usuarioId = usuarioResult.insertId;
 
-        // Asocia los roles al usuario
-        for (const rolId of roles) {
-            await pool.query(
-                "INSERT INTO `usuarios_roles` (`usuario_id`, `rol_id`) VALUES (?, ?)",
-                [usuarioId, rolId]
-            );
+        // Asocia los roles al usuario si existen
+        if (roles && roles.length > 0) {
+            for (const rolId of roles) {
+                await pool.query(
+                    "INSERT INTO `usuarios_roles` (`usuario_id`, `rol_id`) VALUES (?, ?)",
+                    [usuarioId, rolId]
+                );
+            }
         }
 
         if (res) {
