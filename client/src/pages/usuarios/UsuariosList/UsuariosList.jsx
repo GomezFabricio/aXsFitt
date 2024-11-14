@@ -43,12 +43,8 @@ const UsuariosList = () => {
     }, [loggedInUserId]);
 
     const handleEdit = (usuarioId) => {
-        if (usuarioId === loggedInUserId) {
-            setModalContent('Para editar tu información de usuario dirígete a "Mi perfil"');
-            setModalIsOpen(true);
-        } else {
-            navigate(`/usuarios/editar/${usuarioId}`);
-        }
+        navigate(`/usuarios/editar/${usuarioId}`);
+        
     };
 
     const handleBaja = (usuarioId) => {

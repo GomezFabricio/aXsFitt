@@ -2,11 +2,13 @@ import axios from 'axios';
 
 // Obtener el token desde el almacenamiento local
 const token = localStorage.getItem('token');
+const selectedRoleId = localStorage.getItem('selectedRoleId');
 
 // Configuración del encabezado con el token
 const config = {
     headers: {
         Authorization: `Bearer ${token}`,
+        'x-selected-role-id': selectedRoleId,
     },
 };
 

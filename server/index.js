@@ -20,10 +20,9 @@ const app = express();
 
 // Configuración de CORS
 app.use(cors({
-    origin: '*',  // Permitir todas las solicitudes de origen
-    methods: 'GET,POST,PUT,DELETE',
-    allowedHeaders: 'Content-Type,Authorization',
-    credentials: true
+    origin: 'https://localhost:5173',  
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'x-selected-role-id'], 
 }));
 
 // Middleware para parsear JSON
@@ -57,7 +56,7 @@ const server = https.createServer(options, app);
 // Configurar el servidor de WebSocket
 const io = new Server(server, {
     cors: {
-        origin: '*',
+        origin: 'https://localhost:5173', 
         methods: ['GET', 'POST']
     }
 });
