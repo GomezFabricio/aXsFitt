@@ -6,7 +6,7 @@ import { getClientesRequest } from '../../../api/clientes.api';
 import { inventarioList } from '../../../api/inventario.api';
 import { getEstadoVendedorRequest } from '../../../api/vendedores.api';
 import RegistrarVentaForm from '../../../components/RegistrarVentaForm/RegistrarVentaForm';
-import { QRCode } from 'react-qrcode-logo';  // Importa la librería QRCode correctamente
+import { QRCode } from 'react-qrcode-logo'; 
 import { Modal, Button, Spinner } from 'react-bootstrap';
 import io from 'socket.io-client';
 import './RegistrarVenta.css';
@@ -18,7 +18,7 @@ const RegistrarVenta = () => {
     const [productos, setProductos] = useState([]);
     const [venta, setVenta] = useState({
         clienteId: '',
-        vendedorId: '', // Asumimos que el vendedor está autenticado y su ID está disponible
+        vendedorId: '', 
         productos: [],
         total: 0,
     });
