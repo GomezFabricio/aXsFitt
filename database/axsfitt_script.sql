@@ -139,6 +139,26 @@ INDEX usuarios_roles_FKIndex2(usuario_id),
 
 
 
+CREATE TABLE ventas (
+  ventas_id INTEGER UNSIGNED  NOT NULL   AUTO_INCREMENT,
+  persona_id INTEGER UNSIGNED  NOT NULL  ,
+  cliente_id INTEGER UNSIGNED  NULL  ,
+  venta_fecha DATE  NULL  ,
+  venta_total DECIMAL(10,2)  NULL    ,
+PRIMARY KEY(ventas_id)  ,
+INDEX venta_FKIndex1(cliente_id)  ,
+INDEX ventas_FKIndex2(persona_id),
+  FOREIGN KEY(cliente_id)
+    REFERENCES clientes(cliente_id)
+      ON DELETE NO ACTION
+      ON UPDATE NO ACTION,
+  FOREIGN KEY(persona_id)
+    REFERENCES personas(persona_id)
+      ON DELETE NO ACTION
+      ON UPDATE NO ACTION);
+
+
+
 CREATE TABLE vendedores (
   vendedor_id INTEGER UNSIGNED  NOT NULL   AUTO_INCREMENT,
   estado_vendedor_id INTEGER UNSIGNED  NOT NULL  ,
@@ -172,6 +192,27 @@ INDEX menu_roles_FKIndex2(menu_opcion_id),
       ON UPDATE NO ACTION,
   FOREIGN KEY(menu_opcion_id)
     REFERENCES menu_opciones(menu_opcion_id)
+      ON DELETE NO ACTION
+      ON UPDATE NO ACTION);
+
+
+
+CREATE TABLE comprobantes (
+  comprobante_id INTEGER UNSIGNED  NOT NULL   AUTO_INCREMENT,
+  ventas_id INTEGER UNSIGNED  NOT NULL  ,
+  metodo_pago_id INTEGER UNSIGNED  NOT NULL  ,
+  comprobante_url VARCHAR(255)  NULL  ,
+  comprobante_fecha DATE  NULL  ,
+  comprobante_monto DECIMAL(10,2)  NULL    ,
+PRIMARY KEY(comprobante_id)  ,
+INDEX comprobantes_FKIndex1(metodo_pago_id)  ,
+INDEX comprobantes_FKIndex2(ventas_id),
+  FOREIGN KEY(metodo_pago_id)
+    REFERENCES metodo_pago(metodo_pago_id)
+      ON DELETE NO ACTION
+      ON UPDATE NO ACTION,
+  FOREIGN KEY(ventas_id)
+    REFERENCES ventas(ventas_id)
       ON DELETE NO ACTION
       ON UPDATE NO ACTION);
 
@@ -236,26 +277,6 @@ INDEX inventario_principal_FKIndex1(producto_id),
 
 
 
-CREATE TABLE ventas (
-  ventas_id INTEGER UNSIGNED  NOT NULL   AUTO_INCREMENT,
-  cliente_id INTEGER UNSIGNED  NULL  ,
-  vendedor_id INTEGER UNSIGNED  NOT NULL  ,
-  venta_fecha DATE  NULL  ,
-  venta_total DECIMAL(10,2)  NULL    ,
-PRIMARY KEY(ventas_id)  ,
-INDEX venta_FKIndex1(vendedor_id)  ,
-INDEX venta_FKIndex2(cliente_id),
-  FOREIGN KEY(vendedor_id)
-    REFERENCES vendedores(vendedor_id)
-      ON DELETE NO ACTION
-      ON UPDATE NO ACTION,
-  FOREIGN KEY(cliente_id)
-    REFERENCES clientes(cliente_id)
-      ON DELETE NO ACTION
-      ON UPDATE NO ACTION);
-
-
-
 CREATE TABLE detalle_venta (
   detalle_venta_id INTEGER UNSIGNED  NOT NULL   AUTO_INCREMENT,
   ventas_id INTEGER UNSIGNED  NOT NULL  ,
@@ -272,27 +293,6 @@ INDEX detalle_venta_FKIndex2(inventario_id),
       ON UPDATE NO ACTION,
   FOREIGN KEY(inventario_id)
     REFERENCES inventario_principal(inventario_id)
-      ON DELETE NO ACTION
-      ON UPDATE NO ACTION);
-
-
-
-CREATE TABLE comprobantes (
-  comprobante_id INTEGER UNSIGNED  NOT NULL   AUTO_INCREMENT,
-  ventas_id INTEGER UNSIGNED  NOT NULL  ,
-  metodo_pago_id INTEGER UNSIGNED  NOT NULL  ,
-  comprobante_url VARCHAR(255)  NULL  ,
-  comprobante_fecha DATE  NULL  ,
-  comprobante_monto DECIMAL(10,2)  NULL    ,
-PRIMARY KEY(comprobante_id)  ,
-INDEX comprobantes_FKIndex1(metodo_pago_id)  ,
-INDEX comprobantes_FKIndex2(ventas_id),
-  FOREIGN KEY(metodo_pago_id)
-    REFERENCES metodo_pago(metodo_pago_id)
-      ON DELETE NO ACTION
-      ON UPDATE NO ACTION,
-  FOREIGN KEY(ventas_id)
-    REFERENCES ventas(ventas_id)
       ON DELETE NO ACTION
       ON UPDATE NO ACTION);
 

@@ -74,3 +74,8 @@ INSERT INTO `menu_roles` (`menu_roles_id`, `menu_opcion_id`, `rol_id`) VALUES
 (5, 5, 1), -- Inventario para Administrador
 (6, 6, 2), -- Ventas para Administrador
 (7, 6, 2); -- Ventas para Vendedor
+
+-- Inserción de datos en la tabla 'metodo_pago'
+INSERT INTO `metodo_pago` (`metodo_pago_id`, `metodo_pago_nombre`) VALUES
+(1, 'Efectivo'),
+(2, 'Mercado Pago');

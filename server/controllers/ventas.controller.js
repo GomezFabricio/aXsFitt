@@ -17,20 +17,11 @@ export const procesarPagoEfectivo = async (req, res) => {
     }
 
     try {
-        // Verificar si la persona es un vendedor
-        const [vendedor] = await pool.query(
-            `SELECT vendedor_id, vendedor_comision_porcentaje FROM vendedores WHERE persona_id = ?`,
-            [personaId]
-        );
-
-        const vendedorId = vendedor.length > 0 ? vendedor[0].vendedor_id : null;
-        const comisionPorcentaje = vendedor.length > 0 ? vendedor[0].vendedor_comision_porcentaje : null;
-
         // Registrar la venta en la tabla 'ventas'
         const [ventaResult] = await pool.query(
-            `INSERT INTO ventas (cliente_id, vendedor_id, venta_fecha, venta_total)
+            `INSERT INTO ventas (cliente_id, persona_id, venta_fecha, venta_total)
             VALUES (?, ?, NOW(), ?)`,
-            [clienteId || null, vendedorId, total]
+            [clienteId || null, personaId, total]
         );
 
         const ventaId = ventaResult.insertId;
@@ -61,16 +52,6 @@ export const procesarPagoEfectivo = async (req, res) => {
             total
         );
 
-        // Calcular el monto de la comisión
-        const comisionMonto = (total * comisionPorcentaje) / 100;
-
-        // Insertar el registro en la tabla 'comisiones'
-        await pool.query(
-            `INSERT INTO comisiones (vendedor_id, estado_comision_id, comision_fecha, comision_monto, comision_descripcion)
-            VALUES (?, 1, NOW(), ?, 'Venta de suplemento')`,
-            [vendedorId, comisionMonto]
-        );
-
         res.status(200).json({ message: 'Pago en efectivo registrado exitosamente', comprobanteId });
     } catch (error) {
         console.error('Error procesando el pago en efectivo:', error);
@@ -93,26 +74,11 @@ export const procesarPagoMercadoPago = async (req, res) => {
     try {
         console.log('Datos recibidos para procesar pago con Mercado Pago:', { clienteId, productos, total, personaId });
 
-        // Verificar si la persona es un vendedor
-        const [vendedor] = await pool.query(
-            `SELECT vendedor_id, vendedor_comision_porcentaje FROM vendedores WHERE persona_id = ?`,
-            [personaId]
-        );
-
-        const vendedorId = vendedor.length > 0 ? vendedor[0].vendedor_id : null;
-        const comisionPorcentaje = vendedor.length > 0 ? vendedor[0].vendedor_comision_porcentaje : null;
-
-        if (!vendedorId) {
-            throw new Error('Vendedor no encontrado.');
-        }
-
-        console.log('Vendedor encontrado:', vendedorId);
-
         // Registrar la venta en la tabla 'ventas'
         const [ventaResult] = await pool.query(
-            `INSERT INTO ventas (cliente_id, vendedor_id, venta_fecha, venta_total)
+            `INSERT INTO ventas (cliente_id, persona_id, venta_fecha, venta_total)
             VALUES (?, ?, NOW(), ?)`,
-            [clienteId || null, vendedorId, total]
+            [clienteId || null, personaId, total]
         );
 
         const ventaId = ventaResult.insertId;
@@ -148,16 +114,6 @@ export const procesarPagoMercadoPago = async (req, res) => {
         );
 
         console.log('Comprobante creado con ID:', comprobanteId);
-
-        // Calcular el monto de la comisión
-        const comisionMonto = (total * comisionPorcentaje) / 100;
-
-        // Insertar el registro en la tabla 'comisiones'
-        await pool.query(
-            `INSERT INTO comisiones (vendedor_id, estado_comision_id, comision_fecha, comision_monto, comision_descripcion)
-            VALUES (?, 1, NOW(), ?, 'Venta de suplemento')`,
-            [vendedorId, comisionMonto]
-        );
 
         res.status(200).json({ message: 'Pago con Mercado Pago registrado exitosamente', comprobanteId });
     } catch (error) {

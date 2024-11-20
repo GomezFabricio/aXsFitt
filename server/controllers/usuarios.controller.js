@@ -13,7 +13,7 @@ export const createUser = async (req, res) => {
         let personaId = persona.persona_id;
 
         // Verificar si el usuario tiene rol y si es administrador o vendedor
-        if (roles && (roles.includes(1) || roles.includes(2))) {
+        if (roles && roles.includes(2)) { // Solo crear vendedor si el rol es 2 (Vendedor)
             // Crear un registro en la tabla vendedores y obtener el persona_id
             const vendedorResponse = await createVendedor({ body: { personaData: persona, usuarioData: usuario } });
             if (!vendedorResponse || !vendedorResponse.persona_id) {
@@ -53,18 +53,10 @@ export const createUser = async (req, res) => {
             }
         }
 
-        if (res) {
-            res.json({ id: usuarioId });
-        } else {
-            return { id: usuarioId };
-        }
+        res.json({ id: usuarioId });
     } catch (error) {
         console.error('Error al crear el usuario:', error);
-        if (res) {
-            res.status(500).json({ message: 'Error al crear el usuario', error: error.message });
-        } else {
-            throw error;
-        }
+        res.status(500).json({ message: 'Error al crear el usuario', error: error.message });
     }
 };
 
