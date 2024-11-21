@@ -34,7 +34,8 @@ const RegistrarVenta = () => {
     useEffect(() => {
         async function verificarEstadoVendedor() {
             const response = await getEstadoVendedorRequest();
-            if (response.data.estado_vendedor_id === 2) {
+            const { estado_vendedor_id, rol_id } = response.data;
+            if (rol_id === 2 && estado_vendedor_id === 2) { // Solo mostrar el modal si es vendedor y su estado es 2
                 setShowEstadoModal(true);
             }
         }
@@ -50,9 +51,9 @@ const RegistrarVenta = () => {
         async function loadProductos() {
             try {
                 const responseProductos = await inventarioList();
-                setProductos(responseProductos);
+                setProductos(responseProductos.data);
             } catch (error) {
-                console.error('Error al cargar los productos:', error);
+                console.error('Error al cargar productos:', error);
             }
         }
 

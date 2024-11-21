@@ -169,8 +169,7 @@ export const obtenerVentas = async (req, res) => {
                     ventas v
                 LEFT JOIN clientes cl ON v.cliente_id = cl.cliente_id
                 LEFT JOIN personas c ON cl.persona_id = c.persona_id
-                LEFT JOIN vendedores vnd ON v.vendedor_id = vnd.vendedor_id
-                LEFT JOIN personas ven ON vnd.persona_id = ven.persona_id`
+                LEFT JOIN personas ven ON v.persona_id = ven.persona_id`
             );
         } else if (selectedRoleId === '2') { // Vendedor
             [ventas] = await pool.query(
@@ -186,9 +185,8 @@ export const obtenerVentas = async (req, res) => {
                     ventas v
                 LEFT JOIN clientes cl ON v.cliente_id = cl.cliente_id
                 LEFT JOIN personas c ON cl.persona_id = c.persona_id
-                LEFT JOIN vendedores vnd ON v.vendedor_id = vnd.vendedor_id
-                LEFT JOIN personas ven ON vnd.persona_id = ven.persona_id
-                WHERE v.vendedor_id = ?`,
+                LEFT JOIN personas ven ON v.persona_id = ven.persona_id
+                WHERE v.persona_id = ?`,
                 [personaId]
             );
         } else {
@@ -222,8 +220,7 @@ export const obtenerVentaPorId = async (req, res) => {
                 ventas v
             LEFT JOIN clientes cl ON v.cliente_id = cl.cliente_id
             LEFT JOIN personas c ON cl.persona_id = c.persona_id
-            LEFT JOIN vendedores vnd ON v.vendedor_id = vnd.vendedor_id
-            LEFT JOIN personas ven ON vnd.persona_id = ven.persona_id
+            LEFT JOIN personas ven ON v.persona_id = ven.persona_id
             WHERE v.ventas_id = ?`,
             [id]
         );
@@ -253,6 +250,7 @@ export const obtenerVentaPorId = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
+
 /* -------------------------------------------------------------------------- */
 /*                          GENERAR REPORTE DE VENTAS                         */
 /* -------------------------------------------------------------------------- */
@@ -269,10 +267,9 @@ export const generarReporteVentas = async (req, res) => {
                 ven.persona_apellido AS vendedorApellido 
             FROM 
                 ventas v
-            JOIN clientes cl ON v.cliente_id = cl.cliente_id
-            JOIN personas c ON cl.persona_id = c.persona_id
-            LEFT JOIN vendedores vnd ON v.vendedor_id = vnd.vendedor_id
-            LEFT JOIN personas ven ON vnd.persona_id = ven.persona_id`
+            LEFT JOIN clientes cl ON v.cliente_id = cl.cliente_id
+            LEFT JOIN personas c ON cl.persona_id = c.persona_id
+            LEFT JOIN personas ven ON v.persona_id = ven.persona_id`
         );
 
         const workbook = new ExcelJS.Workbook();

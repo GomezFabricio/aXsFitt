@@ -238,25 +238,40 @@ export const getEstadoVendedor = async (req, res) => {
         const decodedToken = jwt.verify(token, SECRET_KEY);
         const personaId = decodedToken.personaId;
 
-        const [vendedorRows] = await pool.query(
-            `SELECT vendedor_id FROM vendedores WHERE persona_id = ?`, [personaId]
+        // Obtener el rol del usuario
+        const [rolRows] = await pool.query(
+            `SELECT r.rol_id 
+            FROM usuarios_roles ur
+            JOIN usuarios u ON ur.usuario_id = u.usuario_id
+            JOIN roles r ON ur.rol_id = r.rol_id
+            WHERE u.persona_id = ?`, 
+            [personaId]
         );
 
-        if (vendedorRows.length === 0) {
-            return res.status(404).json({ message: 'Vendedor no encontrado' });
+        if (rolRows.length === 0) {
+            return res.status(404).json({ message: 'Rol no encontrado' });
         }
 
-        const vendedorId = vendedorRows[0].vendedor_id;
+        const rolId = rolRows[0].rol_id;
 
-        const [estadoRows] = await pool.query(
-            `SELECT estado_vendedor_id FROM vendedores WHERE vendedor_id = ?`, [vendedorId]
-        );
+        // Obtener el estado del vendedor si el usuario es un vendedor
+        let estadoVendedorId = null;
+        if (rolId === 2) { // Si el rol es 2 (Vendedor)
+            const [vendedorRows] = await pool.query(
+                `SELECT estado_vendedor_id 
+                FROM vendedores 
+                WHERE persona_id = ?`, 
+                [personaId]
+            );
 
-        if (estadoRows.length === 0) {
-            return res.status(404).json({ message: 'Estado del vendedor no encontrado' });
+            if (vendedorRows.length === 0) {
+                return res.status(404).json({ message: 'Vendedor no encontrado' });
+            }
+
+            estadoVendedorId = vendedorRows[0].estado_vendedor_id;
         }
 
-        res.json({ estado_vendedor_id: estadoRows[0].estado_vendedor_id });
+        res.json({ estado_vendedor_id: estadoVendedorId, rol_id: rolId });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
