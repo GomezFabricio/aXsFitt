@@ -10,22 +10,19 @@ export const createCliente = async (req, res) => {
     try {
         const { personaData, usuarioData } = req.body;
 
-        // Validar los datos aquí
         if (!personaData || !usuarioData) {
             return res.status(400).json({ message: 'Datos incompletos' });
         }
 
-        // Crear la persona
         const personaResponse = await createPersona(personaData);
         if (!personaResponse || !personaResponse.id) {
             return res.status(500).json({ message: 'Error al crear la persona' });
         }
 
-        // Crear el usuario
         const usuarioRequestData = {
             persona: { persona_id: personaResponse.id },
             usuario: usuarioData,
-            roles: [] // No asignar roles al cliente
+            roles: []
         };
 
         const usuarioResponse = await createUser({ body: usuarioRequestData });
@@ -33,8 +30,7 @@ export const createCliente = async (req, res) => {
             return res.status(500).json({ message: 'Error al crear el usuario' });
         }
 
-        // Crear el cliente
-        const estado_afiliacion_id = 1; // Estado activo
+        const estado_afiliacion_id = 1;
         const cliente_fecha_afiliacion = new Date();
 
         const [clienteResult] = await pool.query(
