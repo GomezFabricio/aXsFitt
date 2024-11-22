@@ -2,8 +2,7 @@ import { pool } from '../db.js';
 import bcrypt from 'bcrypt';
 import { updatePersona } from './personas.controller.js';
 import { createVendedor } from './vendedores.controller.js';
-import jwt from 'jsonwebtoken';
-import { SECRET_KEY } from '../config.js';
+import { obtenerPersonaIdDesdeToken } from './login.controller.js';
 
 export const createUser = async (req, res) => {
     try {
@@ -231,9 +230,7 @@ export const activateUser = async (req, res) => {
 /* -------------------------------------------------------------------------- */
 export const getUserProfile = async (req, res) => {
     try {
-        const token = req.headers.authorization.split(' ')[1];
-        const decodedToken = jwt.verify(token, SECRET_KEY);
-        const personaId = decodedToken.personaId;
+        const personaId = obtenerPersonaIdDesdeToken(req); // Obtener personaId del token JWT
 
         const [rows] = await pool.query(
             `SELECT 
@@ -269,9 +266,7 @@ export const getUserProfile = async (req, res) => {
 /* -------------------------------------------------------------------------- */
 export const updateUserProfile = async (req, res) => {
     try {
-        const token = req.headers.authorization.split(' ')[1];
-        const decodedToken = jwt.verify(token, SECRET_KEY);
-        const personaId = decodedToken.personaId;
+        const personaId = obtenerPersonaIdDesdeToken(req); // Obtener personaId del token JWT
         const { persona_nombre, persona_apellido, persona_dni, persona_fecha_nacimiento, persona_domicilio, persona_telefono, usuario_email } = req.body;
 
         // Obtener los datos actuales del usuario
@@ -333,9 +328,7 @@ export const updateUserProfile = async (req, res) => {
 /* -------------------------------------------------------------------------- */
 export const updateUserPassword = async (req, res) => {
     try {
-        const token = req.headers.authorization.split(' ')[1];
-        const decodedToken = jwt.verify(token, SECRET_KEY);
-        const personaId = decodedToken.personaId;
+        const personaId = obtenerPersonaIdDesdeToken(req); // Obtener personaId del token JWT
         const { currentPassword, newPassword } = req.body;
 
         const [rows] = await pool.query(

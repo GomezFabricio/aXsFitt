@@ -1,7 +1,5 @@
 import ExcelJS from 'exceljs';
 import { pool } from '../db.js';
-import jwt from 'jsonwebtoken';
-import { SECRET_KEY } from '../config.js';
 import { obtenerPersonaIdDesdeToken } from './login.controller.js';
 
 

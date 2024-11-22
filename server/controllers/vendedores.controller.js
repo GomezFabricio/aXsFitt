@@ -1,8 +1,6 @@
 // controllers/vendedores.controller.js
 import { pool } from '../db.js';
 import { createPersona, updatePersona } from './personas.controller.js';
-import jwt from 'jsonwebtoken';
-import { SECRET_KEY } from '../config.js';
 
 /* -------------------------------------------------------------------------- */
 /*                    OBTENER TODOS LOS VENDEDORES                            */
@@ -234,9 +232,7 @@ export const activateVendedor = async (req, res) => {
 /* -------------------------------------------------------------------------- */
 export const getEstadoVendedor = async (req, res) => {
     try {
-        const token = req.headers.authorization.split(' ')[1];
-        const decodedToken = jwt.verify(token, SECRET_KEY);
-        const personaId = decodedToken.personaId;
+        const personaId = obtenerPersonaIdDesdeToken(req); // Obtener personaId del token JWT
 
         const [vendedorRows] = await pool.query(
             `SELECT vendedor_id FROM vendedores WHERE persona_id = ?`, [personaId]
