@@ -156,7 +156,7 @@ const UsuarioEdit = () => {
                   touched={touched}
                 />
                 <button 
-                  type="button" 
+                  type="submit" 
                   className="siguiente-button" 
                   onClick={() => handleNextStep(values, setErrors, validateForm)}
                   disabled={isSubmitting}

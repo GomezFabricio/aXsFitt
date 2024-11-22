@@ -200,30 +200,46 @@ export const updateVendedor = async (req, res) => {
 /* -------------------------------------------------------------------------- */
 /*                 CAMBIAR EL ESTADO DE UN VENDEDOR A INACTIVO                */
 /* -------------------------------------------------------------------------- */
-export const deactivateVendedor = async (req, res) => {
+export const deactivateVendedor = async (req, res = null) => {
     const { id } = req.params;
 
     try {
         await pool.query("UPDATE vendedores SET estado_vendedor_id = 2 WHERE vendedor_id = ?", [id]);
 
-        res.json({ message: 'Vendedor dado de baja exitosamente' });
+        if (res) {
+            res.json({ message: 'Vendedor dado de baja exitosamente' });
+        } else {
+            return { message: 'Vendedor dado de baja exitosamente' };
+        }
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        if (res) {
+            res.status(500).json({ message: error.message });
+        } else {
+            throw error;
+        }
     }
 };
 
 /* -------------------------------------------------------------------------- */
 /*                  CAMBIAR EL ESTADO DE UN VENDEDOR A ACTIVO                 */
 /* -------------------------------------------------------------------------- */
-export const activateVendedor = async (req, res) => {
+export const activateVendedor = async (req, res = null) => {
     const { id } = req.params;
 
     try {
         await pool.query("UPDATE vendedores SET estado_vendedor_id = 1 WHERE vendedor_id = ?", [id]);
 
-        res.json({ message: 'Vendedor reactivado exitosamente' });
+        if (res) {
+            res.json({ message: 'Vendedor reactivado exitosamente' });
+        } else {
+            return { message: 'Vendedor reactivado exitosamente' };
+        }
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        if (res) {
+            res.status(500).json({ message: error.message });
+        } else {
+            throw error;
+        }
     }
 };
 

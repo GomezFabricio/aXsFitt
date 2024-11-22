@@ -1,7 +1,7 @@
 import { pool } from '../db.js';
 import bcrypt from 'bcrypt';
-import { updatePersona } from './personas.controller.js';
-import { createVendedor } from './vendedores.controller.js';
+import { updatePersona, createPersona } from './personas.controller.js';
+import { createVendedor, deactivateVendedor, activateVendedor } from './vendedores.controller.js';
 import { obtenerPersonaIdDesdeToken } from './login.controller.js';
 
 export const createUser = async (req, res = null) => {
@@ -188,6 +188,13 @@ export const updateUser = async (req, res) => {
 
         await pool.query(updateUserQuery, updateUserParams);
 
+        // Obtener los roles actuales del usuario
+        const [currentRoles] = await pool.query(
+            "SELECT rol_id FROM usuarios_roles WHERE usuario_id = ?", [id]
+        );
+
+        const currentRoleIds = currentRoles.map(role => role.rol_id);
+
         // Actualizar los roles del usuario
         await pool.query("DELETE FROM usuarios_roles WHERE usuario_id = ?", [id]);
         for (const rolId of roles) {
@@ -195,6 +202,46 @@ export const updateUser = async (req, res) => {
                 "INSERT INTO usuarios_roles (usuario_id, rol_id) VALUES (?, ?)",
                 [id, rolId]
             );
+        }
+
+        // Manejar el rol de vendedor
+        const isVendedor = roles.includes(2);
+        const wasVendedor = currentRoleIds.includes(2);
+
+        if (isVendedor && !wasVendedor) {
+            // Si el usuario ahora es vendedor pero no lo era antes, verificar si ya existe como vendedor
+            const [vendedor] = await pool.query(
+                "SELECT vendedor_id, estado_vendedor_id FROM vendedores WHERE persona_id = ?", [personaId]
+            );
+
+            if (vendedor.length > 0) {
+                // Si el vendedor ya existe, activar el vendedor si está inactivo
+                if (vendedor[0].estado_vendedor_id === 2) {
+                    await activateVendedor({ params: { id: vendedor[0].vendedor_id } });
+                }
+            } else {
+                // Si el vendedor no existe, crear la instancia en vendedores
+                const vendedorResponse = await createVendedor({ body: { personaData: persona, usuarioData: usuario } });
+                if (!vendedorResponse || !vendedorResponse.id) {
+                    throw new Error('Error al crear el vendedor');
+                }
+            }
+        } else if (!isVendedor && wasVendedor) {
+            // Si el usuario ya no es vendedor pero lo era antes, obtener el ID del vendedor y actualizar el estado del vendedor a inactivo
+            const [vendedor] = await pool.query(
+                "SELECT vendedor_id FROM vendedores WHERE persona_id = ?", [personaId]
+            );
+            if (vendedor.length > 0) {
+                await deactivateVendedor({ params: { id: vendedor[0].vendedor_id } });
+            }
+        } else if (isVendedor && wasVendedor) {
+            // Si el usuario sigue siendo vendedor, obtener el ID del vendedor y activar el vendedor si está inactivo
+            const [vendedor] = await pool.query(
+                "SELECT vendedor_id FROM vendedores WHERE persona_id = ?", [personaId]
+            );
+            if (vendedor.length > 0 && vendedor[0].estado_vendedor_id === 2) {
+                await activateVendedor({ params: { id: vendedor[0].vendedor_id } });
+            }
         }
 
         res.status(200).json({ message: 'Usuario actualizado exitosamente' });

@@ -133,7 +133,7 @@ const UsuariosCreate = () => {
                   touched={touched}
                 />
                 <button 
-                  type="button" 
+                  type="sumbit" 
                   className="siguiente-button" 
                   onClick={() => handleNextStep(values, setErrors, validateForm)}
                   disabled={isSubmitting}
