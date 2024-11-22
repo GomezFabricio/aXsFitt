@@ -2,6 +2,7 @@ import ExcelJS from 'exceljs';
 import { pool } from '../db.js';
 import jwt from 'jsonwebtoken';
 import { SECRET_KEY } from '../config.js';
+import { obtenerPersonaIdDesdeToken } from './login.controller.js';
 
 
 /* -------------------------------------------------------------------------- */
@@ -9,7 +10,7 @@ import { SECRET_KEY } from '../config.js';
 /* -------------------------------------------------------------------------- */
 export const procesarPagoEfectivo = async (req, res) => {
     const { clienteId, productos, total } = req.body;
-    const { personaId } = req.user; // Obtener personaId del token JWT
+    const personaId = obtenerPersonaIdDesdeToken(req); // Obtener personaId del token JWT
 
     // Validación de datos de entrada
     if (!productos || !total) {
@@ -17,6 +18,32 @@ export const procesarPagoEfectivo = async (req, res) => {
     }
 
     try {
+        // Verificar el rol de la persona
+        const [roles] = await pool.query(
+            `SELECT r.rol_id 
+            FROM usuarios_roles ur
+            JOIN roles r ON ur.rol_id = r.rol_id
+            JOIN usuarios u ON ur.usuario_id = u.usuario_id
+            WHERE u.persona_id = ?`,
+            [personaId]
+        );
+
+        const esVendedor = roles.some(role => role.rol_id === 2);
+        const esAdministrador = roles.some(role => role.rol_id === 1);
+
+        let vendedorId = null;
+        let comisionPorcentaje = null;
+
+        if (esVendedor) {
+            const [vendedor] = await pool.query(
+                `SELECT vendedor_id, vendedor_comision_porcentaje FROM vendedores WHERE persona_id = ?`,
+                [personaId]
+            );
+
+            vendedorId = vendedor.length > 0 ? vendedor[0].vendedor_id : null;
+            comisionPorcentaje = vendedor.length > 0 ? vendedor[0].vendedor_comision_porcentaje : null;
+        }
+
         // Registrar la venta en la tabla 'ventas'
         const [ventaResult] = await pool.query(
             `INSERT INTO ventas (cliente_id, persona_id, venta_fecha, venta_total)
@@ -52,6 +79,18 @@ export const procesarPagoEfectivo = async (req, res) => {
             total
         );
 
+        // Registrar la comisión solo si la persona es un vendedor
+        if (esVendedor && comisionPorcentaje !== null) {
+            const comisionMonto = (total * comisionPorcentaje) / 100;
+
+            // Insertar el registro en la tabla 'comisiones'
+            await pool.query(
+                `INSERT INTO comisiones (vendedor_id, estado_comision_id, comision_fecha, comision_monto, comision_descripcion)
+                VALUES (?, 1, NOW(), ?, 'Venta de suplemento')`,
+                [vendedorId, comisionMonto]
+            );
+        }
+
         res.status(200).json({ message: 'Pago en efectivo registrado exitosamente', comprobanteId });
     } catch (error) {
         console.error('Error procesando el pago en efectivo:', error);
@@ -64,7 +103,7 @@ export const procesarPagoEfectivo = async (req, res) => {
 /* -------------------------------------------------------------------------- */
 export const procesarPagoMercadoPago = async (req, res) => {
     const { clienteId, productos, total } = req.body;
-    const { personaId } = req.user; // Obtener personaId del token JWT
+    const personaId = obtenerPersonaIdDesdeToken(req); // Obtener personaId del token JWT
 
     // Validación de datos de entrada
     if (!productos || !total) {
@@ -73,6 +112,32 @@ export const procesarPagoMercadoPago = async (req, res) => {
 
     try {
         console.log('Datos recibidos para procesar pago con Mercado Pago:', { clienteId, productos, total, personaId });
+
+        // Verificar el rol de la persona
+        const [roles] = await pool.query(
+            `SELECT r.rol_id 
+            FROM usuarios_roles ur
+            JOIN roles r ON ur.rol_id = r.rol_id
+            JOIN usuarios u ON ur.usuario_id = u.usuario_id
+            WHERE u.persona_id = ?`,
+            [personaId]
+        );
+
+        const esVendedor = roles.some(role => role.rol_id === 2);
+        const esAdministrador = roles.some(role => role.rol_id === 1);
+
+        let vendedorId = null;
+        let comisionPorcentaje = null;
+
+        if (esVendedor) {
+            const [vendedor] = await pool.query(
+                `SELECT vendedor_id, vendedor_comision_porcentaje FROM vendedores WHERE persona_id = ?`,
+                [personaId]
+            );
+
+            vendedorId = vendedor.length > 0 ? vendedor[0].vendedor_id : null;
+            comisionPorcentaje = vendedor.length > 0 ? vendedor[0].vendedor_comision_porcentaje : null;
+        }
 
         // Registrar la venta en la tabla 'ventas'
         const [ventaResult] = await pool.query(
@@ -115,6 +180,18 @@ export const procesarPagoMercadoPago = async (req, res) => {
 
         console.log('Comprobante creado con ID:', comprobanteId);
 
+        // Registrar la comisión solo si la persona es un vendedor
+        if (esVendedor && comisionPorcentaje !== null) {
+            const comisionMonto = (total * comisionPorcentaje) / 100;
+
+            // Insertar el registro en la tabla 'comisiones'
+            await pool.query(
+                `INSERT INTO comisiones (vendedor_id, estado_comision_id, comision_fecha, comision_monto, comision_descripcion)
+                VALUES (?, 1, NOW(), ?, 'Venta de suplemento')`,
+                [vendedorId, comisionMonto]
+            );
+        }
+
         res.status(200).json({ message: 'Pago con Mercado Pago registrado exitosamente', comprobanteId });
     } catch (error) {
         console.error('Error procesando el pago con Mercado Pago:', error);
@@ -146,10 +223,7 @@ export const crearComprobante = async (ventaId, metodoPagoId, comprobanteUrl, mo
 /* -------------------------------------------------------------------------- */
 export const obtenerVentas = async (req, res) => {
     try {
-        // Obtener el token desde los encabezados de la solicitud
-        const token = req.headers.authorization.split(' ')[1];
-        const decodedToken = jwt.verify(token, SECRET_KEY);
-        const { personaId } = decodedToken;
+        const personaId = obtenerPersonaIdDesdeToken(req); // Obtener personaId del token JWT
 
         // Obtener el ID del rol desde los encabezados de la solicitud
         const selectedRoleId = req.headers['x-selected-role-id'];

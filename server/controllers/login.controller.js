@@ -69,3 +69,10 @@ export const login = async (req, res) => {
         return res.status(500).json({ message: error.message });
     }
 };
+
+// Función para obtener el personaId del token JWT
+export const obtenerPersonaIdDesdeToken = (req) => {
+    const token = req.headers.authorization.split(' ')[1];
+    const decodedToken = jwt.verify(token, SECRET_KEY);
+    return decodedToken.personaId;
+};

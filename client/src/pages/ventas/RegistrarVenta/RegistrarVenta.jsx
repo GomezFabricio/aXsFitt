@@ -6,7 +6,7 @@ import { getClientesRequest } from '../../../api/clientes.api';
 import { inventarioList } from '../../../api/inventario.api';
 import { getEstadoVendedorRequest } from '../../../api/vendedores.api';
 import RegistrarVentaForm from '../../../components/RegistrarVentaForm/RegistrarVentaForm';
-import { QRCode } from 'react-qrcode-logo'; 
+import { QRCode } from 'react-qrcode-logo';  // Importa la librería QRCode correctamente
 import { Modal, Button, Spinner } from 'react-bootstrap';
 import io from 'socket.io-client';
 import './RegistrarVenta.css';
@@ -18,7 +18,7 @@ const RegistrarVenta = () => {
     const [productos, setProductos] = useState([]);
     const [venta, setVenta] = useState({
         clienteId: '',
-        vendedorId: '', 
+        vendedorId: '', // Asumimos que el vendedor está autenticado y su ID está disponible
         productos: [],
         total: 0,
     });
@@ -34,8 +34,7 @@ const RegistrarVenta = () => {
     useEffect(() => {
         async function verificarEstadoVendedor() {
             const response = await getEstadoVendedorRequest();
-            const { estado_vendedor_id, rol_id } = response.data;
-            if (rol_id === 2 && estado_vendedor_id === 2) { // Solo mostrar el modal si es vendedor y su estado es 2
+            if (response.data.estado_vendedor_id === 2) {
                 setShowEstadoModal(true);
             }
         }
@@ -51,9 +50,9 @@ const RegistrarVenta = () => {
         async function loadProductos() {
             try {
                 const responseProductos = await inventarioList();
-                setProductos(responseProductos.data);
+                setProductos(responseProductos);
             } catch (error) {
-                console.error('Error al cargar productos:', error);
+                console.error('Error al cargar los productos:', error);
             }
         }
 
