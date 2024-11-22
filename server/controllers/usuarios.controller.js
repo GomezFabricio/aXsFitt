@@ -195,15 +195,6 @@ export const updateUser = async (req, res) => {
 
         const currentRoleIds = currentRoles.map(role => role.rol_id);
 
-        // Actualizar los roles del usuario
-        await pool.query("DELETE FROM usuarios_roles WHERE usuario_id = ?", [id]);
-        for (const rolId of roles) {
-            await pool.query(
-                "INSERT INTO usuarios_roles (usuario_id, rol_id) VALUES (?, ?)",
-                [id, rolId]
-            );
-        }
-
         // Manejar el rol de vendedor
         const isVendedor = roles.includes(2);
         const wasVendedor = currentRoleIds.includes(2);
@@ -242,6 +233,15 @@ export const updateUser = async (req, res) => {
             if (vendedor.length > 0 && vendedor[0].estado_vendedor_id === 2) {
                 await activateVendedor({ params: { id: vendedor[0].vendedor_id } });
             }
+        }
+
+        // Actualizar los roles del usuario
+        await pool.query("DELETE FROM usuarios_roles WHERE usuario_id = ?", [id]);
+        for (const rolId of roles) {
+            await pool.query(
+                "INSERT INTO usuarios_roles (usuario_id, rol_id) VALUES (?, ?)",
+                [id, rolId]
+            );
         }
 
         res.status(200).json({ message: 'Usuario actualizado exitosamente' });

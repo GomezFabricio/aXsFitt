@@ -204,7 +204,18 @@ export const deactivateVendedor = async (req, res = null) => {
     const { id } = req.params;
 
     try {
+        // Obtener el persona_id asociado al vendedor
+        const [vendedor] = await pool.query("SELECT persona_id FROM vendedores WHERE vendedor_id = ?", [id]);
+        if (vendedor.length === 0) {
+            throw new Error('Vendedor no encontrado');
+        }
+        const personaId = vendedor[0].persona_id;
+
+        // Desactivar el vendedor
         await pool.query("UPDATE vendedores SET estado_vendedor_id = 2 WHERE vendedor_id = ?", [id]);
+
+        // Eliminar el rol de vendedor en usuarios_roles
+        await pool.query("DELETE FROM usuarios_roles WHERE usuario_id = (SELECT usuario_id FROM usuarios WHERE persona_id = ?) AND rol_id = ?", [personaId, 2]);
 
         if (res) {
             res.json({ message: 'Vendedor dado de baja exitosamente' });
@@ -227,7 +238,18 @@ export const activateVendedor = async (req, res = null) => {
     const { id } = req.params;
 
     try {
+        // Obtener el persona_id asociado al vendedor
+        const [vendedor] = await pool.query("SELECT persona_id FROM vendedores WHERE vendedor_id = ?", [id]);
+        if (vendedor.length === 0) {
+            throw new Error('Vendedor no encontrado');
+        }
+        const personaId = vendedor[0].persona_id;
+
+        // Activar el vendedor
         await pool.query("UPDATE vendedores SET estado_vendedor_id = 1 WHERE vendedor_id = ?", [id]);
+
+        // Asignar el rol de vendedor en usuarios_roles
+        await pool.query("INSERT INTO usuarios_roles (usuario_id, rol_id) VALUES ((SELECT usuario_id FROM usuarios WHERE persona_id = ?), ?) ON DUPLICATE KEY UPDATE rol_id = rol_id", [personaId, 2]);
 
         if (res) {
             res.json({ message: 'Vendedor reactivado exitosamente' });
