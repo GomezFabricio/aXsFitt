@@ -5,11 +5,11 @@ import { createUsuarioRequest, getRolesRequest } from '../../../api/usuarios.api
 import FormularioPersona from '../../../components/FormularioPersona/FormularioPersona';
 import FormularioUsuario from '../../../components/FormularioUsuario/FormularioUsuario';
 import FormularioRol from '../../../components/FormularioRol/FormularioRol';
-import * as Yup from 'yup'; // Importar Yup
+import * as Yup from 'yup';
+import verifyEmail from '../../../utils/verifyEmail';
 import './UsuariosCreate.css';
 import '../../../assets/styles/buttons.css';
 
-// Definir esquemas de validación con Yup
 const validationSchemaStep1 = Yup.object().shape({
   persona_nombre: Yup.string()
     .required('El nombre es obligatorio')
@@ -48,6 +48,7 @@ const UsuariosCreate = () => {
   const [step, setStep] = useState(1);
   const [roles, setRoles] = useState([]);
   const [selectedRoles, setSelectedRoles] = useState([]);
+  const [emailValid, setEmailValid] = useState(true); // Estado para la validez del email
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -76,6 +77,13 @@ const UsuariosCreate = () => {
     setStep(step - 1);
   };
 
+  const handleEmailBlur = async (e, handleBlur) => {
+    const email = e.target.value;
+    handleBlur(e);
+    const result = await verifyEmail(email);
+    setEmailValid(result && result.result === 'valid');
+  };
+
   return (
     <div className="container-page">
       <h1>Alta de Usuario</h1>
@@ -90,12 +98,11 @@ const UsuariosCreate = () => {
           usuario_email: "",
           usuario_pass: "",
         }}
-        validationSchema={step === 1 ? validationSchemaStep1 : validationSchemaStep2} // Añadir el esquema de validación según el paso
+        validationSchema={step === 1 ? validationSchemaStep1 : validationSchemaStep2}
         onSubmit={async (values, { setSubmitting }) => {
           try {
             if (step === 1) {
-              // Pasar al siguiente paso
-              handleNextStep(values, setErrors, validateForm);
+              handleNextStep(values, setSubmitting);
             } else {
               const personaData = {
                 persona_nombre: values.persona_nombre,
@@ -110,8 +117,6 @@ const UsuariosCreate = () => {
                 usuario_pass: values.usuario_pass,
               };
 
-              console.log('Datos enviados para crear el usuario:', { personaData, usuarioData, roles: selectedRoles });
-
               await createUsuarioRequest({ persona: personaData, usuario: usuarioData, roles: selectedRoles });
               navigate('/usuarios');
             }
@@ -121,7 +126,7 @@ const UsuariosCreate = () => {
           }
         }}
       >
-        {({ values, handleChange, setFieldValue, errors, touched, validateForm, setErrors, isSubmitting }) => (
+        {({ values, handleChange, handleBlur, setFieldValue, errors, touched, validateForm, setErrors, isSubmitting }) => (
           <Form className="form">
             {step === 1 ? (
               <div>
@@ -133,7 +138,7 @@ const UsuariosCreate = () => {
                   touched={touched}
                 />
                 <button 
-                  type="sumbit" 
+                  type="submit" 
                   className="siguiente-button" 
                   onClick={() => handleNextStep(values, setErrors, validateForm)}
                   disabled={isSubmitting}
@@ -143,8 +148,10 @@ const UsuariosCreate = () => {
               </div>
             ) : (
               <div>
+                {!emailValid && <div className="error-message-email">El correo electrónico ingresado es inexistente. Por favor, reviselo.</div>}
                 <FormularioUsuario 
                   handleChange={handleChange} 
+                  handleBlur={(e) => handleEmailBlur(e, handleBlur)} 
                   setFieldValue={setFieldValue} 
                   values={values} 
                   errors={errors}
@@ -154,7 +161,7 @@ const UsuariosCreate = () => {
                 <button type="button" className="page-anterior-button" onClick={handlePreviousStep}>
                   Anterior
                 </button>
-                <button type="submit" className="alta-button" disabled={isSubmitting || selectedRoles.length === 0}>
+                <button type="submit" className="alta-button" disabled={isSubmitting || selectedRoles.length === 0 || !emailValid}>
                   Agregar Usuario
                 </button>
               </div>
