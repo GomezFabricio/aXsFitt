@@ -85,3 +85,11 @@ export const updateUserProfile = async (data) => {
 export const updateUserPassword = async (currentPassword, newPassword) => {
     return await axios.put('https://localhost:4000/usuarios/perfil/password', { currentPassword, newPassword }, config);
 };
+
+// Nueva función para verificar si un correo electrónico ya existe
+export const checkEmailExistsRequest = async (email) => {
+    console.log(`Enviando solicitud GET a /usuarios/check-email/${email}`);
+    const response = await axios.get(`https://localhost:4000/usuarios/check-email/${email}`, config);
+    console.log('Respuesta recibida:', response.data);
+    return response;
+};

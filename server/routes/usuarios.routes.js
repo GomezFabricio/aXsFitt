@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createUser, getAllUsers, getInactiveUsers, getUserById, deactivateUser, updateUser, activateUser, getUserProfile, updateUserProfile, updateUserPassword } from "../controllers/usuarios.controller.js";
+import { createUser, getAllUsers, getInactiveUsers, getUserById, deactivateUser, updateUser, activateUser, getUserProfile, updateUserProfile, updateUserPassword, checkEmailExists } from "../controllers/usuarios.controller.js";
 
 const router = Router();
 
@@ -32,5 +32,8 @@ router.put("/usuarios/:id/baja", deactivateUser);
 
 // Reactivar un usuario (cambiar a activo)
 router.put("/usuarios/:id/activar", activateUser);
+
+// Verificar si un correo electrónico ya existe
+router.get("/usuarios/check-email/:email", checkEmailExists);
 
 export default router;
