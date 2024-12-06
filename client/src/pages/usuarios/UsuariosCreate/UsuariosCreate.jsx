@@ -6,7 +6,6 @@ import FormularioPersona from '../../../components/FormularioPersona/FormularioP
 import FormularioUsuario from '../../../components/FormularioUsuario/FormularioUsuario';
 import FormularioRol from '../../../components/FormularioRol/FormularioRol';
 import * as Yup from 'yup';
-import verifyEmail from '../../../utils/verifyEmail';
 import './UsuariosCreate.css';
 import '../../../assets/styles/buttons.css';
 
@@ -44,11 +43,20 @@ const validationSchemaStep2 = Yup.object().shape({
     .min(6, 'La contraseña debe tener al menos 6 caracteres'),
 });
 
+const generateRandomPassword = () => {
+  const length = 12;
+  const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  let password = "";
+  for (let i = 0, n = charset.length; i < length; ++i) {
+    password += charset.charAt(Math.floor(Math.random() * n));
+  }
+  return password;
+};
+
 const UsuariosCreate = () => {
   const [step, setStep] = useState(1);
   const [roles, setRoles] = useState([]);
   const [selectedRoles, setSelectedRoles] = useState([]);
-  const [emailValid, setEmailValid] = useState(true); // Estado para la validez del email
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -77,13 +85,6 @@ const UsuariosCreate = () => {
     setStep(step - 1);
   };
 
-  const handleEmailBlur = async (e, handleBlur) => {
-    const email = e.target.value;
-    handleBlur(e);
-    const result = await verifyEmail(email);
-    setEmailValid(result && result.result === 'valid');
-  };
-
   return (
     <div className="container-page">
       <h1>Alta de Usuario</h1>
@@ -96,7 +97,7 @@ const UsuariosCreate = () => {
           persona_fecha_nacimiento: "",
           persona_domicilio: "",
           usuario_email: "",
-          usuario_pass: "",
+          usuario_pass: generateRandomPassword(), // Generar contraseña aleatoria
         }}
         validationSchema={step === 1 ? validationSchemaStep1 : validationSchemaStep2}
         onSubmit={async (values, { setSubmitting }) => {
@@ -148,20 +149,20 @@ const UsuariosCreate = () => {
               </div>
             ) : (
               <div>
-                {!emailValid && <div className="error-message-email">El correo electrónico ingresado es inexistente. Por favor, reviselo.</div>}
                 <FormularioUsuario 
                   handleChange={handleChange} 
-                  handleBlur={(e) => handleEmailBlur(e, handleBlur)} 
+                  handleBlur={handleBlur} 
                   setFieldValue={setFieldValue} 
                   values={values} 
                   errors={errors}
                   touched={touched}
+                  disablePassword={true} // Deshabilitar el campo de contraseña
                 />
                 <FormularioRol roles={roles} selectedRoles={selectedRoles} setSelectedRoles={setSelectedRoles} />
                 <button type="button" className="page-anterior-button" onClick={handlePreviousStep}>
                   Anterior
                 </button>
-                <button type="submit" className="alta-button" disabled={isSubmitting || selectedRoles.length === 0 || !emailValid}>
+                <button type="submit" className="alta-button" disabled={isSubmitting || selectedRoles.length === 0}>
                   Agregar Usuario
                 </button>
               </div>
