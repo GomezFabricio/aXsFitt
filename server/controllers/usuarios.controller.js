@@ -416,13 +416,16 @@ export const updateUserPassword = async (req, res) => {
 
 export const checkEmailExists = async (req, res) => {
     const { email } = req.params;
+    console.log('Verificando correo electrónico:', email); // Agregar log
     try {
         const [rows] = await pool.query('SELECT * FROM usuarios WHERE usuario_email = ?', [email]);
+        console.log('Resultado de la consulta:', rows); // Agregar log
         if (rows.length > 0) {
             return res.status(400).json({ message: 'El correo electrónico ya está registrado' });
         }
         res.json({ message: 'El correo electrónico está disponible' });
     } catch (error) {
+        console.error('Error en checkEmailExists:', error); // Agregar log
         res.status(500).json({ message: error.message });
     }
 };

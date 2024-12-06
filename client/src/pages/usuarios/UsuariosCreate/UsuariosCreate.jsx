@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Formik, Form } from 'formik';
 import { useNavigate } from 'react-router-dom';
-import { createUsuarioRequest, getRolesRequest } from '../../../api/usuarios.api';
+import { createUsuarioRequest, getRolesRequest, checkEmailExistsRequest } from '../../../api/usuarios.api';
 import FormularioPersona from '../../../components/FormularioPersona/FormularioPersona';
 import FormularioUsuario from '../../../components/FormularioUsuario/FormularioUsuario';
 import FormularioRol from '../../../components/FormularioRol/FormularioRol';
@@ -57,6 +57,7 @@ const UsuariosCreate = () => {
   const [step, setStep] = useState(1);
   const [roles, setRoles] = useState([]);
   const [selectedRoles, setSelectedRoles] = useState([]);
+  const [emailError, setEmailError] = useState(''); // Estado para el mensaje de error del email
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -85,6 +86,24 @@ const UsuariosCreate = () => {
     setStep(step - 1);
   };
 
+  const handleEmailCheck = async (email) => {
+    console.log('Verificando correo electrónico:', email); // Agregar log
+    try {
+      const response = await checkEmailExistsRequest(email);
+      console.log('Respuesta de verificación de correo:', response.data); // Agregar log
+      if (response.data.message === 'El correo electrónico ya está registrado') {
+        setEmailError('El correo electrónico ya está registrado');
+        return false;
+      }
+      setEmailError('');
+      return true;
+    } catch (error) {
+      console.error('Error verificando el correo electrónico:', error); // Agregar log
+      setEmailError('Error verificando el correo electrónico');
+      return false;
+    }
+  };
+
   return (
     <div className="container-page">
       <h1>Alta de Usuario</h1>
@@ -105,6 +124,12 @@ const UsuariosCreate = () => {
             if (step === 1) {
               handleNextStep(values, setSubmitting);
             } else {
+              const emailValid = await handleEmailCheck(values.usuario_email);
+              if (!emailValid) {
+                setSubmitting(false);
+                return;
+              }
+
               const personaData = {
                 persona_nombre: values.persona_nombre,
                 persona_apellido: values.persona_apellido,
@@ -158,6 +183,7 @@ const UsuariosCreate = () => {
                   touched={touched}
                   disablePassword={true} // Deshabilitar el campo de contraseña
                 />
+                {emailError && <div className="error-email-message">{emailError}</div>}
                 <FormularioRol roles={roles} selectedRoles={selectedRoles} setSelectedRoles={setSelectedRoles} />
                 <button type="button" className="page-anterior-button" onClick={handlePreviousStep}>
                   Anterior

@@ -88,8 +88,13 @@ export const updateUserPassword = async (currentPassword, newPassword) => {
 
 // Nueva función para verificar si un correo electrónico ya existe
 export const checkEmailExistsRequest = async (email) => {
-    console.log(`Enviando solicitud GET a /usuarios/check-email/${email}`);
-    const response = await axios.get(`https://localhost:4000/usuarios/check-email/${email}`, config);
-    console.log('Respuesta recibida:', response.data);
-    return response;
+    console.log(`Enviando solicitud GET a /usuarios/check-email/${email}`); // Agregar log
+    try {
+        const response = await axios.get(`https://localhost:4000/usuarios/check-email/${email}`, config);
+        console.log('Respuesta recibida:', response.data); // Agregar log
+        return response;
+    } catch (error) {
+        console.error('Error en checkEmailExistsRequest:', error); // Agregar log
+        throw error;
+    }
 };
