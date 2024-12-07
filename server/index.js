@@ -16,6 +16,10 @@ import mercadopagoRoutes from './routes/mercadopago.routes.js';
 import authMiddleware from './middlewares/auth.middleware.js';
 import webhookRoutes from './routes/webhook.routes.js';
 import resetPasswordRoutes from './routes/auth.routes.js'
+import dotenv from 'dotenv';
+
+// Cargar las variables de entorno desde el archivo .env
+dotenv.config();
 
 const app = express();
 

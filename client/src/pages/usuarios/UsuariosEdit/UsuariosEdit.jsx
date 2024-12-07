@@ -173,6 +173,7 @@ const UsuarioEdit = () => {
                   errors={errors}
                   touched={touched}
                   disablePassword={true}
+                  disableEmail={true} // Deshabilitar el campo de correo electrónico
                 />
                 <FormularioRol roles={roles} selectedRoles={selectedRoles} setSelectedRoles={setSelectedRoles} />
                 <button type="button" className="page-anterior-button" onClick={handlePreviousStep}>
