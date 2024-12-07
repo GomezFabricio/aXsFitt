@@ -44,7 +44,6 @@ const UsuariosList = () => {
 
     const handleEdit = (usuarioId) => {
         navigate(`/usuarios/editar/${usuarioId}`);
-        
     };
 
     const handleBaja = (usuarioId) => {
@@ -101,6 +100,8 @@ const UsuariosList = () => {
                 onEdit={handleEdit} // Pasamos la función handleEdit
                 onBaja={handleBaja} // Pasamos la función handleBaja
                 loggedInUserId={loggedInUserId} // Pasamos el ID del usuario logueado
+                setModalContent={setModalContent} // Pasamos la función setModalContent
+                setModalIsOpen={setModalIsOpen} // Pasamos la función setModalIsOpen
             />
 
             <Modal show={modalIsOpen} onHide={closeModal} centered>
