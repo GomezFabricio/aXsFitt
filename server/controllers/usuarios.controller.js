@@ -3,6 +3,7 @@ import bcrypt from 'bcrypt';
 import { updatePersona, createPersona } from './personas.controller.js';
 import { createVendedor, deactivateVendedor, activateVendedor } from './vendedores.controller.js';
 import { obtenerPersonaIdDesdeToken } from './login.controller.js';
+import transporter from '../emailConfig.js';
 
 export const createUser = async (req, res = null) => {
     try {
@@ -46,6 +47,22 @@ export const createUser = async (req, res = null) => {
                 );
             }
         }
+
+        // Enviar correo electrónico al usuario
+        const mailOptions = {
+          from: 'cp15414621@gmail.com', 
+          to: usuario.usuario_email,
+          subject: 'Bienvenido a AXSFitt Suplements',
+          text: `Hola ${persona.persona_nombre},\n\nBienvenido a AXSFitt Suplements. Tus credenciales de ingreso son:\n\nCorreo electrónico: ${usuario.usuario_email}\nContraseña: ${usuario.usuario_pass}\n\nSaludos,\nEl equipo de AXSFitt Suplements`,
+        };
+
+        transporter.sendMail(mailOptions, (error, info) => {
+          if (error) {
+            console.error('Error al enviar el correo electrónico:', error);
+          } else {
+            console.log('Correo electrónico enviado:', info.response);
+          }
+        });
 
         const response = { id: usuarioId };
 

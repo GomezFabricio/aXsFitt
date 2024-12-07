@@ -99,7 +99,7 @@ const UsuariosCreate = () => {
       return true;
     } catch (error) {
       console.error('Error verificando el correo electrónico:', error); // Agregar log
-      setEmailError('Error verificando el correo electrónico');
+      setEmailError(error.message || 'Error verificando el correo electrónico');
       return false;
     }
   };

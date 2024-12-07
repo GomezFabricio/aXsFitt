@@ -94,7 +94,7 @@ export const checkEmailExistsRequest = async (email) => {
         console.log('Respuesta recibida:', response.data); // Agregar log
         return response;
     } catch (error) {
-        console.error('Error en checkEmailExistsRequest:', error); // Agregar log
-        throw error;
+        console.error('Error en checkEmailExistsRequest:', error.response.data); // Agregar log
+        throw error.response.data; // Lanzar el error con los datos de la respuesta
     }
 };
