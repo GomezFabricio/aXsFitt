@@ -2,7 +2,7 @@ import React from 'react';
 import '../../assets/styles/forms.css';
 import './FormularioPersona.css';
 
-const FormularioPersona = ({ handleChange, values, errors, touched }) => {
+const FormularioPersona = ({ handleChange, values, errors, touched, handleBlur }) => {
     return (
         <div className="formulario-persona">
             {/* Fila para Nombre y Apellido */}
@@ -37,6 +37,7 @@ const FormularioPersona = ({ handleChange, values, errors, touched }) => {
                         type="number" 
                         name='persona_dni' 
                         onChange={handleChange} 
+                        onBlur={handleBlur} // Manejar el evento onBlur
                         value={values.persona_dni || ''} // Vincular el valor con valor por defecto
                     />
                     {touched.persona_dni && errors.persona_dni && <div className="error-message">{errors.persona_dni}</div>}

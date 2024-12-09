@@ -13,15 +13,13 @@ import clientesRoutes from './routes/clientes.routes.js';
 import inventarioRoutes from './routes/inventario.routes.js';
 import ventasRoutes from './routes/ventas.routes.js';
 import mercadopagoRoutes from './routes/mercadopago.routes.js'; 
+import personasRoutes from './routes/personas.routes.js';
 import authMiddleware from './middlewares/auth.middleware.js';
 import webhookRoutes from './routes/webhook.routes.js';
 import resetPasswordRoutes from './routes/auth.routes.js'
-import dotenv from 'dotenv';
-
-// Cargar las variables de entorno desde el archivo .env
-dotenv.config();
 
 const app = express();
+
 
 // Configuración de CORS
 app.use(cors({
@@ -49,6 +47,7 @@ app.use(clientesRoutes);
 app.use(ventasRoutes);
 app.use(inventarioRoutes);
 app.use(mercadopagoRoutes); 
+app.use(personasRoutes);
 
 // Cargar archivos SSL
 const options = {

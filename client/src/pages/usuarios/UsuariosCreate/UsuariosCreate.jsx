@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Formik, Form } from 'formik';
 import { useNavigate } from 'react-router-dom';
 import { createUsuarioRequest, getRolesRequest, checkEmailExistsRequest } from '../../../api/usuarios.api';
+import { checkDniExistsRequest } from '../../../api/personas.api'; // Importar la función de verificación del DNI
 import FormularioPersona from '../../../components/FormularioPersona/FormularioPersona';
 import FormularioUsuario from '../../../components/FormularioUsuario/FormularioUsuario';
 import FormularioRol from '../../../components/FormularioRol/FormularioRol';
@@ -58,6 +59,7 @@ const UsuariosCreate = () => {
   const [roles, setRoles] = useState([]);
   const [selectedRoles, setSelectedRoles] = useState([]);
   const [emailError, setEmailError] = useState(''); // Estado para el mensaje de error del email
+  const [dniError, setDniError] = useState(''); // Estado para el mensaje de error del DNI
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -72,14 +74,17 @@ const UsuariosCreate = () => {
     loadRoles();
   }, []);
 
-  const handleNextStep = (values, setErrors, validateForm) => {
-    validateForm().then(errors => {
-      if (Object.keys(errors).length === 0) {
-        setStep(step + 1);
-      } else {
-        setErrors(errors);
+  const handleNextStep = async (values, setErrors, validateForm) => {
+    const errors = await validateForm();
+    if (Object.keys(errors).length === 0) {
+      if (dniError) {
+        setErrors({ persona_dni: dniError });
+        return;
       }
-    });
+      setStep(step + 1);
+    } else {
+      setErrors(errors);
+    }
   };
 
   const handlePreviousStep = () => {
@@ -87,10 +92,10 @@ const UsuariosCreate = () => {
   };
 
   const handleEmailCheck = async (email) => {
-    console.log('Verificando correo electrónico:', email); // Agregar log
+    console.log('Verificando correo electrónico:', email);
     try {
       const response = await checkEmailExistsRequest(email);
-      console.log('Respuesta de verificación de correo:', response.data); // Agregar log
+      console.log('Respuesta de verificación de correo:', response.data);
       if (response.data.message === 'El correo electrónico ya está registrado') {
         setEmailError('El correo electrónico ya está registrado');
         return false;
@@ -98,8 +103,26 @@ const UsuariosCreate = () => {
       setEmailError('');
       return true;
     } catch (error) {
-      console.error('Error verificando el correo electrónico:', error); // Agregar log
+      console.error('Error verificando el correo electrónico:', error);
       setEmailError(error.message || 'Error verificando el correo electrónico');
+      return false;
+    }
+  };
+
+  const handleDniCheck = async (dni) => {
+    console.log('Verificando DNI:', dni);
+    try {
+      const response = await checkDniExistsRequest(dni);
+      console.log('Respuesta de verificación de DNI:', response.data);
+      if (response.data.message === 'El DNI ya está registrado') {
+        setDniError('El DNI ya está registrado');
+        return false;
+      }
+      setDniError('');
+      return true;
+    } catch (error) {
+      console.error('Error verificando el DNI:', error);
+      setDniError(error.message || 'Error verificando el DNI');
       return false;
     }
   };
@@ -122,7 +145,7 @@ const UsuariosCreate = () => {
         onSubmit={async (values, { setSubmitting }) => {
           try {
             if (step === 1) {
-              handleNextStep(values, setSubmitting);
+              handleNextStep(values, setErrors, validateForm);
             } else {
               const emailValid = await handleEmailCheck(values.usuario_email);
               if (!emailValid) {
@@ -162,7 +185,14 @@ const UsuariosCreate = () => {
                   values={values} 
                   errors={errors}
                   touched={touched}
+                  handleBlur={async (e) => {
+                    handleBlur(e);
+                    if (e.target.name === 'persona_dni') {
+                      await handleDniCheck(e.target.value);
+                    }
+                  }} // Pasar handleBlur para manejar el evento onBlur y validar el DNI
                 />
+                {dniError && <div className="error-dni-message">{dniError}</div>}
                 <button 
                   type="submit" 
                   className="siguiente-button" 

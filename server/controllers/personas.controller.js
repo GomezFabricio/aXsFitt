@@ -48,3 +48,22 @@ export const updatePersona = async (req) => {
 
     return result; // Devuelve el resultado en lugar de enviar una respuesta
 };
+
+/* -------------------------------------------------------------------------- */
+/*                          VERIFICAR SI UN DNI EXISTE                        */
+/* -------------------------------------------------------------------------- */
+export const checkDniExists = async (req, res) => {
+    const { dni } = req.params;
+    console.log('Verificando DNI:', dni);
+    try {
+        const [rows] = await pool.query('SELECT * FROM personas WHERE persona_dni = ?', [dni]);
+        console.log('Resultado de la consulta:', rows);
+        if (rows.length > 0) {
+            return res.status(400).json({ message: 'El DNI ya está registrado' });
+        }
+        res.json({ message: 'El DNI está disponible' });
+    } catch (error) {
+        console.error('Error en checkDniExists:', error);
+        res.status(500).json({ message: error.message });
+    }
+};
