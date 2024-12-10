@@ -209,6 +209,8 @@ const RegistrarVenta = () => {
 
     return (
         <div className="container-page">
+            <h1 className="text-3xl font-bold mb-4">Registrar Venta</h1>
+            <h2 className="text-xl mb-4">Complete el formulario para registrar una nueva venta.</h2>
             <RegistrarVentaForm
                 clientes={clientes}
                 productos={productos}
