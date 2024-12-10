@@ -7,6 +7,6 @@ const router = Router();
 router.post('/request-password-reset', requestPasswordReset);
 
 // Ruta para restablecer la contraseña
-router.post('/reset-password', resetPassword);
+router.post('/reset-password/:token', resetPassword);
 
 export default router;

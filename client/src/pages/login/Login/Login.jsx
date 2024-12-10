@@ -32,6 +32,9 @@ const Login = () => {
                 {({ handleChange, values }) => (
                     <Form className="form">
                         <LoginForm handleChange={handleChange} values={values} />
+                        <div className="link-container">
+                            <Link to="/request-password-reset" className="button-recover">Recuperar Contraseña</Link>
+                        </div>
                         <div className="button-container">
                             <button type="submit" className="button-login">Iniciar Sesión</button>
                         </div>

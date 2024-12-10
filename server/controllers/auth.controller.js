@@ -2,16 +2,7 @@ import { pool } from '../db.js';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { SECRET_KEY } from '../config.js';
-import nodemailer from 'nodemailer';
-
-// Configurar nodemailer
-const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-        user: 'tu-email@gmail.com',
-        pass: 'tu-contraseña'
-    }
-});
+import transporter from '../emailConfig.js'; // Importar el transporte de correo electrónico
 
 // Controlador para solicitar la recuperación de contraseña
 export const requestPasswordReset = async (req, res) => {
@@ -27,10 +18,10 @@ export const requestPasswordReset = async (req, res) => {
         const token = jwt.sign({ email }, SECRET_KEY, { expiresIn: '1h' });
 
         const mailOptions = {
-            from: 'fabricio.gomez4371@gmail.com',
+            from: 'cp15414621@gmail.com', // Usar el correo configurado
             to: email,
             subject: 'Recuperación de contraseña',
-            text: `Para restablecer tu contraseña, haz clic en el siguiente enlace: http://localhost:3000/reset-password?token=${token}`
+            text: `Para restablecer tu contraseña, haz clic en el siguiente enlace: https://localhost:5174/reset-password?token=${token}`
         };
 
         await transporter.sendMail(mailOptions);
@@ -43,7 +34,8 @@ export const requestPasswordReset = async (req, res) => {
 
 // Controlador para restablecer la contraseña
 export const resetPassword = async (req, res) => {
-    const { token, newPassword } = req.body;
+    const { token } = req.params;
+    const { newPassword } = req.body;
 
     try {
         const decoded = jwt.verify(token, SECRET_KEY);

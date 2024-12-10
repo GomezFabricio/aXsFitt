@@ -16,10 +16,9 @@ import mercadopagoRoutes from './routes/mercadopago.routes.js';
 import personasRoutes from './routes/personas.routes.js';
 import authMiddleware from './middlewares/auth.middleware.js';
 import webhookRoutes from './routes/webhook.routes.js';
-import resetPasswordRoutes from './routes/auth.routes.js'
+import authRoutes from './routes/auth.routes.js'; 
 
 const app = express();
-
 
 // Configuración de CORS
 app.use(cors({
@@ -35,10 +34,14 @@ app.use(express.json());
 // Ruta del webhook (antes del middleware de autenticación)
 app.use(webhookRoutes);
 
+// Rutas de autenticación (antes del middleware de autenticación)
+app.use(authRoutes);
+
+// Middleware de autenticación
+/* app.use(authMiddleware); */
+
 // Rutas del sistema
 app.use(loginRoutes);
-app.use(resetPasswordRoutes);
-app.use(authMiddleware);
 app.use(menuRoutes);
 app.use(vendedoresRoutes);
 app.use(usuariosRolesRoutes);

@@ -1,22 +1,31 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { Modal, Button } from 'react-bootstrap';
 
 const ResetPassword = () => {
     const [newPassword, setNewPassword] = useState('');
     const [message, setMessage] = useState('');
+    const [modalIsOpen, setModalIsOpen] = useState(false);
     const location = useLocation();
+    const navigate = useNavigate();
     const token = new URLSearchParams(location.search).get('token');
 
     const handleSubmit = async (e) => {
         e.preventDefault();
 
         try {
-            const response = await axios.post('https://localhost:4000/reset-password', { token, newPassword });
+            const response = await axios.post(`https://localhost:4000/reset-password/${token}`, { newPassword });
             setMessage(response.data.message);
+            setModalIsOpen(true); // Mostrar el modal
         } catch (error) {
             setMessage(error.response.data.message);
         }
+    };
+
+    const closeModal = () => {
+        setModalIsOpen(false);
+        navigate('/login'); // Redirigir al login
     };
 
     return (
@@ -35,6 +44,20 @@ const ResetPassword = () => {
                 <button type="submit">Restablecer</button>
             </form>
             {message && <p>{message}</p>}
+
+            <Modal show={modalIsOpen} onHide={closeModal} centered>
+                <Modal.Header closeButton>
+                    <Modal.Title>Información</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <p>Contraseña restablecida correctamente</p>
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="primary" onClick={closeModal}>
+                        De acuerdo
+                    </Button>
+                </Modal.Footer>
+            </Modal>
         </div>
     );
 };

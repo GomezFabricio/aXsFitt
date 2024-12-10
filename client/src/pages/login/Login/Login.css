@@ -1,6 +1,6 @@
 .button-login {
     display: inline-block;
-    margin-top: 20px;
+    margin-top: 10px;
     padding: 10px 20px;
     background-color: #A23FA9;
     color: #ffffff;
@@ -21,7 +21,12 @@
     margin-top: 20px;
 }
 
-.error{
+.error {
     text-align: center;
     margin-bottom: 10px;
+}
+
+.link-container {
+    text-align: center;
+    margin-top: 20px;
 }
