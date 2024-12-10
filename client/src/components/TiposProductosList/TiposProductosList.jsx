@@ -1,11 +1,28 @@
-import React from 'react';
+import React, { useState } from 'react';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import '../../assets/styles/IconStyles.css';
 
 const TiposProductosList = ({ tiposProductos, onDelete, onEdit }) => {
+    const [searchTerm, setSearchTerm] = useState('');
+
+    const handleSearchChange = (event) => {
+        setSearchTerm(event.target.value);
+    };
+
+    const filteredTiposProductos = tiposProductos.filter(item =>
+        item.nombreTipoProducto.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
     return (
         <div className="overflow-x-auto">
-            {Array.isArray(tiposProductos) && tiposProductos.length > 0 ? (
+            <input
+                type="text"
+                placeholder="Buscar..."
+                value={searchTerm}
+                onChange={handleSearchChange}
+                className="search-input mb-4 p-2 border border-gray-300 rounded"
+            />
+            {Array.isArray(filteredTiposProductos) && filteredTiposProductos.length > 0 ? (
                 <table className="min-w-full bg-white border border-gray-200">
                     <thead>
                         <tr>
@@ -14,7 +31,7 @@ const TiposProductosList = ({ tiposProductos, onDelete, onEdit }) => {
                         </tr>
                     </thead>
                     <tbody>
-                        {tiposProductos.map((tipoProducto) => (
+                        {filteredTiposProductos.map((tipoProducto) => (
                             <tr key={tipoProducto.idTipoProducto}>
                                 <td className="px-4 py-2 border-b">{tipoProducto.nombreTipoProducto}</td>
                                 <td className="px-4 py-2 border-b flex space-x-2">

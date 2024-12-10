@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { Table } from 'react-bootstrap';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import '../../assets/styles/IconStyles.css';
 import VentaDetallesModal from '../VentaDetallesModal/VentaDetallesModal';
@@ -19,32 +18,34 @@ const VentasListTable = ({ ventas, onVerDetalles, selectedVenta, setSelectedVent
 
     return (
         <>
-            <Table striped bordered hover>
-                <thead>
-                    <tr>
-                        <th>Fecha</th>
-                        <th>Cliente</th>
-                        <th>Vendedor</th>
-                        <th>Total</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {ventas.map((venta) => (
-                        <tr key={venta.ventas_id}>
-                            <td>{formatDate(venta.venta_fecha)}</td>
-                            <td>{venta.clienteNombre && venta.clienteApellido ? `${venta.clienteNombre} ${venta.clienteApellido}` : ''}</td>
-                            <td>{venta.vendedorNombre && venta.vendedorApellido ? `${venta.vendedorNombre} ${venta.vendedorApellido}` : ''}</td>
-                            <td>{venta.venta_total}</td>
-                            <td className="action-buttons">
-                                <button onClick={() => handleVerDetallesClick(venta)} className="details-button btn btn-sm">
-                                    <i className="fas fa-eye icon"></i> Ver Detalles
-                                </button>
-                            </td>
+            <div className="overflow-x-auto">
+                <table className="min-w-full bg-white border border-gray-200">
+                    <thead>
+                        <tr>
+                            <th className="px-4 py-2 border-b">Fecha</th>
+                            <th className="px-4 py-2 border-b">Cliente</th>
+                            <th className="px-4 py-2 border-b">Vendedor</th>
+                            <th className="px-4 py-2 border-b">Total</th>
+                            <th className="px-4 py-2 border-b">Acciones</th>
                         </tr>
-                    ))}
-                </tbody>
-            </Table>
+                    </thead>
+                    <tbody>
+                        {ventas.map((venta) => (
+                            <tr key={venta.ventas_id}>
+                                <td className="px-4 py-2 border-b">{formatDate(venta.venta_fecha)}</td>
+                                <td className="px-4 py-2 border-b">{venta.clienteNombre && venta.clienteApellido ? `${venta.clienteNombre} ${venta.clienteApellido}` : ''}</td>
+                                <td className="px-4 py-2 border-b">{venta.vendedorNombre && venta.vendedorApellido ? `${venta.vendedorNombre} ${venta.vendedorApellido}` : ''}</td>
+                                <td className="px-4 py-2 border-b">{venta.venta_total}</td>
+                                <td className="px-4 py-2 border-b flex space-x-2">
+                                    <button onClick={() => handleVerDetallesClick(venta)} className="details-button btn btn-sm">
+                                        <i className="fas fa-eye icon"></i> Ver Detalles
+                                    </button>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
 
             {selectedVenta && (
                 <VentaDetallesModal
