@@ -36,12 +36,12 @@ app.use(webhookRoutes);
 
 // Rutas de autenticación (antes del middleware de autenticación)
 app.use(authRoutes);
+app.use(loginRoutes);
 
 // Middleware de autenticación
-/* app.use(authMiddleware); */
+app.use(authMiddleware);
 
 // Rutas del sistema
-app.use(loginRoutes);
 app.use(menuRoutes);
 app.use(vendedoresRoutes);
 app.use(usuariosRolesRoutes);

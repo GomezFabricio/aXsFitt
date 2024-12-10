@@ -7,7 +7,7 @@ import autoprefixer from 'autoprefixer';
 export default defineConfig({
   plugins: [react()],
   server: {
-    port: 5173,
+    port: 5174,
     https: {
       key: fs.readFileSync('../certificates/server.key'),
       cert: fs.readFileSync('../certificates/server.crt'),

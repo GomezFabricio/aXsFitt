@@ -29,21 +29,27 @@ const ResetPassword = () => {
     };
 
     return (
-        <div className="container-page">
-            <h1>Restablecer Contraseña</h1>
-            <form onSubmit={handleSubmit}>
-                <div className="form-group">
-                    <label>Nueva Contraseña</label>
+        <div className="container mx-auto p-4">
+            <button onClick={() => navigate(-1)} className="mb-4 p-2 bg-gray-800 text-white rounded">
+                ← Volver
+            </button>
+            <h1 className="text-2xl font-bold mb-4">Restablecer Contraseña</h1>
+            <form onSubmit={handleSubmit} className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+                <div className="mb-4">
+                    <label className="block text-gray-700 text-sm font-bold mb-2">Nueva Contraseña</label>
                     <input
                         type="password"
                         value={newPassword}
                         onChange={(e) => setNewPassword(e.target.value)}
                         required
+                        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                     />
                 </div>
-                <button type="submit">Restablecer</button>
+                <button type="submit" className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                    Restablecer
+                </button>
             </form>
-            {message && <p>{message}</p>}
+            {message && <p className="text-red-500 text-xs italic">{message}</p>}
 
             <Modal show={modalIsOpen} onHide={closeModal} centered>
                 <Modal.Header closeButton>

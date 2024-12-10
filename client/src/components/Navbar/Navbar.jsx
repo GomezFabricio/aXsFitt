@@ -83,7 +83,7 @@ const NavBar = () => {
                 <ul className="space-y-4 p-4">
                     {menuOptions.length > 0 ? (
                         menuOptions.map((option, index) => (
-                            <li key={index} className="hover:bg-gray-700 rounded px-2 py-1">
+                            <li key={index} className="hover:bg-gray-700 rounded px-4 py-2 border border-gray-600">
                                 <Link to={`/${option.toLowerCase().replace(/\s/g, '-')}`} className="text-white no-underline hover:text-gray-300">
                                     {option}
                                 </Link>
@@ -97,7 +97,7 @@ const NavBar = () => {
                     {user && (
                         <div>
                             <button
-                                className="w-full text-left px-2 py-1 bg-gray-700 rounded hover:bg-gray-600"
+                                className="w-full text-left px-4 py-2 bg-gray-700 rounded hover:bg-gray-600"
                                 onClick={toggleDropdown}
                             >
                                 {user.firstName} {user.lastName}
@@ -110,7 +110,7 @@ const NavBar = () => {
                                     )}
                                     <button
                                         onClick={handleLogout}
-                                        className="w-full text-left bg-red-500 rounded px-2 py-1 hover:bg-red-600"
+                                        className="w-full text-left bg-red-500 rounded px-4 py-2 hover:bg-red-600"
                                     >
                                         Salir
                                     </button>

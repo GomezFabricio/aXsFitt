@@ -1,6 +1,7 @@
 // controllers/vendedores.controller.js
 import { pool } from '../db.js';
 import { createPersona, updatePersona } from './personas.controller.js';
+import { obtenerPersonaIdDesdeToken } from './login.controller.js';
 
 /* -------------------------------------------------------------------------- */
 /*                    OBTENER TODOS LOS VENDEDORES                            */
@@ -19,9 +20,9 @@ export const getVendedores = async (req, res) => {
                 p.persona_domicilio,
                 p.persona_telefono, 
                 v.vendedor_comision_porcentaje,
-                (SELECT COUNT(*) FROM ventas WHERE vendedor_id = v.vendedor_id) AS ventas_realizadas,
-                (SELECT SUM(comision_monto) FROM comisiones WHERE vendedor_id = v.vendedor_id AND estado_comision_id = 2) AS comisiones_acumuladas,
-                (SELECT SUM(comision_monto) FROM comisiones WHERE vendedor_id = v.vendedor_id AND estado_comision_id = 1) AS comisiones_pendientes
+                COALESCE((SELECT COUNT(*) FROM ventas WHERE ventas.persona_id = p.persona_id), 0) AS ventas_realizadas,
+                COALESCE((SELECT SUM(comision_monto) FROM comisiones WHERE comisiones.vendedor_id = v.vendedor_id AND estado_comision_id = 2), 0) AS comisiones_acumuladas,
+                COALESCE((SELECT SUM(comision_monto) FROM comisiones WHERE comisiones.vendedor_id = v.vendedor_id AND estado_comision_id = 1), 0) AS comisiones_pendientes
             FROM 
                 vendedores v 
             INNER JOIN 

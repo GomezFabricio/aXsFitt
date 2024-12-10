@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { getVendedoresInactivosRequest, activateVendedorRequest } from '../../../api/vendedores.api';
 import SearchInput, { createFilter } from 'react-search-input';
 import VendedoresInactivosTable from '../../../components/VendedoresInactivosTable/VendedoresInactivosTable';
@@ -9,6 +10,7 @@ const KEYS_TO_FILTERS = ['nombre', 'apellido', 'dni', 'email']; // Campos a filt
 const VendedoresInactivosList = () => {
     const [vendedoresInactivos, setVendedoresInactivos] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
+    const navigate = useNavigate();
 
     const loadVendedoresInactivos = async () => {
         try {
@@ -37,7 +39,12 @@ const VendedoresInactivosList = () => {
 
     return (
         <div className="container-page">
-            <h1>Vendedores Inactivos</h1>
+            <div className="header">
+                <button onClick={() => navigate(-1)} className="mb-4 p-2 bg-gray-800 text-white rounded">
+                    ← Volver
+                </button>
+                <h1>Vendedores Inactivos</h1>
+            </div>
 
             <h2>En esta sección podrás ver y gestionar los vendedores inactivos.</h2>
 

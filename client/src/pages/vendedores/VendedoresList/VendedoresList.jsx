@@ -31,18 +31,18 @@ const VendedoresList = () => {
     navigate('/vendedores/inactivos'); // Navegamos a la página de vendedores inactivos
   };
 
-  const handleAgregarClick = () => {
+  /* const handleAgregarClick = () => {
     navigate('/create-vendedor'); // Navegamos a la página de agregar un nuevo vendedor
-  };
+  }; */
 
   return (
     <div className="container-page">
       <div className="header">
         <h1>Vendedores</h1>
         <div className="buttons-container">
-          <button className="agregar-button" onClick={handleAgregarClick}>
+          {/* <button className="agregar-button" onClick={handleAgregarClick}>
             Agregar Vendedor
-          </button>
+          </button> */}
           <button className="inactivos-button" onClick={handleInactivosClick}>
             Ver Inactivos
           </button>

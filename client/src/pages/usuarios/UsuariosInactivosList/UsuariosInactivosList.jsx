@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { getUsuariosInactivosRequest, activateUsuarioRequest } from '../../../api/usuarios.api';
 import SearchInput, { createFilter } from 'react-search-input';
 import UsuariosInactivosTable from '../../../components/UsuariosInactivosTable/UsuariosInactivosTable';
@@ -9,6 +10,7 @@ const KEYS_TO_FILTERS = ['persona_nombre', 'persona_apellido', 'persona_dni', 'u
 const UsuariosInactivosList = () => {
     const [usuarios, setUsuarios] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
+    const navigate = useNavigate();
 
     useEffect(() => {
         async function loadUsuariosInactivos() {
@@ -41,6 +43,9 @@ const UsuariosInactivosList = () => {
     return (
         <div className="container-page">
             <div className="header">
+                <button onClick={() => navigate(-1)} className="mb-4 p-2 bg-gray-800 text-white rounded">
+                    ← Volver
+                </button>
                 <h1>Usuarios Inactivos</h1>
             </div>
 
