@@ -83,7 +83,10 @@ const NavBar = () => {
                 <ul className="space-y-4 p-4">
                     {menuOptions.length > 0 ? (
                         menuOptions.map((option, index) => (
-                            <li key={index} className="hover:bg-gray-700 rounded px-4 py-2 border border-gray-600">
+                            <li
+                                key={index}
+                                className="hover:bg-gray-700 px-4 py-3 border-b border-gray-600"
+                            >
                                 <Link to={`/${option.toLowerCase().replace(/\s/g, '-')}`} className="text-white no-underline hover:text-gray-300">
                                     {option}
                                 </Link>
