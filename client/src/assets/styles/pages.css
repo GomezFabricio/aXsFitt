@@ -14,6 +14,7 @@ html, body, #root {
     max-width: 1200px;
     margin: 0 auto;
     padding: 20px;
+    gap: 10px;
 }
 
 .container-page > h1 {
@@ -34,10 +35,11 @@ html, body, #root {
 
 .header {
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
     margin-bottom: 5px;
     position: relative;
+    gap: 10px;
 }
 
 .header h1 {
@@ -46,6 +48,31 @@ html, body, #root {
     font-weight: 400;
     text-align: center;
     flex-grow: 1;
+}
+
+.buttons-container {
+    display: flex;
+    gap: 10px;
+}
+
+/* Media query para pantallas pequeñas */
+@media (max-width: 768px) {
+    .header {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .buttons-container {
+        position: relative;
+        flex-direction: row;
+        width: 100%;
+        justify-content: center;
+    }
+
+    .buttons-container button {
+        width: 100%;
+        max-width: 200px;
+    }
 }
 
 .content {
