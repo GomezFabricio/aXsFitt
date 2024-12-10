@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import './ProductosList.css';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import '../../assets/styles/IconStyles.css';
 
@@ -18,37 +17,37 @@ const ProductosList = ({ productos, onDelete, onEdit }) => {
     );
 
     return (
-        <div>
+        <div className="overflow-x-auto">
             <input
                 type="text"
                 placeholder="Buscar..."
                 value={searchTerm}
                 onChange={handleSearchChange}
-                className="search-input"
+                className="search-input mb-4 p-2 border border-gray-300 rounded"
             />
             {Array.isArray(filteredProductos) && filteredProductos.length > 0 ? (
-                <table id="productosTable" className="display">
+                <table className="min-w-full bg-white border border-gray-200">
                     <thead>
                         <tr>
-                            <th>Código de Barras</th>
-                            <th>Nombre Producto</th>
-                            <th>Tipo Producto</th>
-                            <th>Marca Producto</th>
-                            <th>Acciones</th>
+                            <th className="px-4 py-2 border-b">Código de Barras</th>
+                            <th className="px-4 py-2 border-b">Nombre Producto</th>
+                            <th className="px-4 py-2 border-b">Tipo Producto</th>
+                            <th className="px-4 py-2 border-b">Marca Producto</th>
+                            <th className="px-4 py-2 border-b">Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
                         {filteredProductos.map((producto) => (
                             <tr key={producto.CodigoBarras}>
-                                <td>{producto.CodigoBarras}</td>
-                                <td>{producto.Producto}</td>
-                                <td>{producto.TipoProducto}</td>
-                                <td>{producto.MarcaProducto}</td>
-                                <td className="action-buttons">
-                                    <button className="edit-button btn btn-sm me-2" onClick={() => onEdit(producto)}>
+                                <td className="px-4 py-2 border-b">{producto.CodigoBarras}</td>
+                                <td className="px-4 py-2 border-b">{producto.Producto}</td>
+                                <td className="px-4 py-2 border-b">{producto.TipoProducto}</td>
+                                <td className="px-4 py-2 border-b">{producto.MarcaProducto}</td>
+                                <td className="px-4 py-2 border-b flex space-x-2">
+                                    <button className="edit-button btn btn-sm" onClick={() => onEdit(producto)}>
                                         <i className="fas fa-edit icon"></i>
                                     </button>
-                                    <button className="delete-button btn btn-sm me-2" onClick={() => onDelete(producto.idProducto)}>
+                                    <button className="delete-button btn btn-sm" onClick={() => onDelete(producto.idProducto)}>
                                         <i className="fas fa-trash-alt icon"></i>
                                     </button>
                                 </td>

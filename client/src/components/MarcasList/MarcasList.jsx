@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import './MarcasList.css';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import '../../assets/styles/IconStyles.css';
 
@@ -15,31 +14,31 @@ const MarcasList = ({ marcas, onEdit, onDelete }) => {
     );
 
     return (
-        <div id="marcasTableContainer">
+        <div className="overflow-x-auto">
             <input
                 type="text"
                 placeholder="Buscar..."
                 value={searchTerm}
                 onChange={handleSearchChange}
-                className="search-input"
+                className="search-input mb-4 p-2 border border-gray-300 rounded"
             />
             {Array.isArray(filteredMarcas) && filteredMarcas.length > 0 ? (
-                <table id="marcasTable" className="display">
+                <table className="min-w-full bg-white border border-gray-200">
                     <thead>
                         <tr>
-                            <th>Marca Producto</th>
-                            <th>Acciones</th>
+                            <th className="px-4 py-2 border-b">Marca Producto</th>
+                            <th className="px-4 py-2 border-b">Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
                         {filteredMarcas.map((marca) => (
                             <tr key={marca.idMarcaProducto}>
-                                <td>{marca.nombreMarcaProducto}</td>
-                                <td className="action-buttons">
-                                    <button className="edit-button btn btn-sm me-2" onClick={() => onEdit(marca)}>
+                                <td className="px-4 py-2 border-b">{marca.nombreMarcaProducto}</td>
+                                <td className="px-4 py-2 border-b flex space-x-2">
+                                    <button className="edit-button btn btn-sm" onClick={() => onEdit(marca)}>
                                         <i className="fas fa-edit icon"></i>
                                     </button>
-                                    <button className="delete-button btn btn-sm me-2" onClick={() => onDelete(marca.idMarcaProducto)}>
+                                    <button className="delete-button btn btn-sm" onClick={() => onDelete(marca.idMarcaProducto)}>
                                         <i className="fas fa-trash-alt icon"></i>
                                     </button>
                                 </td>

@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import './InventarioList.css';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import '../../assets/styles/IconStyles.css';
 
@@ -18,48 +17,48 @@ const InventarioList = ({ inventario, onDelete, onEdit, onReingreso }) => {
     );
 
     return (
-        <div>
+        <div className="overflow-x-auto">
             <input
                 type="text"
                 placeholder="Buscar..."
                 value={searchTerm}
                 onChange={handleSearchChange}
-                className="search-input"
+                className="search-input mb-4 p-2 border border-gray-300 rounded"
             />
             {Array.isArray(filteredInventario) && filteredInventario.length > 0 ? (
-                <table id="inventarioTable" className="display">
+                <table className="min-w-full bg-white border border-gray-200">
                     <thead>
                         <tr>
-                            <th>Código de Barras</th>
-                            <th>Producto</th>
-                            <th>Tipo</th>
-                            <th>Marca</th>
-                            <th>Cantidad</th>
-                            <th>Precio Costo</th>
-                            <th>Precio Venta</th>
-                            <th>Precio Afiliados</th>
-                            <th>Acciones</th>
+                            <th className="px-4 py-2 border-b">Código de Barras</th>
+                            <th className="px-4 py-2 border-b">Producto</th>
+                            <th className="px-4 py-2 border-b">Tipo</th>
+                            <th className="px-4 py-2 border-b">Marca</th>
+                            <th className="px-4 py-2 border-b">Cantidad</th>
+                            <th className="px-4 py-2 border-b">Precio Costo</th>
+                            <th className="px-4 py-2 border-b">Precio Venta</th>
+                            <th className="px-4 py-2 border-b">Precio Afiliados</th>
+                            <th className="px-4 py-2 border-b">Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
                         {filteredInventario.map((item) => (
                             <tr key={item.CodigoBarras}>
-                                <td>{item.CodigoBarras}</td>
-                                <td>{item.Producto}</td>
-                                <td>{item.Tipo}</td>
-                                <td>{item.Marca}</td>
-                                <td>{item.Cantidad}</td>
-                                <td>{item.PrecioCosto}</td>
-                                <td>{item.PrecioVenta}</td>
-                                <td>{item.PrecioAfiliados}</td>
-                                <td className="action-buttons">
-                                    <button className="edit-button btn btn-sm me-2" onClick={() => onEdit(item.idProducto)}>
+                                <td className="px-4 py-2 border-b">{item.CodigoBarras}</td>
+                                <td className="px-4 py-2 border-b">{item.Producto}</td>
+                                <td className="px-4 py-2 border-b">{item.Tipo}</td>
+                                <td className="px-4 py-2 border-b">{item.Marca}</td>
+                                <td className="px-4 py-2 border-b">{item.Cantidad}</td>
+                                <td className="px-4 py-2 border-b">{item.PrecioCosto}</td>
+                                <td className="px-4 py-2 border-b">{item.PrecioVenta}</td>
+                                <td className="px-4 py-2 border-b">{item.PrecioAfiliados}</td>
+                                <td className="px-4 py-2 border-b flex space-x-2">
+                                    <button className="edit-button btn btn-sm" onClick={() => onEdit(item.idProducto)}>
                                         <i className="fas fa-edit icon"></i>
                                     </button>
-                                    <button className="delete-button btn btn-sm me-2" onClick={() => onDelete(item.idProducto)}>
+                                    <button className="delete-button btn btn-sm" onClick={() => onDelete(item.idProducto)}>
                                         <i className="fas fa-trash-alt icon"></i>
                                     </button>
-                                    <button className="reingreso-button btn btn-sm me-2" onClick={() => onReingreso(item.idProducto)}>
+                                    <button className="reingreso-button btn btn-sm" onClick={() => onReingreso(item.idProducto)}>
                                         <i className="fas fa-plus-circle icon"></i>
                                     </button>
                                 </td>
