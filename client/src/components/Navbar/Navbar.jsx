@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode'; 
 import { getRolesByUserIdRequest } from '../../api/usuarios.api'; 
-import './NavBar.css';
 
 const NavBar = () => {
     const [menuOptions, setMenuOptions] = useState([]);
@@ -10,10 +9,10 @@ const NavBar = () => {
     const [user, setUser] = useState(null);
     const [dropdownVisible, setDropdownVisible] = useState(false);
     const [roles, setRoles] = useState([]);
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false); // Estado para controlar la barra lateral
     const navigate = useNavigate();
 
     useEffect(() => {
-        // Recuperar las opciones del menú desde localStorage
         const storedMenuOptions = localStorage.getItem('menuOptions');
         if (storedMenuOptions) {
             setMenuOptions(JSON.parse(storedMenuOptions));
@@ -21,7 +20,6 @@ const NavBar = () => {
             setError('No hay opciones de menú disponibles');
         }
 
-        // Recuperar el token desde localStorage y decodificarlo
         const token = localStorage.getItem('token');
         if (token) {
             try {
@@ -31,7 +29,6 @@ const NavBar = () => {
                     lastName: decodedToken.lastName,
                 });
 
-                // Obtener los roles del usuario
                 const fetchRoles = async () => {
                     try {
                         const response = await getRolesByUserIdRequest(decodedToken.userId);
@@ -58,41 +55,72 @@ const NavBar = () => {
         setDropdownVisible(!dropdownVisible);
     };
 
+    const toggleSidebar = () => {
+        setIsSidebarOpen(!isSidebarOpen);
+    };
+
     return (
-        <nav className="navbar">
-            {error && <p className="error">{error}</p>}
-            <ul>
-                {menuOptions.length > 0 ? (
-                    menuOptions.map((option, index) => (
-                        <li key={index}>
-                            <Link to={`/${option.toLowerCase().replace(/\s/g, '-')}`}>
-                                {option}
-                            </Link>
-                        </li>
-                    ))
-                ) : (
-                    <li>Cargando opciones...</li>
-                )}
-            </ul>
-            <div className="user-menu">
-                {user && (
-                    <div className="user-dropdown">
-                        <button className="user-button" onClick={toggleDropdown}>
-                            {user.firstName} {user.lastName}
-                        </button>
-                        {dropdownVisible && (
-                            <div className="dropdown-content">
-                                <Link to="/mi-perfil">Mi perfil</Link>
-                                {roles.length > 1 && (
-                                    <Link to="/seleccion-rol">Roles</Link>
-                                )}
-                                <button onClick={handleLogout}>Salir</button>
-                            </div>
-                        )}
-                    </div>
-                )}
-            </div>
-        </nav>
+        <div className="flex h-screen">
+            {/* Botón de hamburguesa */}
+            <button
+                onClick={toggleSidebar}
+                className={`fixed top-4 left-4 z-30 text-white text-2xl bg-gray-800 p-2 rounded-full focus:outline-none transition-transform ${
+                    isSidebarOpen ? 'translate-x-64' : 'translate-x-0'
+                }`}
+            >
+                ☰
+            </button>
+
+            {/* Barra lateral */}
+            <aside
+                className={`fixed top-0 left-0 h-full bg-gray-800 text-white w-64 transition-transform transform z-20 ${
+                    isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
+                }`}
+            >
+                <div className="p-4">
+                    <h1 className="text-2xl font-bold">Mi Aplicación</h1>
+                </div>
+                <ul className="space-y-4 p-4">
+                    {menuOptions.length > 0 ? (
+                        menuOptions.map((option, index) => (
+                            <li key={index} className="hover:bg-gray-700 rounded px-2 py-1">
+                                <Link to={`/${option.toLowerCase().replace(/\s/g, '-')}`} className="text-white no-underline hover:text-gray-300">
+                                    {option}
+                                </Link>
+                            </li>
+                        ))
+                    ) : (
+                        <li>Cargando opciones...</li>
+                    )}
+                </ul>
+                <div className="mt-auto p-4">
+                    {user && (
+                        <div>
+                            <button
+                                className="w-full text-left px-2 py-1 bg-gray-700 rounded hover:bg-gray-600"
+                                onClick={toggleDropdown}
+                            >
+                                {user.firstName} {user.lastName}
+                            </button>
+                            {dropdownVisible && (
+                                <div className="mt-2 bg-gray-700 rounded p-2 space-y-2">
+                                    <Link to="/mi-perfil" className="block text-white no-underline hover:text-gray-300">Mi perfil</Link>
+                                    {roles.length > 1 && (
+                                        <Link to="/seleccion-rol" className="block text-white no-underline hover:text-gray-300">Roles</Link>
+                                    )}
+                                    <button
+                                        onClick={handleLogout}
+                                        className="w-full text-left bg-red-500 rounded px-2 py-1 hover:bg-red-600"
+                                    >
+                                        Salir
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+                    )}
+                </div>
+            </aside>
+        </div>
     );
 };
 

@@ -5,6 +5,7 @@ import NotFound from './pages/NotFound';
 import VendedorCreate from './pages/vendedores/VendedorCreate/VendedorCreate';
 import VendedorDetail from './pages/vendedores/VendedorDetail/VendedorDetail';
 import Navbar from './components/Navbar/Navbar';
+import Header from './components/Header/Header'; // Importar el componente Header
 import VendedoresInactivosList from './pages/vendedores/VendedoresInactivosList/VendedoresInactivosList';
 import VendedorEdit from './pages/vendedores/VendedorEdit/VendedorEdit';
 import Login from './pages/login/Login/Login';
@@ -71,9 +72,14 @@ function App() {
           path="/vendedores"
           element={
             <ProtectedRoute>
-              <Navbar /> {/* Navbar visible solo en rutas protegidas */}
-              <VendedoresList />
-              <Footer />
+              <div className="flex h-screen">
+                <Navbar /> {/* Menú lateral fijo */}
+                <div className="flex-1 flex flex-col overflow-auto"> 
+                  <Header /> {/* Header */}
+                  <VendedoresList /> {/* Contenido principal */}
+                  <Footer /> {/* Pie de página */}
+                </div>
+              </div>
             </ProtectedRoute>
           }
         />
@@ -82,9 +88,14 @@ function App() {
           path="/create-vendedor"
           element={
             <ProtectedRoute>
-              <Navbar />
-              <VendedorCreate />
-              <Footer />
+              <div className="flex h-screen">
+                <Navbar /> {/* Menú lateral fijo */}
+                <div className="flex-1 flex flex-col overflow-auto"> 
+                  <Header /> {/* Header */}
+                  <VendedorCreate /> {/* Contenido principal */}
+                  <Footer /> {/* Pie de página */}
+                </div>
+              </div>
             </ProtectedRoute>
           }
         />
@@ -93,9 +104,14 @@ function App() {
           path="/vendedor/:id"
           element={
             <ProtectedRoute>
-              <Navbar />
-              <VendedorDetail />
-              <Footer />
+              <div className="flex h-screen">
+                <Navbar /> {/* Menú lateral fijo */}
+                <div className="flex-1 flex flex-col overflow-auto"> 
+                  <Header /> {/* Header */}
+                  <VendedorDetail /> {/* Contenido principal */}
+                  <Footer /> {/* Pie de página */}
+                </div>
+              </div>
             </ProtectedRoute>
           }
         />
@@ -104,9 +120,14 @@ function App() {
           path="/vendedores/inactivos"
           element={
             <ProtectedRoute>
-              <Navbar />
-              <VendedoresInactivosList />
-              <Footer />
+              <div className="flex h-screen">
+                <Navbar /> {/* Menú lateral fijo */}
+                <div className="flex-1 flex flex-col overflow-auto"> 
+                  <Header /> {/* Header */}
+                  <VendedoresInactivosList /> {/* Contenido principal */}
+                  <Footer /> {/* Pie de página */}
+                </div>
+              </div>
             </ProtectedRoute>
           }
         />
@@ -115,9 +136,14 @@ function App() {
           path="/vendedor/:id/edit"
           element={
             <ProtectedRoute>
-              <Navbar />
-              <VendedorEdit />
-              <Footer />
+              <div className="flex h-screen">
+                <Navbar /> {/* Menú lateral fijo */}
+                <div className="flex-1 flex flex-col overflow-auto"> 
+                  <Header /> {/* Header */}
+                  <VendedorEdit /> {/* Contenido principal */}
+                  <Footer /> {/* Pie de página */}
+                </div>
+              </div>
             </ProtectedRoute>
           }
         />
@@ -126,9 +152,14 @@ function App() {
           path="/usuarios"
           element={
             <ProtectedRoute>
-              <Navbar />
-              <UsuariosList />
-              <Footer />
+              <div className="flex h-screen">
+                <Navbar /> {/* Menú lateral fijo */}
+                <div className="flex-1 flex flex-col overflow-auto"> 
+                  <Header /> {/* Header */}
+                  <UsuariosList /> {/* Contenido principal */}
+                  <Footer /> {/* Pie de página */}
+                </div>
+              </div>
             </ProtectedRoute>
           }
         />
@@ -137,9 +168,14 @@ function App() {
           path="/usuarios/inactivos"
           element={
             <ProtectedRoute>
-              <Navbar />
-              <UsuariosInactivosList />
-              <Footer />
+              <div className="flex h-screen">
+                <Navbar /> {/* Menú lateral fijo */}
+                <div className="flex-1 flex flex-col overflow-auto"> 
+                  <Header /> {/* Header */}
+                  <UsuariosInactivosList /> {/* Contenido principal */}
+                  <Footer /> {/* Pie de página */}
+                </div>
+              </div>
             </ProtectedRoute>
           }
         />
@@ -148,9 +184,14 @@ function App() {
           path="/usuarios/alta"
           element={
             <ProtectedRoute>
-              <Navbar />
-              <UsuariosCreate />
-              <Footer />
+              <div className="flex h-screen">
+                <Navbar /> {/* Menú lateral fijo */}
+                <div className="flex-1 flex flex-col overflow-auto"> 
+                  <Header /> {/* Header */}
+                  <UsuariosCreate /> {/* Contenido principal */}
+                  <Footer /> {/* Pie de página */}
+                </div>
+              </div>
             </ProtectedRoute>
           }
         />
@@ -159,9 +200,14 @@ function App() {
           path="/usuarios/editar/:id" // Nueva ruta para editar usuario
           element={
             <ProtectedRoute>
-              <Navbar />
-              <UsuarioEdit />
-              <Footer />
+              <div className="flex h-screen">
+                <Navbar /> {/* Menú lateral fijo */}
+                <div className="flex-1 flex flex-col overflow-auto"> 
+                  <Header /> {/* Header */}
+                  <UsuarioEdit /> {/* Contenido principal */}
+                  <Footer /> {/* Pie de página */}
+                </div>
+              </div>
             </ProtectedRoute>
           }
         />
@@ -171,9 +217,14 @@ function App() {
           path="/inventario"
           element={
             <ProtectedRoute>
-              <Navbar />
-              <Inventario />
-              <Footer />
+              <div className="flex h-screen">
+                <Navbar /> {/* Menú lateral fijo */}
+                <div className="flex-1 flex flex-col overflow-auto"> 
+                  <Header /> {/* Header */}
+                  <Inventario /> {/* Contenido principal */}
+                  <Footer /> {/* Pie de página */}
+                </div>
+              </div>
             </ProtectedRoute>
           }
         />
@@ -182,9 +233,14 @@ function App() {
           path="/marcas-productos"
           element={
             <ProtectedRoute>
-              <Navbar />
-              <MarcasProductos />
-              <Footer />
+              <div className="flex h-screen">
+                <Navbar /> {/* Menú lateral fijo */}
+                <div className="flex-1 flex flex-col overflow-auto"> 
+                  <Header /> {/* Header */}
+                  <MarcasProductos /> {/* Contenido principal */}
+                  <Footer /> {/* Pie de página */}
+                </div>
+              </div>
             </ProtectedRoute>
           }
         />
@@ -193,9 +249,14 @@ function App() {
           path="/productos"
           element={
             <ProtectedRoute>
-              <Navbar />
-              <Productos />
-              <Footer />
+              <div className="flex h-screen">
+                <Navbar /> {/* Menú lateral fijo */}
+                <div className="flex-1 flex flex-col overflow-auto"> 
+                  <Header /> {/* Header */}
+                  <Productos /> {/* Contenido principal */}
+                  <Footer /> {/* Pie de página */}
+                </div>
+              </div>
             </ProtectedRoute>
           }
         />
@@ -204,9 +265,14 @@ function App() {
           path="/tipos-productos"
           element={
             <ProtectedRoute>
-              <Navbar />
-              <TiposProductos />
-              <Footer />
+              <div className="flex h-screen">
+                <Navbar /> {/* Menú lateral fijo */}
+                <div className="flex-1 flex flex-col overflow-auto"> 
+                  <Header /> {/* Header */}
+                  <TiposProductos /> {/* Contenido principal */}
+                  <Footer /> {/* Pie de página */}
+                </div>
+              </div>
             </ProtectedRoute>
           }
         />
@@ -216,9 +282,14 @@ function App() {
           path="/clientes"
           element={
             <ProtectedRoute>
-              <Navbar />
-              <ClientesList />
-              <Footer />
+              <div className="flex h-screen">
+                <Navbar /> {/* Menú lateral fijo */}
+                <div className="flex-1 flex flex-col overflow-auto"> 
+                  <Header /> {/* Header */}
+                  <ClientesList /> {/* Contenido principal */}
+                  <Footer /> {/* Pie de página */}
+                </div>
+              </div>
             </ProtectedRoute>
           }
         />
@@ -227,9 +298,14 @@ function App() {
           path="/clientes/alta"
           element={
             <ProtectedRoute>
-              <Navbar />
-              <ClientesCreate />
-              <Footer />
+              <div className="flex h-screen">
+                <Navbar /> {/* Menú lateral fijo */}
+                <div className="flex-1 flex flex-col overflow-auto"> 
+                  <Header /> {/* Header */}
+                  <ClientesCreate /> {/* Contenido principal */}
+                  <Footer /> {/* Pie de página */}
+                </div>
+              </div>
             </ProtectedRoute>
           }
         />
@@ -238,9 +314,14 @@ function App() {
           path="/clientes/editar/:id"
           element={
             <ProtectedRoute>
-              <Navbar />
-              <ClientesEdit />
-              <Footer />
+              <div className="flex h-screen">
+                <Navbar /> {/* Menú lateral fijo */}
+                <div className="flex-1 flex flex-col overflow-auto"> 
+                  <Header /> {/* Header */}
+                  <ClientesEdit /> {/* Contenido principal */}
+                  <Footer /> {/* Pie de página */}
+                </div>
+              </div>
             </ProtectedRoute>
           }
         />
@@ -249,9 +330,14 @@ function App() {
           path="/clientes/inactivos"
           element={
             <ProtectedRoute>
-              <Navbar />
-              <ClientesInactivosList />
-              <Footer />
+              <div className="flex h-screen">
+                <Navbar /> {/* Menú lateral fijo */}
+                <div className="flex-1 flex flex-col overflow-auto"> 
+                  <Header /> {/* Header */}
+                  <ClientesInactivosList /> {/* Contenido principal */}
+                  <Footer /> {/* Pie de página */}
+                </div>
+              </div>
             </ProtectedRoute>
           }
         />
@@ -261,9 +347,14 @@ function App() {
           path="/ventas"
           element={
             <ProtectedRoute>
-              <Navbar />
-              <VentasHome />
-              <Footer />
+              <div className="flex h-screen">
+                <Navbar /> {/* Menú lateral fijo */}
+                <div className="flex-1 flex flex-col overflow-auto"> 
+                  <Header /> {/* Header */}
+                  <VentasHome /> {/* Contenido principal */}
+                  <Footer /> {/* Pie de página */}
+                </div>
+              </div>
             </ProtectedRoute>
           }
         />
@@ -272,9 +363,14 @@ function App() {
           path="/ventas/listado"
           element={
             <ProtectedRoute>
-              <Navbar />
-              <VentasList />
-              <Footer />
+              <div className="flex h-screen">
+                <Navbar /> {/* Menú lateral fijo */}
+                <div className="flex-1 flex flex-col overflow-auto"> 
+                  <Header /> {/* Header */}
+                  <VentasList /> {/* Contenido principal */}
+                  <Footer /> {/* Pie de página */}
+                </div>
+              </div>
             </ProtectedRoute>
           }
         />
@@ -283,9 +379,14 @@ function App() {
           path="/ventas/registrar"
           element={
             <ProtectedRoute>
-              <Navbar />
-              <RegistrarVenta />
-              <Footer />
+              <div className="flex h-screen">
+                <Navbar /> {/* Menú lateral fijo */}
+                <div className="flex-1 flex flex-col overflow-auto"> 
+                  <Header /> {/* Header */}
+                  <RegistrarVenta /> {/* Contenido principal */}
+                  <Footer /> {/* Pie de página */}
+                </div>
+              </div>
             </ProtectedRoute>
           }
         />
@@ -294,9 +395,14 @@ function App() {
           path="/registrar-venta"
           element={
             <ProtectedRoute>
-              <Navbar />
-              <RegistrarVenta />
-              <Footer />
+              <div className="flex h-screen">
+                <Navbar /> {/* Menú lateral fijo */}
+                <div className="flex-1 flex flex-col overflow-auto"> 
+                  <Header /> {/* Header */}
+                  <RegistrarVenta /> {/* Contenido principal */}
+                  <Footer /> {/* Pie de página */}
+                </div>
+              </div>
             </ProtectedRoute>
           }
         />
@@ -305,9 +411,14 @@ function App() {
           path="/mis-ventas"
           element={
             <ProtectedRoute>
-              <Navbar />
-              <VentasList />
-              <Footer />
+              <div className="flex h-screen">
+                <Navbar /> {/* Menú lateral fijo */}
+                <div className="flex-1 flex flex-col overflow-auto"> 
+                  <Header /> {/* Header */}
+                  <VentasList /> {/* Contenido principal */}
+                  <Footer /> {/* Pie de página */}
+                </div>
+              </div>
             </ProtectedRoute>
           }
         />
@@ -317,9 +428,14 @@ function App() {
           path="/mi-perfil"
           element={
             <ProtectedRoute>
-              <Navbar />
-              <MiPerfil />
-              <Footer />
+              <div className="flex h-screen">
+                <Navbar /> {/* Menú lateral fijo */}
+                <div className="flex-1 flex flex-col overflow-auto"> 
+                  <Header /> {/* Header */}
+                  <MiPerfil /> {/* Contenido principal */}
+                  <Footer /> {/* Pie de página */}
+                </div>
+              </div>
             </ProtectedRoute>
           }
         />
@@ -328,9 +444,14 @@ function App() {
           path="*"
           element={
             <ProtectedRoute>
-              <Navbar /> {/* Navbar visible solo en rutas protegidas */}
-              <NotFound />
-              <Footer />
+              <div className="flex h-screen">
+                <Navbar /> {/* Menú lateral fijo */}
+                <div className="flex-1 flex flex-col overflow-auto"> 
+                  <Header /> {/* Header */}
+                  <NotFound /> {/* Contenido principal */}
+                  <Footer /> {/* Pie de página */}
+                </div>
+              </div>
             </ProtectedRoute>
           }
         />
