@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { Formik, Form } from 'formik';
 import { useNavigate } from 'react-router-dom';
-import { createVendedorRequest } from '../../../api/vendedores.api';
+import { createUsuarioRequest, checkEmailExistsRequest } from '../../../api/usuarios.api'; // Importar createUsuarioRequest y checkEmailExistsRequest
+import { checkDniExistsRequest } from '../../../api/personas.api'; // Importar checkDniExistsRequest
 import FormularioPersona from '../../../components/FormularioPersona/FormularioPersona';
 import FormularioUsuario from '../../../components/FormularioUsuario/FormularioUsuario';
 import * as Yup from 'yup'; // Importar Yup
@@ -38,28 +39,40 @@ const validationSchemaStep2 = Yup.object().shape({
   usuario_email: Yup.string()
     .email('El correo electrónico no es válido')
     .required('El correo electrónico es obligatorio'),
-  usuario_pass: Yup.string()
-    .required('La contraseña es obligatoria')
-    .min(6, 'La contraseña debe tener al menos 6 caracteres'),
 });
 
 const VendedorCreate = () => {
   const [step, setStep] = useState(1);
   const navigate = useNavigate();
 
-  const handleNextStep = (values, setErrors, validateForm) => {
-    validateForm().then(errors => {
-      if (Object.keys(errors).length === 0) {
-        localStorage.setItem('personaData', JSON.stringify(values));
-        setStep(step + 1);
-      } else {
-        setErrors(errors);
+  const handleNextStep = async (values, setErrors, validateForm) => {
+    const errors = await validateForm();
+    if (Object.keys(errors).length === 0) {
+      // Validar el DNI
+      const dniExists = await checkDniExistsRequest(values.persona_dni);
+      if (dniExists.data.exists) {
+        setErrors({ persona_dni: 'El DNI ya está registrado' });
+        return;
       }
-    });
+
+      localStorage.setItem('personaData', JSON.stringify(values));
+      setStep(step + 1);
+    } else {
+      setErrors(errors);
+    }
   };
 
   const handlePreviousStep = () => {
     setStep(step - 1);
+  };
+
+  const generateRandomPassword = () => {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let password = '';
+    for (let i = 0; i < 8; i++) {
+      password += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return password;
   };
 
   return (
@@ -75,15 +88,23 @@ const VendedorCreate = () => {
           persona_fecha_nacimiento: "",
           persona_domicilio: "",
           usuario_email: "",
-          usuario_pass: "",
+          usuario_pass: generateRandomPassword(), // Generar una contraseña aleatoria
         }}
         validationSchema={step === 1 ? validationSchemaStep1 : validationSchemaStep2} // Añadir el esquema de validación según el paso
-        onSubmit={async (values, { setSubmitting }) => {
+        onSubmit={async (values, { setSubmitting, setErrors }) => {
           try {
             if (step === 1) {
               // Guardar datos en localStorage y pasar al siguiente paso
-              handleNextStep(values, setSubmitting);
+              await handleNextStep(values, setErrors, validateForm);
             } else {
+              // Validar el correo electrónico
+              const emailExists = await checkEmailExistsRequest(values.usuario_email);
+              if (emailExists.data.exists) {
+                setErrors({ usuario_email: 'El correo electrónico ya está registrado' });
+                setSubmitting(false);
+                return;
+              }
+
               const personaData = JSON.parse(localStorage.getItem('personaData'));
               const usuarioData = {
                 usuario_email: values.usuario_email,
@@ -91,7 +112,7 @@ const VendedorCreate = () => {
               };
 
               // Enviar la solicitud con ambos pasos completados
-              await createVendedorRequest({ personaData, usuarioData });
+              await createUsuarioRequest({ persona: personaData, usuario: usuarioData, roles: [2] });
               navigate('/vendedores'); // Redirigir a la URL "/vendedores" después de finalizar el registro
             }
           } catch (error) {
@@ -123,6 +144,7 @@ const VendedorCreate = () => {
                   values={values} 
                   errors={errors} 
                   touched={touched} 
+                  readOnly // Hacer que los campos sean de solo lectura
                 />
                 <button type="button" className="page-anterior-button" onClick={handlePreviousStep}>
                   Anterior
