@@ -1,18 +1,15 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import VendedoresList from './pages/vendedores/VendedoresList/VendedoresList';
 import NotFound from './pages/NotFound';
 import VendedorCreate from './pages/vendedores/VendedorCreate/VendedorCreate';
 import VendedorDetail from './pages/vendedores/VendedorDetail/VendedorDetail';
-import Navbar from './components/Navbar/Navbar';
-import Header from './components/Header/Header'; // Importar el componente Header
 import VendedoresInactivosList from './pages/vendedores/VendedoresInactivosList/VendedoresInactivosList';
 import VendedorEdit from './pages/vendedores/VendedorEdit/VendedorEdit';
 import Login from './pages/login/Login/Login';
 import SeleccionRol from './pages/login/SeleccionRol/SeleccionRol';
 import UsuariosList from './pages/usuarios/UsuariosList/UsuariosList';
 import UsuariosInactivosList from "./pages/usuarios/UsuariosInactivosList/UsuariosInactivosList";
-import Footer from './components/Footer/Footer';
 import UsuariosCreate from './pages/usuarios/UsuariosCreate/UsuariosCreate';
 import UsuarioEdit from './pages/usuarios/UsuariosEdit/UsuariosEdit';
 import ProtectedRoute from './pages/ProtectedRoute';
@@ -31,19 +28,26 @@ import VentasHome from './pages/ventas/VentasHome/VentasHome';
 import VentasList from './pages/ventas/VentasList/VentasList';
 import RegistrarVenta from './pages/ventas/RegistrarVenta/RegistrarVenta';
 
-import MiPerfil from './pages/MiPerfil/MiPerfil'; // Importar la página Mi Perfil
-import RequestPasswordReset from './pages/RequestPasswordReset/RequestPasswordReset'; // Importar la página de solicitud de recuperación de contraseña
-import ResetPassword from './pages/ResetPassword/ResetPassword'; // Importar la página de restablecimiento de contraseña
+import MiPerfil from './pages/MiPerfil/MiPerfil';
+import RequestPasswordReset from './pages/RequestPasswordReset/RequestPasswordReset';
+import ResetPassword from './pages/ResetPassword/ResetPassword';
+
+import MainLayout from './components/layouts/MainLayout/MainLayout';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './assets/styles/variables.css';
 import './assets/styles/pages.css';
 
 function App() {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
+  };
+
   return (
     <>
       <Routes>
-        
         {/* Redirigir la ruta raíz al login */}
         <Route path="/" element={<Navigate to="/login" />} />
 
@@ -61,332 +65,219 @@ function App() {
           path="/seleccion-rol"
           element={
             <ProtectedRoute>
-              <SeleccionRol />
-              <Footer />
+              <MainLayout isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar}>
+                <SeleccionRol />
+              </MainLayout>
             </ProtectedRoute>
           }
         />
 
-        {/* Vistas protegidas */}
+        {/* Módulo de vendedores */}
         <Route
           path="/vendedores"
           element={
             <ProtectedRoute>
-              <div className="flex h-screen">
-                <Navbar /> {/* Menú lateral fijo */}
-                <div className="flex-1 flex flex-col overflow-auto"> 
-                  <Header /> {/* Header */}
-                  <VendedoresList /> {/* Contenido principal */}
-                  <Footer /> {/* Pie de página */}
-                </div>
-              </div>
+              <MainLayout isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar}>
+                <VendedoresList />
+              </MainLayout>
             </ProtectedRoute>
           }
         />
-
         <Route
           path="/create-vendedor"
           element={
             <ProtectedRoute>
-              <div className="flex h-screen">
-                <Navbar /> {/* Menú lateral fijo */}
-                <div className="flex-1 flex flex-col overflow-auto"> 
-                  <Header /> {/* Header */}
-                  <VendedorCreate /> {/* Contenido principal */}
-                  <Footer /> {/* Pie de página */}
-                </div>
-              </div>
+              <MainLayout isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar}>
+                <VendedorCreate />
+              </MainLayout>
             </ProtectedRoute>
           }
         />
-
         <Route
           path="/vendedor/:id"
           element={
             <ProtectedRoute>
-              <div className="flex h-screen">
-                <Navbar /> {/* Menú lateral fijo */}
-                <div className="flex-1 flex flex-col overflow-auto"> 
-                  <Header /> {/* Header */}
-                  <VendedorDetail /> {/* Contenido principal */}
-                  <Footer /> {/* Pie de página */}
-                </div>
-              </div>
+              <MainLayout isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar}>
+                <VendedorDetail />
+              </MainLayout>
             </ProtectedRoute>
           }
         />
-
         <Route
           path="/vendedores/inactivos"
           element={
             <ProtectedRoute>
-              <div className="flex h-screen">
-                <Navbar /> {/* Menú lateral fijo */}
-                <div className="flex-1 flex flex-col overflow-auto"> 
-                  <Header /> {/* Header */}
-                  <VendedoresInactivosList /> {/* Contenido principal */}
-                  <Footer /> {/* Pie de página */}
-                </div>
-              </div>
+              <MainLayout isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar}>
+                <VendedoresInactivosList />
+              </MainLayout>
             </ProtectedRoute>
           }
         />
-
         <Route
           path="/vendedor/:id/edit"
           element={
             <ProtectedRoute>
-              <div className="flex h-screen">
-                <Navbar /> {/* Menú lateral fijo */}
-                <div className="flex-1 flex flex-col overflow-auto"> 
-                  <Header /> {/* Header */}
-                  <VendedorEdit /> {/* Contenido principal */}
-                  <Footer /> {/* Pie de página */}
-                </div>
-              </div>
+              <MainLayout isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar}>
+                <VendedorEdit />
+              </MainLayout>
             </ProtectedRoute>
           }
         />
 
+        {/* Módulo de usuarios */}
         <Route
           path="/usuarios"
           element={
             <ProtectedRoute>
-              <div className="flex h-screen">
-                <Navbar /> {/* Menú lateral fijo */}
-                <div className="flex-1 flex flex-col overflow-auto"> 
-                  <Header /> {/* Header */}
-                  <UsuariosList /> {/* Contenido principal */}
-                  <Footer /> {/* Pie de página */}
-                </div>
-              </div>
+              <MainLayout isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar}>
+                <UsuariosList />
+              </MainLayout>
             </ProtectedRoute>
           }
         />
-
         <Route
           path="/usuarios/inactivos"
           element={
             <ProtectedRoute>
-              <div className="flex h-screen">
-                <Navbar /> {/* Menú lateral fijo */}
-                <div className="flex-1 flex flex-col overflow-auto"> 
-                  <Header /> {/* Header */}
-                  <UsuariosInactivosList /> {/* Contenido principal */}
-                  <Footer /> {/* Pie de página */}
-                </div>
-              </div>
+              <MainLayout isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar}>
+                <UsuariosInactivosList />
+              </MainLayout>
             </ProtectedRoute>
           }
         />
-
         <Route
           path="/usuarios/alta"
           element={
             <ProtectedRoute>
-              <div className="flex h-screen">
-                <Navbar /> {/* Menú lateral fijo */}
-                <div className="flex-1 flex flex-col overflow-auto"> 
-                  <Header /> {/* Header */}
-                  <UsuariosCreate /> {/* Contenido principal */}
-                  <Footer /> {/* Pie de página */}
-                </div>
-              </div>
+              <MainLayout isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar}>
+                <UsuariosCreate />
+              </MainLayout>
             </ProtectedRoute>
           }
         />
-
         <Route
-          path="/usuarios/editar/:id" // Nueva ruta para editar usuario
+          path="/usuarios/editar/:id"
           element={
             <ProtectedRoute>
-              <div className="flex h-screen">
-                <Navbar /> {/* Menú lateral fijo */}
-                <div className="flex-1 flex flex-col overflow-auto"> 
-                  <Header /> {/* Header */}
-                  <UsuarioEdit /> {/* Contenido principal */}
-                  <Footer /> {/* Pie de página */}
-                </div>
-              </div>
+              <MainLayout isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar}>
+                <UsuarioEdit />
+              </MainLayout>
             </ProtectedRoute>
           }
         />
 
-        {/* Rutas del módulo de inventario */}
+        {/* Módulo de inventario */}
         <Route
           path="/inventario"
           element={
             <ProtectedRoute>
-              <div className="flex h-screen">
-                <Navbar /> {/* Menú lateral fijo */}
-                <div className="flex-1 flex flex-col overflow-auto"> 
-                  <Header /> {/* Header */}
-                  <Inventario /> {/* Contenido principal */}
-                  <Footer /> {/* Pie de página */}
-                </div>
-              </div>
+              <MainLayout isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar}>
+                <Inventario />
+              </MainLayout>
             </ProtectedRoute>
           }
         />
-
         <Route
           path="/marcas-productos"
           element={
             <ProtectedRoute>
-              <div className="flex h-screen">
-                <Navbar /> {/* Menú lateral fijo */}
-                <div className="flex-1 flex flex-col overflow-auto"> 
-                  <Header /> {/* Header */}
-                  <MarcasProductos /> {/* Contenido principal */}
-                  <Footer /> {/* Pie de página */}
-                </div>
-              </div>
+              <MainLayout isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar}>
+                <MarcasProductos />
+              </MainLayout>
             </ProtectedRoute>
           }
         />
-
         <Route
           path="/productos"
           element={
             <ProtectedRoute>
-              <div className="flex h-screen">
-                <Navbar /> {/* Menú lateral fijo */}
-                <div className="flex-1 flex flex-col overflow-auto"> 
-                  <Header /> {/* Header */}
-                  <Productos /> {/* Contenido principal */}
-                  <Footer /> {/* Pie de página */}
-                </div>
-              </div>
+              <MainLayout isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar}>
+                <Productos />
+              </MainLayout>
             </ProtectedRoute>
           }
         />
-
         <Route
           path="/tipos-productos"
           element={
             <ProtectedRoute>
-              <div className="flex h-screen">
-                <Navbar /> {/* Menú lateral fijo */}
-                <div className="flex-1 flex flex-col overflow-auto"> 
-                  <Header /> {/* Header */}
-                  <TiposProductos /> {/* Contenido principal */}
-                  <Footer /> {/* Pie de página */}
-                </div>
-              </div>
+              <MainLayout isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar}>
+                <TiposProductos />
+              </MainLayout>
             </ProtectedRoute>
           }
         />
 
-        {/* Rutas del módulo de clientes */}
+        {/* Módulo de clientes */}
         <Route
           path="/clientes"
           element={
             <ProtectedRoute>
-              <div className="flex h-screen">
-                <Navbar /> {/* Menú lateral fijo */}
-                <div className="flex-1 flex flex-col overflow-auto"> 
-                  <Header /> {/* Header */}
-                  <ClientesList /> {/* Contenido principal */}
-                  <Footer /> {/* Pie de página */}
-                </div>
-              </div>
+              <MainLayout isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar}>
+                <ClientesList />
+              </MainLayout>
             </ProtectedRoute>
           }
         />
-
         <Route
-          path="/clientes/alta"
+          path="/clientes/crear"
           element={
             <ProtectedRoute>
-              <div className="flex h-screen">
-                <Navbar /> {/* Menú lateral fijo */}
-                <div className="flex-1 flex flex-col overflow-auto"> 
-                  <Header /> {/* Header */}
-                  <ClientesCreate /> {/* Contenido principal */}
-                  <Footer /> {/* Pie de página */}
-                </div>
-              </div>
+              <MainLayout isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar}>
+                <ClientesCreate />
+              </MainLayout>
             </ProtectedRoute>
           }
         />
-
         <Route
           path="/clientes/editar/:id"
           element={
             <ProtectedRoute>
-              <div className="flex h-screen">
-                <Navbar /> {/* Menú lateral fijo */}
-                <div className="flex-1 flex flex-col overflow-auto"> 
-                  <Header /> {/* Header */}
-                  <ClientesEdit /> {/* Contenido principal */}
-                  <Footer /> {/* Pie de página */}
-                </div>
-              </div>
+              <MainLayout isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar}>
+                <ClientesEdit />
+              </MainLayout>
             </ProtectedRoute>
           }
         />
-
         <Route
           path="/clientes/inactivos"
           element={
             <ProtectedRoute>
-              <div className="flex h-screen">
-                <Navbar /> {/* Menú lateral fijo */}
-                <div className="flex-1 flex flex-col overflow-auto"> 
-                  <Header /> {/* Header */}
-                  <ClientesInactivosList /> {/* Contenido principal */}
-                  <Footer /> {/* Pie de página */}
-                </div>
-              </div>
+              <MainLayout isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar}>
+                <ClientesInactivosList />
+              </MainLayout>
             </ProtectedRoute>
           }
         />
 
-        {/* Rutas del módulo de ventas */}
+        {/* Módulo de ventas */}
         <Route
           path="/ventas"
           element={
             <ProtectedRoute>
-              <div className="flex h-screen">
-                <Navbar /> {/* Menú lateral fijo */}
-                <div className="flex-1 flex flex-col overflow-auto"> 
-                  <Header /> {/* Header */}
-                  <VentasHome /> {/* Contenido principal */}
-                  <Footer /> {/* Pie de página */}
-                </div>
-              </div>
+              <MainLayout isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar}>
+                <VentasHome />
+              </MainLayout>
             </ProtectedRoute>
           }
         />
-
         <Route
-          path="/ventas/listado"
+          path="/ventas/list"
           element={
             <ProtectedRoute>
-              <div className="flex h-screen">
-                <Navbar /> {/* Menú lateral fijo */}
-                <div className="flex-1 flex flex-col overflow-auto"> 
-                  <Header /> {/* Header */}
-                  <VentasList /> {/* Contenido principal */}
-                  <Footer /> {/* Pie de página */}
-                </div>
-              </div>
+              <MainLayout isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar}>
+                <VentasList />
+              </MainLayout>
             </ProtectedRoute>
           }
         />
-
         <Route
           path="/ventas/registrar"
           element={
             <ProtectedRoute>
-              <div className="flex h-screen">
-                <Navbar /> {/* Menú lateral fijo */}
-                <div className="flex-1 flex flex-col overflow-auto"> 
-                  <Header /> {/* Header */}
-                  <RegistrarVenta /> {/* Contenido principal */}
-                  <Footer /> {/* Pie de página */}
-                </div>
-              </div>
+              <MainLayout isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar}>
+                <RegistrarVenta />
+              </MainLayout>
             </ProtectedRoute>
           }
         />
@@ -395,14 +286,9 @@ function App() {
           path="/registrar-venta"
           element={
             <ProtectedRoute>
-              <div className="flex h-screen">
-                <Navbar /> {/* Menú lateral fijo */}
-                <div className="flex-1 flex flex-col overflow-auto"> 
-                  <Header /> {/* Header */}
-                  <RegistrarVenta /> {/* Contenido principal */}
-                  <Footer /> {/* Pie de página */}
-                </div>
-              </div>
+              <MainLayout isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar}>
+                <RegistrarVenta />
+              </MainLayout>
             </ProtectedRoute>
           }
         />
@@ -411,14 +297,9 @@ function App() {
           path="/mis-ventas"
           element={
             <ProtectedRoute>
-              <div className="flex h-screen">
-                <Navbar /> {/* Menú lateral fijo */}
-                <div className="flex-1 flex flex-col overflow-auto"> 
-                  <Header /> {/* Header */}
-                  <VentasList /> {/* Contenido principal */}
-                  <Footer /> {/* Pie de página */}
-                </div>
-              </div>
+              <MainLayout isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar}>
+                <VentasList />
+              </MainLayout>
             </ProtectedRoute>
           }
         />
@@ -428,14 +309,9 @@ function App() {
           path="/mi-perfil"
           element={
             <ProtectedRoute>
-              <div className="flex h-screen">
-                <Navbar /> {/* Menú lateral fijo */}
-                <div className="flex-1 flex flex-col overflow-auto"> 
-                  <Header /> {/* Header */}
-                  <MiPerfil /> {/* Contenido principal */}
-                  <Footer /> {/* Pie de página */}
-                </div>
-              </div>
+              <MainLayout isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar}>
+                <MiPerfil />
+              </MainLayout>
             </ProtectedRoute>
           }
         />
@@ -444,14 +320,9 @@ function App() {
           path="*"
           element={
             <ProtectedRoute>
-              <div className="flex h-screen">
-                <Navbar /> {/* Menú lateral fijo */}
-                <div className="flex-1 flex flex-col overflow-auto"> 
-                  <Header /> {/* Header */}
-                  <NotFound /> {/* Contenido principal */}
-                  <Footer /> {/* Pie de página */}
-                </div>
-              </div>
+              <MainLayout isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar}>
+                <NotFound />
+              </MainLayout>
             </ProtectedRoute>
           }
         />
