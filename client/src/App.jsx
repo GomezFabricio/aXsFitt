@@ -65,9 +65,7 @@ function App() {
           path="/seleccion-rol"
           element={
             <ProtectedRoute>
-              <MainLayout isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar}>
-                <SeleccionRol />
-              </MainLayout>
+              <SeleccionRol />
             </ProtectedRoute>
           }
         />
