@@ -161,7 +161,7 @@ const NavBar = ({ isSidebarOpen, toggleSidebar }) => {
             </aside>
 
             {/* Navbar para dispositivos de resolución superior */}
-            <nav className="hidden lg:flex items-center justify-between bg-gray-800 text-white px-8 py-4">
+            <nav className="hidden lg:flex items-center justify-between bg-gray-900 text-white px-8 py-4">
                 <div className="flex items-center space-x-8">
                     {menuOptions.length > 0 ? (
                         menuOptions.map((option, index) => (
