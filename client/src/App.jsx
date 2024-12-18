@@ -218,7 +218,7 @@ function App() {
           }
         />
         <Route
-          path="/clientes/crear"
+          path="/clientes/alta"
           element={
             <ProtectedRoute>
               <MainLayout isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar}>
@@ -260,7 +260,7 @@ function App() {
           }
         />
         <Route
-          path="/ventas/list"
+          path="/ventas/listado"
           element={
             <ProtectedRoute>
               <MainLayout isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar}>
