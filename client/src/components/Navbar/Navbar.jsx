@@ -78,7 +78,7 @@ const NavBar = ({ isSidebarOpen, toggleSidebar }) => {
     return (
         <div>
             {/* Header para dispositivos móviles y tablets */}
-            <header className="flex lg:hidden justify-between items-center p-4 bg-gray-800 text-white">
+            <header className="flex lg:hidden justify-between items-center p-4 bg-gray-900 text-white">
                 <button
                     onClick={toggleSidebar}
                     className={`text-2xl focus:outline-none z-50 ${isSidebarOpen ? 'opacity-0' : 'opacity-100'}`}
