@@ -143,7 +143,7 @@
     
                 <TiposProductosList tiposProductos={tiposProductos} onDelete={handleDelete} onEdit={handleEdit} />
     
-                <div className="mt-4">
+                <div className="mt-10">
                     <button className={`toggle-inactivos-button ${showInactivos ? 'bg-red-500 hover:bg-red-600' : 'bg-gray-700 hover:bg-gray-800'} text-white font-bold py-2 px-4 rounded`} onClick={handleToggleInactivos}>
                         {showInactivos ? 'Ocultar Inactivos' : 'Mostrar Inactivos'}
                     </button>

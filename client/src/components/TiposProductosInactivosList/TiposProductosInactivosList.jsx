@@ -15,7 +15,7 @@ const TiposProductosInactivosList = ({ tiposProductos, onReactivar }) => {
 
     return (
         <div className="overflow-x">
-            <h2 className="mt-12 mb-4 text-3xl text-black">Tipos de Productos Inactivos</h2>
+            <h2 className="mt-4 mb-4 text-3xl text-black">Tipos de Productos Inactivos</h2>
             {Array.isArray(filteredTiposProductos) && filteredTiposProductos.length > 0 ? (
                 <>
                     <input
