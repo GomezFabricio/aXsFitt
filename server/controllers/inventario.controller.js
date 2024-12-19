@@ -458,7 +458,12 @@ export const editarTipoProducto = async (req, res) => {
 export const verInventariosInactivos = async (req, res) => {
     try {
         const [rows] = await pool.query(`
-            SELECT * FROM inventario_principal WHERE activo = FALSE
+            SELECT ip.*, p.producto_descripcion, tp.tipo_producto_nombre, mp.marca_producto_nombre
+            FROM inventario_principal ip
+            JOIN productos p ON ip.producto_id = p.producto_id
+            JOIN tipos_productos tp ON p.tipo_producto_id = tp.tipo_producto_id
+            JOIN marca_productos mp ON p.marca_producto_id = mp.marca_producto_id
+            WHERE ip.activo = FALSE
         `);
         res.json(rows);
     } catch (error) {
@@ -471,7 +476,11 @@ export const verInventariosInactivos = async (req, res) => {
 export const verProductosInactivos = async (req, res) => {
     try {
         const [rows] = await pool.query(`
-            SELECT * FROM productos WHERE activo = FALSE
+            SELECT p.*, tp.tipo_producto_nombre, mp.marca_producto_nombre
+            FROM productos p
+            JOIN tipos_productos tp ON p.tipo_producto_id = tp.tipo_producto_id
+            JOIN marca_productos mp ON p.marca_producto_id = mp.marca_producto_id
+            WHERE p.activo = FALSE
         `);
         res.json(rows);
     } catch (error) {

@@ -10,21 +10,23 @@ const ProductosList = ({ productos, onDelete, onEdit }) => {
     };
 
     const filteredProductos = productos.filter(item =>
-        item.Producto.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        item.CodigoBarras.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        item.TipoProducto.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        item.MarcaProducto.toLowerCase().includes(searchTerm.toLowerCase())
+        item.Producto?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item.CodigoBarras?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item.TipoProducto?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item.MarcaProducto?.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
     return (
         <div className="overflow-x-auto">
-            <input
-                type="text"
-                placeholder="Buscar..."
-                value={searchTerm}
-                onChange={handleSearchChange}
-                className="search-input mb-4 p-2 border border-gray-300 rounded"
-            />
+            {Array.isArray(filteredProductos) && filteredProductos.length > 0 && (
+                <input
+                    type="text"
+                    placeholder="Buscar..."
+                    value={searchTerm}
+                    onChange={handleSearchChange}
+                    className="search-input mb-4 p-2 border border-gray-300 rounded"
+                />
+            )}
             {Array.isArray(filteredProductos) && filteredProductos.length > 0 ? (
                 <table className="min-w-full bg-white border border-gray-200">
                     <thead>

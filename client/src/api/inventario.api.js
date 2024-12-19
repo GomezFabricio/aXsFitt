@@ -193,6 +193,7 @@ export const verInventariosInactivos = async () => {
 export const verProductosInactivos = async () => {
     try {
         const response = await axios.get('https://localhost:4000/inventario/productos-inactivos', config);
+        console.log(response.data);
         return response.data;
     } catch (error) {
         throw error.response.data;
