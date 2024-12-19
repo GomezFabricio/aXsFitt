@@ -79,6 +79,7 @@ const NavBar = ({ isSidebarOpen, toggleSidebar }) => {
         <div>
             {/* Header para dispositivos móviles y tablets */}
             <header className="flex lg:hidden justify-between items-center p-4 bg-gray-900 text-white">
+                <div className="flex-grow"></div> {/* Espaciador para empujar el botón a la derecha */}
                 <button
                     onClick={toggleSidebar}
                     className={`text-2xl focus:outline-none z-50 ${isSidebarOpen ? 'opacity-0' : 'opacity-100'}`}
@@ -89,8 +90,8 @@ const NavBar = ({ isSidebarOpen, toggleSidebar }) => {
 
             {/* Menú lateral para móviles y tablets */}
             <aside
-                className={`fixed top-0 left-0 h-full bg-gray-800 text-white w-64 z-40 transition-transform transform lg:hidden ${
-                    isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
+                className={`fixed top-0 right-0 h-full bg-gray-800 text-white w-64 z-40 transition-transform transform lg:hidden ${
+                    isSidebarOpen ? 'translate-x-0' : 'translate-x-full'
                 }`}
             >
                 <div className="p-4 flex justify-between items-center">

@@ -1,7 +1,7 @@
 :root {
     /* Paleta de Colores */
-    --color-principal: #9E3DA5;
-    --color-principal-hover: #7b2a7d;
-    --color-letras-fondo-claro: #989898;
-    --color-letras-botones: #ffffff;
+    --color-principal: #3498db; /* Azul */
+    --color-principal-hover: #2980b9; /* Azul oscuro */
+    --color-letras-fondo-claro: #2c3e50; /* Gris oscuro */
+    --color-letras-botones: #ecf0f1; /* Blanco humo */
   }
