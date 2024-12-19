@@ -20,6 +20,7 @@ export const inventarioList = async (req, res) => {
             JOIN tipos_productos tp ON p.tipo_producto_id = tp.tipo_producto_id
             JOIN marca_productos mp ON p.marca_producto_id = mp.marca_producto_id
             JOIN inventario_principal ip ON p.producto_id = ip.producto_id
+            WHERE ip.activo = TRUE
         `);
         res.json(result);
     } catch (error) {
@@ -37,6 +38,7 @@ export const marcasList = async (req, res) => {
                 marca_producto_id AS idMarcaProducto,
                 marca_producto_nombre AS nombreMarcaProducto
             FROM marca_productos
+            WHERE activo = TRUE
         `);
         console.log('Resultado de la consulta de marcas:', result);
         res.json(result);
@@ -55,6 +57,7 @@ export const tiposProductosList = async (req, res) => {
                 tipo_producto_id AS idTipoProducto,
                 tipo_producto_nombre AS nombreTipoProducto
             FROM tipos_productos
+            WHERE activo = TRUE
         `);
         console.log('Resultado de la consulta de tipos de productos:', result);
         res.json(result);
@@ -78,6 +81,7 @@ export const productosList = async (req, res) => {
             FROM productos p
             JOIN tipos_productos tp ON p.tipo_producto_id = tp.tipo_producto_id
             JOIN marca_productos mp ON p.marca_producto_id = mp.marca_producto_id
+            WHERE p.activo = TRUE
         `);
         console.log('Resultado de la consulta de productos:', result);
         res.json(result);
@@ -251,90 +255,81 @@ export const obtenerInventarioPorId = async (req, res) => {
     }
 };
 
-// Eliminar inventario
+// Eliminar inventario (marcar como inactivo)
 export const eliminarInventario = async (req, res) => {
     const { id } = req.params;
 
     try {
         const [result] = await pool.query(`
-            DELETE FROM inventario_principal WHERE producto_id = ?
+            UPDATE inventario_principal SET activo = FALSE WHERE producto_id = ?
         `, [id]);
 
         if (result.affectedRows === 0) {
             return res.status(404).json({ message: 'Producto no encontrado' });
         }
 
-        res.json({ message: 'Producto eliminado exitosamente' });
+        res.json({ message: 'Producto marcado como inactivo exitosamente' });
     } catch (error) {
         console.error('Error eliminando producto del inventario:', error);
         res.status(500).json({ message: error.message });
     }
 };
 
-// Eliminar marca
+// Eliminar marca (marcar como inactiva)
 export const eliminarMarca = async (req, res) => {
     const { id } = req.params;
 
     try {
         const [result] = await pool.query(`
-            DELETE FROM marca_productos WHERE marca_producto_id = ?
+            UPDATE marca_productos SET activo = FALSE WHERE marca_producto_id = ?
         `, [id]);
 
         if (result.affectedRows === 0) {
             return res.status(404).json({ message: 'Marca no encontrada' });
         }
 
-        res.json({ message: 'Marca eliminada exitosamente' });
+        res.json({ message: 'Marca marcada como inactiva exitosamente' });
     } catch (error) {
-        if (error.code === 'ER_ROW_IS_REFERENCED_2') {
-            return res.status(400).json({ message: 'No se puede eliminar la marca porque está asociada a uno o más productos.' });
-        }
         console.error('Error eliminando marca:', error);
         res.status(500).json({ message: error.message });
     }
 };
 
-// Eliminar tipo de producto
+// Eliminar tipo de producto (marcar como inactivo)
 export const eliminarTipoProducto = async (req, res) => {
     const { id } = req.params;
 
     try {
         const [result] = await pool.query(`
-            DELETE FROM tipos_productos WHERE tipo_producto_id = ?
+            UPDATE tipos_productos SET activo = FALSE WHERE tipo_producto_id = ?
         `, [id]);
 
         if (result.affectedRows === 0) {
             return res.status(404).json({ message: 'Tipo de producto no encontrado' });
         }
 
-        res.json({ message: 'Tipo de producto eliminado exitosamente' });
+        res.json({ message: 'Tipo de producto marcado como inactivo exitosamente' });
     } catch (error) {
-        if (error.code === 'ER_ROW_IS_REFERENCED_2') {
-            return res.status(400).json({ message: 'No se puede eliminar el tipo de producto porque está asociado a uno o más productos.' });
-        }
         console.error('Error eliminando tipo de producto:', error);
         res.status(500).json({ message: error.message });
     }
 };
 
-// Eliminar producto
+// Eliminar producto (marcar como inactivo)
 export const eliminarProducto = async (req, res) => {
     const { id } = req.params;
 
     try {
         const [result] = await pool.query(`
-            DELETE FROM productos WHERE producto_id = ?
+            UPDATE productos SET activo = FALSE WHERE producto_id = ?
         `, [id]);
 
         if (result.affectedRows === 0) {
             return res.status(404).json({ message: 'Producto no encontrado' });
         }
 
-        res.json({ message: 'Producto eliminado exitosamente' });
+        res.json({ message: 'Producto marcado como inactivo exitosamente' });
     } catch (error) {
-        if (error.code === 'ER_ROW_IS_REFERENCED_2') {
-            return res.status(400).json({ message: 'No se puede eliminar el producto porque está asociado a uno o más registros de inventario.' });
-        }
         console.error('Error eliminando producto:', error);
         res.status(500).json({ message: error.message });
     }
@@ -458,3 +453,138 @@ export const editarTipoProducto = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
+
+// Ver inventarios inactivos
+export const verInventariosInactivos = async (req, res) => {
+    try {
+        const [rows] = await pool.query(`
+            SELECT * FROM inventario_principal WHERE activo = FALSE
+        `);
+        res.json(rows);
+    } catch (error) {
+        console.error('Error obteniendo inventarios inactivos:', error);
+        res.status(500).json({ message: error.message });
+    }
+};
+
+// Ver productos inactivos
+export const verProductosInactivos = async (req, res) => {
+    try {
+        const [rows] = await pool.query(`
+            SELECT * FROM productos WHERE activo = FALSE
+        `);
+        res.json(rows);
+    } catch (error) {
+        console.error('Error obteniendo productos inactivos:', error);
+        res.status(500).json({ message: error.message });
+    }
+};
+
+// Ver marcas inactivas
+export const verMarcasInactivas = async (req, res) => {
+    try {
+        const [rows] = await pool.query(`
+            SELECT * FROM marca_productos WHERE activo = FALSE
+        `);
+        res.json(rows);
+    } catch (error) {
+        console.error('Error obteniendo marcas inactivas:', error);
+        res.status(500).json({ message: error.message });
+    }
+};
+
+// Ver tipos de productos inactivos
+export const verTiposProductosInactivos = async (req, res) => {
+    console.log('Entrando a verTiposProductosInactivos');
+    try {
+        const [rows] = await pool.query(`
+            SELECT * FROM tipos_productos WHERE activo = FALSE
+        `);
+        console.log('Resultado de la consulta de tipos de productos inactivos:', rows);
+        res.json(rows);
+    } catch (error) {
+        console.error('Error obteniendo tipos de productos inactivos:', error);
+        res.status(500).json({ message: error.message });
+    }
+};
+
+// Reactivar inventario
+export const reactivarInventario = async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const [result] = await pool.query(`
+            UPDATE inventario_principal SET activo = TRUE WHERE inventario_id = ?
+        `, [id]);
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ message: 'Inventario no encontrado' });
+        }
+
+        res.json({ message: 'Inventario reactivado exitosamente' });
+    } catch (error) {
+        console.error('Error reactivando inventario:', error);
+        res.status(500).json({ message: error.message });
+    }
+};
+
+// Reactivar producto
+export const reactivarProducto = async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const [result] = await pool.query(`
+            UPDATE productos SET activo = TRUE WHERE producto_id = ?
+        `, [id]);
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ message: 'Producto no encontrado' });
+        }
+
+        res.json({ message: 'Producto reactivado exitosamente' });
+    } catch (error) {
+        console.error('Error reactivando producto:', error);
+        res.status(500).json({ message: error.message });
+    }
+};
+
+// Reactivar marca
+export const reactivarMarca = async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const [result] = await pool.query(`
+            UPDATE marca_productos SET activo = TRUE WHERE marca_producto_id = ?
+        `, [id]);
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ message: 'Marca no encontrada' });
+        }
+
+        res.json({ message: 'Marca reactivada exitosamente' });
+    } catch (error) {
+        console.error('Error reactivando marca:', error);
+        res.status(500).json({ message: error.message });
+    }
+};
+
+// Reactivar tipo de producto
+export const reactivarTipoProducto = async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const [result] = await pool.query(`
+            UPDATE tipos_productos SET activo = TRUE WHERE tipo_producto_id = ?
+        `, [id]);
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ message: 'Tipo de producto no encontrado' });
+        }
+
+        res.json({ message: 'Tipo de producto reactivado exitosamente' });
+    } catch (error) {
+        console.error('Error reactivando tipo de producto:', error);
+        res.status(500).json({ message: error.message });
+    }
+};
+

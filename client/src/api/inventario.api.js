@@ -179,3 +179,77 @@ export const editarTipoProducto = async (id, tipoProducto) => {
         throw error.response.data;
     }
 };
+
+// Funciones para ver inactivos
+export const verInventariosInactivos = async () => {
+    try {
+        const response = await axios.get('https://localhost:4000/inventario/inventarios-inactivos', config);
+        return response.data;
+    } catch (error) {
+        throw error.response.data;
+    }
+};
+
+export const verProductosInactivos = async () => {
+    try {
+        const response = await axios.get('https://localhost:4000/inventario/productos-inactivos', config);
+        return response.data;
+    } catch (error) {
+        throw error.response.data;
+    }
+};
+
+export const verMarcasInactivas = async () => {
+    try {
+        const response = await axios.get('https://localhost:4000/inventario/marcas-inactivas', config);
+        return response.data;
+    } catch (error) {
+        throw error.response.data;
+    }
+};
+
+export const verTiposProductosInactivos = async () => {
+    try {
+        const response = await axios.get('https://localhost:4000/inventario/tipos-productos-inactivos', config);
+        return response.data;
+    } catch (error) {
+        throw error.response.data;
+    }
+};
+
+// Funciones para reactivar
+export const reactivarInventario = async (id) => {
+    try {
+        const response = await axios.put(`https://localhost:4000/inventario/reactivar-inventario/${id}`, {}, config);
+        return response.data;
+    } catch (error) {
+        throw error.response.data;
+    }
+};
+
+export const reactivarProducto = async (id) => {
+    try {
+        const response = await axios.put(`https://localhost:4000/inventario/reactivar-producto/${id}`, {}, config);
+        return response.data;
+    } catch (error) {
+        throw error.response.data;
+    }
+};
+
+export const reactivarMarca = async (id) => {
+    try {
+        const response = await axios.put(`https://localhost:4000/inventario/reactivar-marca/${id}`, {}, config);
+        return response.data;
+    } catch (error) {
+        throw error.response.data;
+    }
+};
+
+export const reactivarTipoProducto = async (id) => {
+    try {
+        const response = await axios.put(`https://localhost:4000/inventario/reactivar-tipo-producto/${id}`, {}, config);
+        return response.data;
+    } catch (error) {
+        throw error.response.data;
+    }
+};

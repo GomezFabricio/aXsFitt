@@ -16,7 +16,15 @@ import {
     editarInventario,
     editarProducto,
     editarMarca,
-    editarTipoProducto
+    editarTipoProducto,
+    verInventariosInactivos,
+    verProductosInactivos,
+    verMarcasInactivas,
+    verTiposProductosInactivos,
+    reactivarInventario,
+    reactivarProducto,
+    reactivarMarca,
+    reactivarTipoProducto
 } from '../controllers/inventario.controller.js';
 
 const router = Router();
@@ -41,5 +49,17 @@ router.put('/inventario/editar-inventario/:id', editarInventario);
 router.put('/inventario/editar-producto/:id', editarProducto);
 router.put('/inventario/editar-marca/:id', editarMarca);
 router.put('/inventario/editar-tipo-producto/:id', editarTipoProducto);
+
+// Nuevas rutas para ver inactivos
+router.get('/inventario/inventarios-inactivos', verInventariosInactivos);
+router.get('/inventario/productos-inactivos', verProductosInactivos);
+router.get('/inventario/marcas-inactivas', verMarcasInactivas);
+router.get('/inventario/tipos-productos-inactivos', verTiposProductosInactivos);
+
+// Nuevas rutas para reactivar
+router.put('/inventario/reactivar-inventario/:id', reactivarInventario);
+router.put('/inventario/reactivar-producto/:id', reactivarProducto);
+router.put('/inventario/reactivar-marca/:id', reactivarMarca);
+router.put('/inventario/reactivar-tipo-producto/:id', reactivarTipoProducto);
 
 export default router;

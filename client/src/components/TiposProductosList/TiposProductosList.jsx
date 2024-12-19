@@ -15,13 +15,15 @@ const TiposProductosList = ({ tiposProductos, onDelete, onEdit }) => {
 
     return (
         <div className="overflow-x-auto">
-            <input
-                type="text"
-                placeholder="Buscar..."
-                value={searchTerm}
-                onChange={handleSearchChange}
-                className="search-input mb-4 p-2 border border-gray-300 rounded"
-            />
+            {Array.isArray(filteredTiposProductos) && filteredTiposProductos.length > 0 && (
+                <input
+                    type="text"
+                    placeholder="Buscar..."
+                    value={searchTerm}
+                    onChange={handleSearchChange}
+                    className="search-input mb-4 p-2 border border-gray-300 rounded"
+                />
+            )}
             {Array.isArray(filteredTiposProductos) && filteredTiposProductos.length > 0 ? (
                 <table className="min-w-full bg-white border border-gray-200">
                     <thead>
@@ -39,7 +41,7 @@ const TiposProductosList = ({ tiposProductos, onDelete, onEdit }) => {
                                         <i className="fas fa-edit icon"></i>
                                     </button>
                                     <button className="delete-button btn btn-sm" onClick={() => onDelete(tipoProducto.idTipoProducto)}>
-                                        <i className="fas fa-trash-alt icon"></i>
+                                        <i className="fas fa-trash icon"></i>
                                     </button>
                                 </td>
                             </tr>
