@@ -22,6 +22,7 @@ export const inventarioList = async (req, res) => {
             JOIN inventario_principal ip ON p.producto_id = ip.producto_id
             WHERE ip.activo = TRUE
         `);
+        console.log('Resultado de la consulta de inventario:', result);
         res.json(result);
     } catch (error) {
         console.error('Error en inventarioList:', error);
@@ -458,7 +459,7 @@ export const editarTipoProducto = async (req, res) => {
 export const verInventariosInactivos = async (req, res) => {
     try {
         const [rows] = await pool.query(`
-            SELECT ip.*, p.producto_descripcion, tp.tipo_producto_nombre, mp.marca_producto_nombre
+            SELECT ip.*, p.producto_codigo_barras, p.producto_descripcion, tp.tipo_producto_nombre, mp.marca_producto_nombre
             FROM inventario_principal ip
             JOIN productos p ON ip.producto_id = p.producto_id
             JOIN tipos_productos tp ON p.tipo_producto_id = tp.tipo_producto_id
@@ -471,7 +472,6 @@ export const verInventariosInactivos = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
-
 // Ver productos inactivos
 export const verProductosInactivos = async (req, res) => {
     try {

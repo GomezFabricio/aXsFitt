@@ -18,13 +18,15 @@ const InventarioList = ({ inventario, onDelete, onEdit, onReingreso }) => {
 
     return (
         <div className="overflow-x-auto">
-            <input
-                type="text"
-                placeholder="Buscar..."
-                value={searchTerm}
-                onChange={handleSearchChange}
-                className="search-input mb-4 p-2 border border-gray-300 rounded"
-            />
+            {Array.isArray(filteredInventario) && filteredInventario.length > 0 && (
+                <input
+                    type="text"
+                    placeholder="Buscar..."
+                    value={searchTerm}
+                    onChange={handleSearchChange}
+                    className="search-input mb-4 p-2 border border-gray-300 rounded"
+                />
+            )}
             {Array.isArray(filteredInventario) && filteredInventario.length > 0 ? (
                 <table className="min-w-full bg-white border border-gray-200">
                     <thead>

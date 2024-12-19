@@ -184,6 +184,7 @@ export const editarTipoProducto = async (id, tipoProducto) => {
 export const verInventariosInactivos = async () => {
     try {
         const response = await axios.get('https://localhost:4000/inventario/inventarios-inactivos', config);
+        console.log(response.data);
         return response.data;
     } catch (error) {
         throw error.response.data;
