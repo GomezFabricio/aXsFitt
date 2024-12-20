@@ -1,5 +1,6 @@
 import axios from 'axios';
 import config from '../../src/config/config'; 
+
 export const loginRequest = async (data) => {
     return await axios.post(`${config.backendUrl}/login`, data);
 };
