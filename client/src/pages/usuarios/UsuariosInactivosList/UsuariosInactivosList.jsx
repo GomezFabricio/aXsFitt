@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { getUsuariosInactivosRequest, activateUsuarioRequest } from '../../../api/usuarios.api';
 import SearchInput, { createFilter } from 'react-search-input';
 import UsuariosInactivosTable from '../../../components/UsuariosInactivosTable/UsuariosInactivosTable';
-import "../UsuariosList/UsuariosList.css"; // Ajusta la ruta según la estructura de tu proyecto
 
 const KEYS_TO_FILTERS = ['persona_nombre', 'persona_apellido', 'persona_dni', 'usuario_email']; // Campos a filtrar
 
@@ -43,13 +42,27 @@ const UsuariosInactivosList = () => {
     return (
         <div className="container-page">
             <div className="header">
-                <button onClick={() => navigate(-1)} className="mb-4 p-2 bg-gray-800 text-white rounded">
-                    ← Volver
-                </button>
                 <h1>Usuarios Inactivos</h1>
+                <div className="buttons-container">
+                    <button
+                        onClick={() => navigate(-1)}
+                        className="volver-button"
+                    >
+                        Volver
+                    </button>
+                </div>
             </div>
 
             <h2>En esta sección podrás ver y gestionar los usuarios inactivos.</h2>
+
+            <div className="buttons-container-small">
+                <button
+                    onClick={() => navigate(-1)}
+                    className="volver-button"
+                >
+                    Volver
+                </button>
+            </div>
 
             <div style={{ display: 'flex', justifyContent: 'center' }}>
                 <SearchInput

@@ -3,8 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { getClientesInactivosRequest, activateClienteRequest } from '../../../api/clientes.api';
 import SearchInput, { createFilter } from 'react-search-input';
 import ClientesInactivosTable from '../../../components/ClientesInactivosTable/ClientesInactivosTable';
-import "../ClientesList/ClientesList.css"; // Ajusta la ruta según la estructura de tu proyecto
-
+    
 const KEYS_TO_FILTERS = ['persona_nombre', 'persona_apellido', 'persona_dni', 'persona_telefono']; // Campos a filtrar
 
 const ClientesInactivosList = () => {
@@ -34,13 +33,27 @@ const ClientesInactivosList = () => {
     return (
         <div className="container-page">
             <div className="header">
-                <button onClick={() => navigate(-1)} className="mb-4 p-2 bg-gray-800 text-white rounded">
-                    ← Volver
-                </button>
                 <h1>Clientes Inactivos</h1>
+                <div className="buttons-container">
+                    <button
+                        onClick={() => navigate(-1)}
+                        className="volver-button"
+                    >
+                        Volver
+                    </button>
+                </div>
             </div>
 
             <h2>En esta sección podrás ver y gestionar los clientes inactivos.</h2>
+
+            <div className="buttons-container-small">
+                <button
+                    onClick={() => navigate(-1)}
+                    className="volver-button"
+                >
+                    Volver
+                </button>
+            </div>
 
             <div style={{ display: 'flex', justifyContent: 'center' }}>
                 <SearchInput
@@ -67,7 +80,7 @@ const ClientesInactivosList = () => {
                     onReactivarClick={handleReactivarClick}
                 />
             ) : (
-                <p style={{ textAlign: 'center', marginTop: '20px' }}>No hay datos para mostrar.</p>
+                <p style={{ textAlign: 'center' }}>No hay datos para mostrar.</p>
             )}
         </div>
     );

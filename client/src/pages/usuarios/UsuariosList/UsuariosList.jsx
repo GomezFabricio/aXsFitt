@@ -76,6 +76,15 @@ const UsuariosList = () => {
 
             <h2>En esta sección podrás ver y gestionar los usuarios activos.</h2>
 
+            <div className="buttons-container-small">
+                <button className="agregar-button" onClick={() => navigate('/usuarios/alta')}>
+                    Agregar Usuario
+                </button>
+                <button className="inactivos-button" onClick={() => navigate('/usuarios/inactivos')}>
+                    Ver Inactivos
+                </button>
+            </div>
+
             <div style={{ display: 'flex', justifyContent: 'center' }}>
                 <SearchInput
                     style={{

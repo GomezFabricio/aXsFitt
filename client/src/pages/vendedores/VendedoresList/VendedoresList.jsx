@@ -50,6 +50,15 @@ const VendedoresList = () => {
       </div>
       <h2>En esta sección podrás ver y gestionar los vendedores activos.</h2>
 
+      <div className="buttons-container-small">
+        <button className="agregar-button" onClick={handleAgregarClick}>
+          Agregar Vendedor
+        </button>
+        <button className="inactivos-button" onClick={handleInactivosClick}>
+          Ver Inactivos
+        </button>
+      </div>
+
       <div style={{ display: 'flex', justifyContent: 'center' }}>
         <SearchInput
           style={{

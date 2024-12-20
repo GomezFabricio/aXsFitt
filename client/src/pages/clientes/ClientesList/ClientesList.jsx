@@ -63,6 +63,15 @@ const ClientesList = () => {
 
             <h2>En esta sección podrás ver y gestionar los clientes activos.</h2>
 
+            <div className="buttons-container-small">
+                <button className="agregar-button" onClick={handleAltaClick}>
+                    Agregar Cliente
+                </button>
+                <button className="inactivos-button" onClick={handleInactivosClick}>
+                    Ver Inactivos
+                </button>
+            </div>
+
             <div style={{ display: 'flex', justifyContent: 'center' }}>
                 <SearchInput
                     style={{

@@ -8,6 +8,10 @@ const ClientesListTable = ({ clientes, onEdit, onBaja }) => {
         return new Date(dateString).toLocaleDateString(undefined, options);
     };
 
+    if (clientes.length === 0) {
+        return <p className="text-center text-gray-500">No hay datos disponibles</p>;
+    }
+
     return (
         <div className="overflow-x-auto">
             <table className="min-w-full bg-white border border-gray-200">

@@ -40,13 +40,27 @@ const VendedoresInactivosList = () => {
     return (
         <div className="container-page">
             <div className="header">
-                <button onClick={() => navigate(-1)} className="mb-4 p-2 bg-gray-800 text-white rounded">
-                    ← Volver
-                </button>
                 <h1>Vendedores Inactivos</h1>
+                <div className="buttons-container">
+                    <button
+                        onClick={() => navigate(-1)}
+                        className="volver-button"
+                    >
+                        Volver
+                    </button>
+                </div>
             </div>
 
             <h2>En esta sección podrás ver y gestionar los vendedores inactivos.</h2>
+
+            <div className="buttons-container-small">
+                <button
+                    onClick={() => navigate(-1)}
+                    className="volver-button"
+                >
+                    Volver
+                </button>
+            </div>
 
             <div style={{ display: 'flex', justifyContent: 'center' }}>
                 <SearchInput

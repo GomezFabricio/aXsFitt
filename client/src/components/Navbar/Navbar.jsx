@@ -78,11 +78,12 @@ const NavBar = ({ isSidebarOpen, toggleSidebar }) => {
     return (
         <div>
             {/* Header para dispositivos móviles y tablets */}
-            <header className="flex lg:hidden justify-between items-center p-4 bg-gray-900 text-white">
+            <header className="flex lg:hidden justify-between items-center p-4 shadow-lg" style={{ backgroundColor: 'var(--color-principal-darkest)', color: 'var(--color-letras-botones)', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' }}>
                 <div className="flex-grow"></div> {/* Espaciador para empujar el botón a la derecha */}
                 <button
                     onClick={toggleSidebar}
                     className={`text-2xl focus:outline-none z-50 ${isSidebarOpen ? 'opacity-0' : 'opacity-100'}`}
+                    style={{ color: 'var(--color-letras-botones)' }}
                 >
                     ☰
                 </button>
@@ -90,15 +91,17 @@ const NavBar = ({ isSidebarOpen, toggleSidebar }) => {
 
             {/* Menú lateral para móviles y tablets */}
             <aside
-                className={`fixed top-0 right-0 h-full bg-gray-800 text-white w-64 z-40 transition-transform transform lg:hidden ${
+                className={`fixed top-0 right-0 h-full w-64 z-40 transition-transform transform lg:hidden ${
                     isSidebarOpen ? 'translate-x-0' : 'translate-x-full'
-                }`}
+                } shadow-lg`}
+                style={{ backgroundColor: 'var(--color-principal-darker)', boxShadow: '-4px 0 8px rgba(0, 0, 0, 0.1)' }}
             >
                 <div className="p-4 flex justify-between items-center">
-                    <h1 className="text-2xl font-bold">Mi Aplicación</h1>
+                    <h1 className="text-2xl font-bold" style={{ color: 'var(--color-letras-botones)' }}>Mi Aplicación</h1>
                     <button
                         onClick={toggleSidebar}
                         className="text-2xl focus:outline-none z-50"
+                        style={{ color: 'var(--color-letras-botones)' }}
                     >
                         ☰
                     </button>
@@ -108,11 +111,11 @@ const NavBar = ({ isSidebarOpen, toggleSidebar }) => {
                         menuOptions.map((option, index) => (
                             <li
                                 key={index}
-                                className="hover:bg-gray-700 px-4 py-3 border-b border-gray-600"
+                                className="hover:bg-black hover:text-white px-4 py-3 border-b border-white border-opacity-50 transform transition-transform duration-200 hover:translate-y-1"
                             >
                                 <Link
                                     to={`/${option.toLowerCase().replace(/\s/g, '-')}`}
-                                    className="text-white no-underline hover:text-gray-300"
+                                    className="text-white no-underline"
                                     onClick={handleMenuOptionClick}
                                 >
                                     {option}
@@ -120,28 +123,30 @@ const NavBar = ({ isSidebarOpen, toggleSidebar }) => {
                             </li>
                         ))
                     ) : (
-                        <li>Cargando opciones...</li>
+                        <li style={{ color: 'var(--color-letras-botones)' }}>Cargando opciones...</li>
                     )}
                 </ul>
                 <div className="mt-auto p-4">
                     {user && (
                         <div>
-                            <div className="w-full text-left px-4 py-2 bg-gray-700 rounded">
+                            <div className="w-full text-left px-4 py-2" style={{ backgroundColor: 'var(--color-principal-dark)', color: 'var(--color-letras-botones)' }}>
                                 {user.firstName} {user.lastName}
                             </div>
-                            <div className="mt-2 bg-gray-700 rounded p-2 space-y-2 z-50 relative">
+                            <div className="mt-2 p-2 space-y-2 z-50 relative" style={{ backgroundColor: 'var(--color-principal-darker)' }}>
                                 <Link
                                     to="/mi-perfil"
-                                    className="block text-white no-underline hover:text-gray-300"
+                                    className="block text-white no-underline hover:bg-black hover:text-white px-4 py-2 transform transition-transform duration-200 hover:translate-y-1"
                                     onClick={handleMenuOptionClick}
+                                    style={{ color: 'var(--color-letras-botones)' }}
                                 >
                                     Mi perfil
                                 </Link>
                                 {roles.length > 1 && (
                                     <Link
                                         to="/seleccion-rol"
-                                        className="block text-white no-underline hover:text-gray-300"
+                                        className="block text-white no-underline hover:bg-black hover:text-white px-4 py-2 transform transition-transform duration-200 hover:translate-y-1"
                                         onClick={handleMenuOptionClick}
+                                        style={{ color: 'var(--color-letras-botones)' }}
                                     >
                                         Roles
                                     </Link>
@@ -151,7 +156,8 @@ const NavBar = ({ isSidebarOpen, toggleSidebar }) => {
                                         handleLogout();
                                         handleMenuOptionClick();
                                     }}
-                                    className="w-full text-left bg-red-500 rounded px-4 py-2 hover:bg-red-600"
+                                    className="block w-full text-left px-4 py-2 hover:bg-red-600"
+                                    style={{ color: 'var(--color-letras-botones)' }}
                                 >
                                     Salir
                                 </button>
@@ -162,21 +168,22 @@ const NavBar = ({ isSidebarOpen, toggleSidebar }) => {
             </aside>
 
             {/* Navbar para dispositivos de resolución superior */}
-            <nav className="hidden lg:flex items-center justify-between bg-gray-900 text-white px-8 py-4">
+            <nav className="hidden lg:flex items-center justify-between px-8 py-4 shadow-lg" style={{ backgroundColor: 'var(--color-principal-darkest)', color: 'var(--color-letras-botones)', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' }}>
                 <div className="flex items-center space-x-8">
                     {menuOptions.length > 0 ? (
                         menuOptions.map((option, index) => (
                             <Link
                                 key={index}
                                 to={`/${option.toLowerCase().replace(/\s/g, '-')}`}
-                                className="text-white no-underline hover:text-gray-300"
+                                className="text-white no-underline border-b border-white border-opacity-50 pb-1 transform transition-transform duration-200 hover:translate-y-1"
                                 onClick={handleMenuOptionClick}
+                                style={{ color: 'var(--color-letras-botones)' }}
                             >
                                 {option}
                             </Link>
                         ))
                     ) : (
-                        <span>Cargando opciones...</span>
+                        <span style={{ color: 'var(--color-letras-botones)' }}>Cargando opciones...</span>
                     )}
                 </div>
                 {user && (
@@ -184,23 +191,26 @@ const NavBar = ({ isSidebarOpen, toggleSidebar }) => {
                         <button
                             className="text-white focus:outline-none"
                             onClick={toggleDropdown}
+                            style={{ color: 'var(--color-letras-botones)' }}
                         >
                             {user.firstName} {user.lastName}
                         </button>
                         {dropdownVisible && (
-                            <div ref={dropdownRef} className="absolute right-0 mt-2 w-48 bg-gray-700 rounded shadow-lg py-2 z-50">
+                            <div ref={dropdownRef} className="absolute right-0 mt-2 w-48 shadow-lg py-2 z-50" style={{ backgroundColor: 'var(--color-principal-darker)' }}>
                                 <Link
                                     to="/mi-perfil"
-                                    className="block px-4 py-2 text-white no-underline hover:bg-gray-600"
+                                    className="block px-4 py-2 text-white no-underline hover:bg-black hover:text-white transform transition-transform duration-200 hover:translate-y-1"
                                     onClick={handleMenuOptionClick}
+                                    style={{ color: 'var(--color-letras-botones)' }}
                                 >
                                     Mi perfil
                                 </Link>
                                 {roles.length > 1 && (
                                     <Link
                                         to="/seleccion-rol"
-                                        className="block px-4 py-2 text-white no-underline hover:bg-gray-600"
+                                        className="block px-4 py-2 text-white no-underline hover:bg-black hover:text-white transform transition-transform duration-200 hover:translate-y-1"
                                         onClick={handleMenuOptionClick}
+                                        style={{ color: 'var(--color-letras-botones)' }}
                                     >
                                         Roles
                                     </Link>
@@ -210,7 +220,8 @@ const NavBar = ({ isSidebarOpen, toggleSidebar }) => {
                                         handleLogout(); 
                                         handleMenuOptionClick(); 
                                     }}
-                                    className="block w-full text-left px-4 py-2 text-white hover:bg-red-600"
+                                    className="block w-full text-left px-4 py-2 hover:bg-red-600"
+                                    style={{ color: 'var(--color-letras-botones)' }}
                                 >
                                     Salir
                                 </button>
