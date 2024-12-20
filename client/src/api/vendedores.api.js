@@ -1,48 +1,49 @@
 import axios from 'axios';
+import config from '../../src/config/config'; 
 
 // Obtener el token desde el almacenamiento local
 const token = localStorage.getItem('token');
 
 // Configuración del encabezado con el token
-const config = {
+const axiosConfig = {
     headers: {
         Authorization: `Bearer ${token}`,
     },
 };
 
 export const getVendedoresRequest = async () => {
-    return await axios.get('https://localhost:4000/vendedores', config);
+    return await axios.get(`${config.backendUrl}/vendedores`, axiosConfig);
 };
 
 export const getVendedorRequest = async (id) => {
-    return await axios.get(`https://localhost:4000/vendedores/${id}`, config);
+    return await axios.get(`${config.backendUrl}/vendedores/${id}`, axiosConfig);
 };
 
 export const getEstadoVendedorRequest = async () => {
-    return await axios.get('https://localhost:4000/vendedores/estado', config); 
+    return await axios.get(`${config.backendUrl}/vendedores/estado`, axiosConfig); 
 };
 
 export const createVendedorRequest = async (data) => {
     console.log('Datos enviados a la API para crear vendedor:', data); 
-    await axios.post('https://localhost:4000/vendedores', data, config);
+    await axios.post(`${config.backendUrl}/vendedores`, data, axiosConfig);
 };
 
 export const deactivateVendedor = async (id) => {
-    await axios.put(`https://localhost:4000/vendedores/${id}/baja`, null, config);
+    await axios.put(`${config.backendUrl}/vendedores/${id}/baja`, null, axiosConfig);
 };
 
 export const getVendedoresInactivosRequest = async () => {
-    return await axios.get('https://localhost:4000/vendedores/inactivos', config);
+    return await axios.get(`${config.backendUrl}/vendedores/inactivos`, axiosConfig);
 };
 
 export const activateVendedorRequest = async (id) => {
-    return await axios.put(`https://localhost:4000/vendedores/${id}/activar`, null, config);
+    return await axios.put(`${config.backendUrl}/vendedores/${id}/activar`, null, axiosConfig);
 };
 
 export const updateVendedorRequest = async (id, data) => {
-    return await axios.put(`https://localhost:4000/vendedores/${id}`, data, config);
+    return await axios.put(`${config.backendUrl}/vendedores/${id}`, data, axiosConfig);
 };
 
 export const liquidarComisiones = async (id) => {
-    return await axios.put(`https://localhost:4000/vendedores/${id}/liquidar`, null, config);
+    return await axios.put(`${config.backendUrl}/vendedores/${id}/liquidar`, null, axiosConfig);
 };
