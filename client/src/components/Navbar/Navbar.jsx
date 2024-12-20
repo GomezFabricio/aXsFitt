@@ -132,10 +132,10 @@ const NavBar = ({ isSidebarOpen, toggleSidebar }) => {
                             <div className="w-full text-left px-4 py-2" style={{ backgroundColor: 'var(--color-principal-dark)', color: 'var(--color-letras-botones)' }}>
                                 {user.firstName} {user.lastName}
                             </div>
-                            <div className="mt-2 p-2 space-y-2 z-50 relative" style={{ backgroundColor: 'var(--color-principal-darker)' }}>
+                            <div className="mt-2 p-2 space-y-2 z-50 relative rounded-md shadow-lg" style={{ backgroundColor: 'var(--color-principal-dark)', borderRadius: '4px', boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)' }}>
                                 <Link
                                     to="/mi-perfil"
-                                    className="block text-white no-underline hover:bg-black hover:text-white px-4 py-2 transform transition-transform duration-200 hover:translate-y-1"
+                                    className="block text-white no-underline hover:bg-black hover:text-white px-4 py-2 border-b border-white border-opacity-50 transform transition-transform duration-200 hover:translate-y-1"
                                     onClick={handleMenuOptionClick}
                                     style={{ color: 'var(--color-letras-botones)' }}
                                 >
@@ -144,7 +144,7 @@ const NavBar = ({ isSidebarOpen, toggleSidebar }) => {
                                 {roles.length > 1 && (
                                     <Link
                                         to="/seleccion-rol"
-                                        className="block text-white no-underline hover:bg-black hover:text-white px-4 py-2 transform transition-transform duration-200 hover:translate-y-1"
+                                        className="block text-white no-underline hover:bg-black hover:text-white px-4 py-2 border-b border-white border-opacity-50 transform transition-transform duration-200 hover:translate-y-1"
                                         onClick={handleMenuOptionClick}
                                         style={{ color: 'var(--color-letras-botones)' }}
                                     >
@@ -156,7 +156,7 @@ const NavBar = ({ isSidebarOpen, toggleSidebar }) => {
                                         handleLogout();
                                         handleMenuOptionClick();
                                     }}
-                                    className="block w-full text-left px-4 py-2 hover:bg-red-600"
+                                    className="block w-full text-left px-4 py-2 hover:bg-red-600 transform transition-transform duration-200 hover:translate-y-1"
                                     style={{ color: 'var(--color-letras-botones)' }}
                                 >
                                     Salir
@@ -220,7 +220,7 @@ const NavBar = ({ isSidebarOpen, toggleSidebar }) => {
                                         handleLogout(); 
                                         handleMenuOptionClick(); 
                                     }}
-                                    className="block w-full text-left px-4 py-2 hover:bg-red-600"
+                                    className="block w-full text-left px-4 py-2 hover:bg-red-600 transform transition-transform duration-200 hover:translate-y-1"
                                     style={{ color: 'var(--color-letras-botones)' }}
                                 >
                                     Salir
