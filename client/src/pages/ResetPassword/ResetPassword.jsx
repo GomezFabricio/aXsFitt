@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Modal, Button } from 'react-bootstrap';
+import config from '../../config/config';
 
 const ResetPassword = () => {
     const [newPassword, setNewPassword] = useState('');
@@ -15,7 +16,7 @@ const ResetPassword = () => {
         e.preventDefault();
 
         try {
-            const response = await axios.post(`https://localhost:4000/reset-password/${token}`, { newPassword });
+            const response = await axios.post(`${config.frontendUrl}/reset-password/${token}`, { newPassword });
             setMessage(response.data.message);
             setModalIsOpen(true); // Mostrar el modal
         } catch (error) {
@@ -31,36 +32,30 @@ const ResetPassword = () => {
     return (
         <div className="container mx-auto p-4">
             <button onClick={() => navigate(-1)} className="mb-4 p-2 bg-gray-800 text-white rounded">
-                ← Volver
+                Volver
             </button>
-            <h1 className="text-2xl font-bold mb-4">Restablecer Contraseña</h1>
-            <form onSubmit={handleSubmit} className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+            <form onSubmit={handleSubmit}>
                 <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2">Nueva Contraseña</label>
+                    <label htmlFor="newPassword" className="block text-gray-700">Nueva Contraseña</label>
                     <input
                         type="password"
+                        id="newPassword"
                         value={newPassword}
                         onChange={(e) => setNewPassword(e.target.value)}
+                        className="w-full p-2 border border-gray-300 rounded mt-1"
                         required
-                        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                     />
                 </div>
-                <button type="submit" className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
-                    Restablecer
-                </button>
+                <button type="submit" className="w-full p-2 bg-blue-600 text-white rounded">Restablecer Contraseña</button>
             </form>
-            {message && <p className="text-red-500 text-xs italic">{message}</p>}
-
-            <Modal show={modalIsOpen} onHide={closeModal} centered>
+            <Modal show={modalIsOpen} onHide={closeModal}>
                 <Modal.Header closeButton>
-                    <Modal.Title>Información</Modal.Title>
+                    <Modal.Title>Mensaje</Modal.Title>
                 </Modal.Header>
-                <Modal.Body>
-                    <p>Contraseña restablecida correctamente</p>
-                </Modal.Body>
+                <Modal.Body>{message}</Modal.Body>
                 <Modal.Footer>
                     <Button variant="primary" onClick={closeModal}>
-                        De acuerdo
+                        Cerrar
                     </Button>
                 </Modal.Footer>
             </Modal>
