@@ -1,10 +1,11 @@
 import axios from 'axios';
+import config from '../../src/config/config'; 
 
 // Obtener el token desde el almacenamiento local
 const token = localStorage.getItem('token');
 
 // Configuración del encabezado con el token
-const config = {
+const axiosConfig = {
     headers: {
         Authorization: `Bearer ${token}`,
     },
@@ -13,7 +14,7 @@ const config = {
 // Función para listar inventario con detalles
 export const inventarioList = async () => {
     try {
-        const response = await axios.get('https://localhost:4000/inventario/inventario-list', config);
+        const response = await axios.get(`${config.backendUrl}/inventario/inventario-list`, axiosConfig);
         return response.data;
     } catch (error) {
         throw error.response.data;
@@ -23,7 +24,7 @@ export const inventarioList = async () => {
 // Función para listar todas las marcas
 export const marcasList = async () => {
     try {
-        const response = await axios.get('https://localhost:4000/inventario/marcas-list', config);
+        const response = await axios.get(`${config.backendUrl}/inventario/marcas-list`, axiosConfig);
         return response.data;
     } catch (error) {
         throw error.response.data;
@@ -33,7 +34,7 @@ export const marcasList = async () => {
 // Función para listar todos los tipos de productos
 export const tiposProductosList = async () => {
     try {
-        const response = await axios.get('https://localhost:4000/inventario/tipos-productos-list', config);
+        const response = await axios.get(`${config.backendUrl}/inventario/tipos-productos-list`, axiosConfig);
         return response.data;
     } catch (error) {
         throw error.response.data;
@@ -43,7 +44,7 @@ export const tiposProductosList = async () => {
 // Función para listar todos los productos
 export const productosList = async () => {
     try {
-        const response = await axios.get('https://localhost:4000/inventario/productos-list', config);
+        const response = await axios.get(`${config.backendUrl}/inventario/productos-list`, axiosConfig);
         return response.data;
     } catch (error) {
         throw error.response.data;
@@ -53,7 +54,7 @@ export const productosList = async () => {
 // Función para agregar un tipo de producto
 export const agregarTipoProducto = async (nombreTipoProducto) => {
     try {
-        const response = await axios.post('https://localhost:4000/inventario/agregar-tipo-producto', { nombreTipoProducto }, config);
+        const response = await axios.post(`${config.backendUrl}/inventario/agregar-tipo-producto`, { nombreTipoProducto }, axiosConfig);
         return response.data;
     } catch (error) {
         throw error.response.data;
@@ -63,7 +64,7 @@ export const agregarTipoProducto = async (nombreTipoProducto) => {
 // Función para agregar una marca
 export const agregarMarca = async (nombreMarcaProducto) => {
     try {
-        const response = await axios.post('https://localhost:4000/inventario/agregar-marca', { nombreMarcaProducto }, config);
+        const response = await axios.post(`${config.backendUrl}/inventario/agregar-marca`, { nombreMarcaProducto }, axiosConfig);
         return response.data;
     } catch (error) {
         throw error.response.data;
@@ -73,7 +74,7 @@ export const agregarMarca = async (nombreMarcaProducto) => {
 // Función para agregar un producto
 export const agregarProducto = async (producto) => {
     try {
-        const response = await axios.post('https://localhost:4000/inventario/agregar-producto', producto, config);
+        const response = await axios.post(`${config.backendUrl}/inventario/agregar-producto`, producto, axiosConfig);
         return response.data;
     } catch (error) {
         throw error.response.data;
@@ -83,7 +84,7 @@ export const agregarProducto = async (producto) => {
 // Función para agregar inventario
 export const agregarInventario = async (inventario) => {
     try {
-        const response = await axios.post('https://localhost:4000/inventario/agregar-inventario', inventario, config);
+        const response = await axios.post(`${config.backendUrl}/inventario/agregar-inventario`, inventario, axiosConfig);
         return response.data;
     } catch (error) {
         throw error.response.data;
@@ -93,7 +94,7 @@ export const agregarInventario = async (inventario) => {
 // Función para obtener inventario por ID
 export const obtenerInventarioPorId = async (id) => {
     try {
-        const response = await axios.get(`https://localhost:4000/inventario/obtener-inventario/${id}`, config);
+        const response = await axios.get(`${config.backendUrl}/inventario/obtener-inventario/${id}`, axiosConfig);
         return response.data;
     } catch (error) {
         throw error.response.data;
@@ -103,7 +104,7 @@ export const obtenerInventarioPorId = async (id) => {
 // Función para eliminar inventario
 export const eliminarInventario = async (id) => {
     try {
-        const response = await axios.delete(`https://localhost:4000/inventario/eliminar-inventario/${id}`, config);
+        const response = await axios.delete(`${config.backendUrl}/inventario/eliminar-inventario/${id}`, axiosConfig);
         return response.data;
     } catch (error) {
         throw error.response.data;
@@ -113,7 +114,7 @@ export const eliminarInventario = async (id) => {
 // Función para eliminar marca
 export const eliminarMarca = async (id) => {
     try {
-        const response = await axios.delete(`https://localhost:4000/inventario/eliminar-marca/${id}`, config);
+        const response = await axios.delete(`${config.backendUrl}/inventario/eliminar-marca/${id}`, axiosConfig);
         return response.data;
     } catch (error) {
         throw error.response.data;
@@ -123,7 +124,7 @@ export const eliminarMarca = async (id) => {
 // Función para eliminar tipo de producto
 export const eliminarTipoProducto = async (id) => {
     try {
-        const response = await axios.delete(`https://localhost:4000/inventario/eliminar-tipo-producto/${id}`, config);
+        const response = await axios.delete(`${config.backendUrl}/inventario/eliminar-tipo-producto/${id}`, axiosConfig);
         return response.data;
     } catch (error) {
         throw error.response.data;
@@ -133,7 +134,7 @@ export const eliminarTipoProducto = async (id) => {
 // Función para eliminar producto
 export const eliminarProducto = async (id) => {
     try {
-        const response = await axios.delete(`https://localhost:4000/inventario/eliminar-producto/${id}`, config);
+        const response = await axios.delete(`${config.backendUrl}/inventario/eliminar-producto/${id}`, axiosConfig);
         return response.data;
     } catch (error) {
         throw error.response.data;
@@ -143,7 +144,7 @@ export const eliminarProducto = async (id) => {
 // Función para editar inventario
 export const editarInventario = async (id, inventario) => {
     try {
-        const response = await axios.put(`https://localhost:4000/inventario/editar-inventario/${id}`, inventario, config);
+        const response = await axios.put(`${config.backendUrl}/inventario/editar-inventario/${id}`, inventario, axiosConfig);
         return response.data;
     } catch (error) {
         throw error.response.data;
@@ -153,7 +154,7 @@ export const editarInventario = async (id, inventario) => {
 // Función para editar producto
 export const editarProducto = async (id, producto) => {
     try {
-        const response = await axios.put(`https://localhost:4000/inventario/editar-producto/${id}`, producto, config);
+        const response = await axios.put(`${config.backendUrl}/inventario/editar-producto/${id}`, producto, axiosConfig);
         return response.data;
     } catch (error) {
         throw error.response.data;
@@ -163,7 +164,7 @@ export const editarProducto = async (id, producto) => {
 // Función para editar marca
 export const editarMarca = async (id, marca) => {
     try {
-        const response = await axios.put(`https://localhost:4000/inventario/editar-marca/${id}`, marca, config);
+        const response = await axios.put(`${config.backendUrl}/inventario/editar-marca/${id}`, marca, axiosConfig);
         return response.data;
     } catch (error) {
         throw error.response.data;
@@ -173,7 +174,7 @@ export const editarMarca = async (id, marca) => {
 // Función para editar tipo de producto
 export const editarTipoProducto = async (id, tipoProducto) => {
     try {
-        const response = await axios.put(`https://localhost:4000/inventario/editar-tipo-producto/${id}`, tipoProducto, config);
+        const response = await axios.put(`${config.backendUrl}/inventario/editar-tipo-producto/${id}`, tipoProducto, axiosConfig);
         return response.data;
     } catch (error) {
         throw error.response.data;
@@ -183,7 +184,7 @@ export const editarTipoProducto = async (id, tipoProducto) => {
 // Funciones para ver inactivos
 export const verInventariosInactivos = async () => {
     try {
-        const response = await axios.get('https://localhost:4000/inventario/inventarios-inactivos', config);
+        const response = await axios.get(`${config.backendUrl}/inventario/inventarios-inactivos`, axiosConfig);
         console.log(response.data);
         return response.data;
     } catch (error) {
@@ -193,7 +194,7 @@ export const verInventariosInactivos = async () => {
 
 export const verProductosInactivos = async () => {
     try {
-        const response = await axios.get('https://localhost:4000/inventario/productos-inactivos', config);
+        const response = await axios.get(`${config.backendUrl}/inventario/productos-inactivos`, axiosConfig);
         console.log(response.data);
         return response.data;
     } catch (error) {
@@ -203,7 +204,7 @@ export const verProductosInactivos = async () => {
 
 export const verMarcasInactivas = async () => {
     try {
-        const response = await axios.get('https://localhost:4000/inventario/marcas-inactivas', config);
+        const response = await axios.get(`${config.backendUrl}/inventario/marcas-inactivas`, axiosConfig);
         return response.data;
     } catch (error) {
         throw error.response.data;
@@ -212,7 +213,7 @@ export const verMarcasInactivas = async () => {
 
 export const verTiposProductosInactivos = async () => {
     try {
-        const response = await axios.get('https://localhost:4000/inventario/tipos-productos-inactivos', config);
+        const response = await axios.get(`${config.backendUrl}/inventario/tipos-productos-inactivos`, axiosConfig);
         return response.data;
     } catch (error) {
         throw error.response.data;
@@ -222,7 +223,7 @@ export const verTiposProductosInactivos = async () => {
 // Funciones para reactivar
 export const reactivarInventario = async (id) => {
     try {
-        const response = await axios.put(`https://localhost:4000/inventario/reactivar-inventario/${id}`, {}, config);
+        const response = await axios.put(`${config.backendUrl}/inventario/reactivar-inventario/${id}`, {}, axiosConfig);
         return response.data;
     } catch (error) {
         throw error.response.data;
@@ -231,7 +232,7 @@ export const reactivarInventario = async (id) => {
 
 export const reactivarProducto = async (id) => {
     try {
-        const response = await axios.put(`https://localhost:4000/inventario/reactivar-producto/${id}`, {}, config);
+        const response = await axios.put(`${config.backendUrl}/inventario/reactivar-producto/${id}`, {}, axiosConfig);
         return response.data;
     } catch (error) {
         throw error.response.data;
@@ -240,7 +241,7 @@ export const reactivarProducto = async (id) => {
 
 export const reactivarMarca = async (id) => {
     try {
-        const response = await axios.put(`https://localhost:4000/inventario/reactivar-marca/${id}`, {}, config);
+        const response = await axios.put(`${config.backendUrl}/inventario/reactivar-marca/${id}`, {}, axiosConfig);
         return response.data;
     } catch (error) {
         throw error.response.data;
@@ -249,7 +250,7 @@ export const reactivarMarca = async (id) => {
 
 export const reactivarTipoProducto = async (id) => {
     try {
-        const response = await axios.put(`https://localhost:4000/inventario/reactivar-tipo-producto/${id}`, {}, config);
+        const response = await axios.put(`${config.backendUrl}/inventario/reactivar-tipo-producto/${id}`, {}, axiosConfig);
         return response.data;
     } catch (error) {
         throw error.response.data;

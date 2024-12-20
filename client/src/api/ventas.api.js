@@ -1,11 +1,12 @@
 import axios from 'axios';
+import config from '../../src/config/config'; 
 
 // Obtener el token desde el almacenamiento local
 const token = localStorage.getItem('token');
 const selectedRoleId = localStorage.getItem('selectedRoleId');
 
 // Configuración del encabezado con el token
-const config = {
+const axiosConfig = {
     headers: {
         Authorization: `Bearer ${token}`,
         'x-selected-role-id': selectedRoleId,
@@ -15,24 +16,23 @@ const config = {
 // Obtener todas las ventas
 export const obtenerVentasRequest = async () => {
     console.log('API: obtenerVentasRequest');
-    return await axios.get('https://localhost:4000/ventas', config);
+    return await axios.get(`${config.backendUrl}/ventas`, axiosConfig);
 };
 
 // Obtener una venta por su ID
 export const obtenerVentaPorIdRequest = async (id) => {
     console.log('API: obtenerVentaPorIdRequest', id);
-    return await axios.get(`https://localhost:4000/ventas/${id}`, config);
+    return await axios.get(`${config.backendUrl}/ventas/${id}`, axiosConfig);
 };
 
 // Descargar el reporte de ventas en formato Excel
 export const descargarReporteVentasRequest = async () => {
     console.log('API: descargarReporteVentasRequest');
     try {
-        const response = await axios.get('https://localhost:4000/ventas/reporte', {
+        const response = await axios.get(`${config.backendUrl}/ventas/reporte`, {
             responseType: 'blob',
-            ...config,
+            ...axiosConfig,
         });
-
         const url = window.URL.createObjectURL(new Blob([response.data]));
         const link = document.createElement('a');
         link.href = url;
@@ -49,11 +49,11 @@ export const descargarReporteVentasRequest = async () => {
 // Procesar pago en efectivo
 export const procesarPagoEfectivoRequest = async (data) => {
     console.log('API: procesarPagoEfectivoRequest', data);
-    return await axios.post('https://localhost:4000/ventas/pago-efectivo', data, config);
+    return await axios.post(`${config.backendUrl}/ventas/pago-efectivo`, data, axiosConfig);
 };
 
 // Procesar pago con Mercado Pago
 export const procesarPagoMercadoPagoRequest = async (data) => {
     console.log('API: procesarPagoMercadoPagoRequest', data);
-    return await axios.post('https://localhost:4000/ventas/pago-mercadopago', data, config);
+    return await axios.post(`${config.backendUrl}/ventas/pago-mercadopago`, data, axiosConfig);
 };

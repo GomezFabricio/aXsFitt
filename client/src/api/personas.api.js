@@ -1,10 +1,11 @@
 import axios from 'axios';
+import config from '../../src/config/config'; 
 
 // Obtener el token desde el almacenamiento local
 const token = localStorage.getItem('token');
 
 // Configuración del encabezado con el token
-const config = {
+const axiosConfig = {
     headers: {
         Authorization: `Bearer ${token}`,
     },
@@ -13,7 +14,7 @@ const config = {
 export const checkDniExistsRequest = async (dni) => {
     console.log('Verificando DNI:', dni);
     try {
-        const response = await axios.get(`https://localhost:4000/personas/check-dni/${dni}`, config);
+        const response = await axios.get(`${config.backendUrl}/personas/check-dni/${dni}`, axiosConfig);
         console.log('Respuesta recibida:', response.data);
         return response;
     } catch (error) {
