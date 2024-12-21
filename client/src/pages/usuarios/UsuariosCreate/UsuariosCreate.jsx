@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { Formik, Form } from 'formik';
 import { useNavigate } from 'react-router-dom';
 import { createUsuarioRequest, getRolesRequest, checkEmailExistsRequest } from '../../../api/usuarios.api';
-import { checkDniExistsRequest } from '../../../api/personas.api'; // Importar la función de verificación del DNI
 import FormularioPersona from '../../../components/FormularioPersona/FormularioPersona';
 import FormularioUsuario from '../../../components/FormularioUsuario/FormularioUsuario';
 import FormularioRol from '../../../components/FormularioRol/FormularioRol';
@@ -39,48 +38,30 @@ const validationSchemaStep2 = Yup.object().shape({
   usuario_email: Yup.string()
     .email('El correo electrónico no es válido')
     .required('El correo electrónico es obligatorio'),
-  usuario_pass: Yup.string()
-    .required('La contraseña es obligatoria')
-    .min(6, 'La contraseña debe tener al menos 6 caracteres'),
 });
-
-const generateRandomPassword = () => {
-  const length = 12;
-  const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-  let password = "";
-  for (let i = 0, n = charset.length; i < length; ++i) {
-    password += charset.charAt(Math.floor(Math.random() * n));
-  }
-  return password;
-};
 
 const UsuariosCreate = () => {
   const [step, setStep] = useState(1);
   const [roles, setRoles] = useState([]);
-  const [selectedRoles, setSelectedRoles] = useState([]);
-  const [emailError, setEmailError] = useState(''); // Estado para el mensaje de error del email
-  const [dniError, setDniError] = useState(''); // Estado para el mensaje de error del DNI
   const navigate = useNavigate();
 
   useEffect(() => {
-    async function loadRoles() {
+    const fetchRoles = async () => {
       try {
-        const responseRoles = await getRolesRequest();
-        setRoles(responseRoles.data);
+        const response = await getRolesRequest();
+        setRoles(response.data);
       } catch (error) {
-        console.error("Error al obtener los roles:", error);
+        console.error('Error al obtener los roles:', error);
       }
-    }
-    loadRoles();
+    };
+
+    fetchRoles();
   }, []);
 
   const handleNextStep = async (values, setErrors, validateForm) => {
     const errors = await validateForm();
     if (Object.keys(errors).length === 0) {
-      if (dniError) {
-        setErrors({ persona_dni: dniError });
-        return;
-      }
+      localStorage.setItem('personaData', JSON.stringify(values));
       setStep(step + 1);
     } else {
       setErrors(errors);
@@ -91,45 +72,19 @@ const UsuariosCreate = () => {
     setStep(step - 1);
   };
 
-  const handleEmailCheck = async (email) => {
-    console.log('Verificando correo electrónico:', email);
-    try {
-      const response = await checkEmailExistsRequest(email);
-      console.log('Respuesta de verificación de correo:', response.data);
-      if (response.data.message === 'El correo electrónico ya está registrado') {
-        setEmailError('El correo electrónico ya está registrado');
-        return false;
-      }
-      setEmailError('');
-      return true;
-    } catch (error) {
-      console.error('Error verificando el correo electrónico:', error);
-      setEmailError(error.message || 'Error verificando el correo electrónico');
-      return false;
+  const generateRandomPassword = () => {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let password = '';
+    for (let i = 0; i < 8; i++) {
+      password += chars.charAt(Math.floor(Math.random() * chars.length));
     }
-  };
-
-  const handleDniCheck = async (dni) => {
-    console.log('Verificando DNI:', dni);
-    try {
-      const response = await checkDniExistsRequest(dni);
-      console.log('Respuesta de verificación de DNI:', response.data);
-      if (response.data.message === 'El DNI ya está registrado') {
-        setDniError('El DNI ya está registrado');
-        return false;
-      }
-      setDniError('');
-      return true;
-    } catch (error) {
-      console.error('Error verificando el DNI:', error);
-      setDniError(error.message || 'Error verificando el DNI');
-      return false;
-    }
+    return password;
   };
 
   return (
     <div className="container-page">
-      <h1>Alta de Usuario</h1>
+      <h1 className="title">Alta Usuario</h1>
+      <h2>Complete los siguientes campos para registrar un nuevo usuario en el sistema. Asegúrese de ingresar toda la información requerida para garantizar un registro exitoso.</h2>
       <Formik
         initialValues={{
           persona_nombre: "",
@@ -139,35 +94,34 @@ const UsuariosCreate = () => {
           persona_fecha_nacimiento: "",
           persona_domicilio: "",
           usuario_email: "",
-          usuario_pass: generateRandomPassword(), // Generar contraseña aleatoria
+          usuario_pass: generateRandomPassword(), // Generar una contraseña aleatoria
+          roles: [],
         }}
-        validationSchema={step === 1 ? validationSchemaStep1 : validationSchemaStep2}
-        onSubmit={async (values, { setSubmitting }) => {
+        validationSchema={step === 1 ? validationSchemaStep1 : validationSchemaStep2} // Añadir el esquema de validación según el paso
+        onSubmit={async (values, { setSubmitting, setErrors }) => {
           try {
             if (step === 1) {
-              handleNextStep(values, setErrors, validateForm);
+              // Guardar datos en localStorage y pasar al siguiente paso
+              await handleNextStep(values, setErrors, validateForm);
             } else {
-              const emailValid = await handleEmailCheck(values.usuario_email);
-              if (!emailValid) {
+              // Validar el correo electrónico
+              const emailExists = await checkEmailExistsRequest(values.usuario_email);
+              if (emailExists.data.exists) {
+                setErrors({ usuario_email: 'El correo electrónico ya está registrado' });
                 setSubmitting(false);
                 return;
               }
 
-              const personaData = {
-                persona_nombre: values.persona_nombre,
-                persona_apellido: values.persona_apellido,
-                persona_dni: values.persona_dni,
-                persona_telefono: values.persona_telefono,
-                persona_fecha_nacimiento: values.persona_fecha_nacimiento,
-                persona_domicilio: values.persona_domicilio,
-              };
+              const personaData = JSON.parse(localStorage.getItem('personaData'));
               const usuarioData = {
                 usuario_email: values.usuario_email,
                 usuario_pass: values.usuario_pass,
+                roles: values.roles,
               };
 
-              await createUsuarioRequest({ persona: personaData, usuario: usuarioData, roles: selectedRoles });
-              navigate('/usuarios');
+              // Enviar la solicitud con ambos pasos completados
+              await createUsuarioRequest({ persona: personaData, usuario: usuarioData });
+              navigate('/usuarios'); // Redirigir a la URL "/usuarios" después de finalizar el registro
             }
           } catch (error) {
             console.log(error);
@@ -175,7 +129,7 @@ const UsuariosCreate = () => {
           }
         }}
       >
-        {({ values, handleChange, handleBlur, setFieldValue, errors, touched, validateForm, setErrors, isSubmitting }) => (
+        {({ values, handleChange, setFieldValue, errors, touched, validateForm, setErrors }) => (
           <Form className="form">
             {step === 1 ? (
               <div>
@@ -183,22 +137,10 @@ const UsuariosCreate = () => {
                   handleChange={handleChange} 
                   setFieldValue={setFieldValue} 
                   values={values} 
-                  errors={errors}
-                  touched={touched}
-                  handleBlur={async (e) => {
-                    handleBlur(e);
-                    if (e.target.name === 'persona_dni') {
-                      await handleDniCheck(e.target.value);
-                    }
-                  }} // Pasar handleBlur para manejar el evento onBlur y validar el DNI
+                  errors={errors} 
+                  touched={touched} 
                 />
-                {dniError && <div className="error-dni-message">{dniError}</div>}
-                <button 
-                  type="submit" 
-                  className="siguiente-button" 
-                  onClick={() => handleNextStep(values, setErrors, validateForm)}
-                  disabled={isSubmitting}
-                >
+                <button type="submit" className="siguiente-button" onClick={() => handleNextStep(values, setErrors, validateForm)}>
                   Siguiente
                 </button>
               </div>
@@ -206,20 +148,25 @@ const UsuariosCreate = () => {
               <div>
                 <FormularioUsuario 
                   handleChange={handleChange} 
-                  handleBlur={handleBlur} 
                   setFieldValue={setFieldValue} 
                   values={values} 
-                  errors={errors}
-                  touched={touched}
-                  disablePassword={true} // Deshabilitar el campo de contraseña
+                  errors={errors} 
+                  touched={touched} 
+                  readOnly // Hacer que los campos sean de solo lectura
                 />
-                {emailError && <div className="error-email-message">{emailError}</div>}
-                <FormularioRol roles={roles} selectedRoles={selectedRoles} setSelectedRoles={setSelectedRoles} />
+                <FormularioRol 
+                  handleChange={handleChange} 
+                  setFieldValue={setFieldValue} 
+                  values={values} 
+                  errors={errors} 
+                  touched={touched} 
+                  roles={roles} 
+                />
                 <button type="button" className="page-anterior-button" onClick={handlePreviousStep}>
                   Anterior
                 </button>
-                <button type="submit" className="alta-button" disabled={isSubmitting || selectedRoles.length === 0}>
-                  Agregar Usuario
+                <button type="submit" className="alta-button">
+                  Finalizar Registro
                 </button>
               </div>
             )}

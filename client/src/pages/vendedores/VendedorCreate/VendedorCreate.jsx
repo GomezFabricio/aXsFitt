@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { Formik, Form } from 'formik';
 import { useNavigate } from 'react-router-dom';
 import { createUsuarioRequest, checkEmailExistsRequest } from '../../../api/usuarios.api'; // Importar createUsuarioRequest y checkEmailExistsRequest
-import { checkDniExistsRequest } from '../../../api/personas.api'; // Importar checkDniExistsRequest
 import FormularioPersona from '../../../components/FormularioPersona/FormularioPersona';
 import FormularioUsuario from '../../../components/FormularioUsuario/FormularioUsuario';
 import * as Yup from 'yup'; // Importar Yup
@@ -48,13 +47,6 @@ const VendedorCreate = () => {
   const handleNextStep = async (values, setErrors, validateForm) => {
     const errors = await validateForm();
     if (Object.keys(errors).length === 0) {
-      // Validar el DNI
-      const dniExists = await checkDniExistsRequest(values.persona_dni);
-      if (dniExists.data.exists) {
-        setErrors({ persona_dni: 'El DNI ya está registrado' });
-        return;
-      }
-
       localStorage.setItem('personaData', JSON.stringify(values));
       setStep(step + 1);
     } else {
